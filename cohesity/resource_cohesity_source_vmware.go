@@ -21,7 +21,7 @@ func resourceCohesitySourceVMware() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				Description: `Specifies the network endpoint of the Protection
-							  Source where it is reachable. It could be an URL
+                              Source where it is reachable. It could be an URL
 							  or hostname or an IP address of the Protection Source`,
 			},
 			"vmware_type": {
