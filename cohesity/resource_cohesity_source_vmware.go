@@ -21,8 +21,9 @@ func resourceCohesitySourceVMware() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				Description: `Specifies the network endpoint of the Protection
-                              Source where it is reachable. It could be an URL
-							  or hostname or an IP address of the Protection Source`,
+				Source where it is reachable. It could be an URL or hostname or
+				an IP address of the Protection Source
+							  `,
 			},
 			"vmware_type": {
 				Type:        schema.TypeString,
@@ -59,44 +60,41 @@ func resourceCohesitySourceVMware() *schema.Resource {
 				Optional: true,
 				Default:  false,
 				Description: `Specifies whether datastore streams are configured
-							  for all datastores that are part of the registered
-							  entity. If set to true, number of streams from Cohesity
-							  cluster to the registered entity will be limited
-							  to the value set for number_of_streams. If not set
-							  or set to false, there is no max limit for the number of
-							  concurrent streams.`,
+				for all datastores that are part of the registered entity. If set
+				to true, number of streams from Cohesity cluster to the registered
+				entity will be limited to the value set for number_of_streams. If
+				not set or set to false, there is no max limit for the number of 
+				concurrent streams.`,
 			},
 			"number_of_streams": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  1,
-				Description: `Specifies the limit on the number of streams Cohesity
-							  cluster will make concurrently to the datastores of the
-							  registered entity. This limit is enforced only when the
-							  cap_streams_per_datastore is set to true`,
+				Description: `Specifies the limit on the number of streams
+				Cohesity cluster will make concurrently to the datastores
+				of the registered entity. This limit is enforced only when the
+				cap_streams_per_datastore is set to true`,
 			},
 			"enable_latency_throttling": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
 				Description: `Indicates whether read operations to the datastores,
-							  which are part of the registered Protection Source,
-							  are throttled.`,
+				which are part of the registered Protection Source, are throttled.`,
 			},
 			"new_task_latency": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  30,
 				Description: `If the latency of a datastore is above this value,
-							  then new backup tasks using the datastore will not
-							  be started.`,
+				then new backup tasks using the datastore will not be started.`,
 			},
 			"active_task_latency": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  30,
 				Description: `If the latency of a datastore is above this value,
-				              existing backup tasks using the datastore are throttled.`,
+				existing backup tasks using the datastore are throttled.`,
 			},
 		},
 	}
