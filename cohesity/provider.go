@@ -39,6 +39,7 @@ func Provider() terraform.ResourceProvider {
 			"cohesity_virtual_edition_cluster":  resourceCohesityVirtualEditionCluster(),
 			"cohesity_physical_edition_cluster": resourceCohesityPhysicalEditionCluster(),
 			"cohesity_source_vmware":            resourceCohesitySourceVMware(),
+			"cohesity_job_vmware":               resourceCohesityJobVMware(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
