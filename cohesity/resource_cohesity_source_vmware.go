@@ -40,6 +40,7 @@ func resourceCohesitySourceVMware() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,
+				DefaultFunc: schema.EnvDefaultFunc("COHESITY_SOURCE_VMWARE_PASSWORD", ""),
 				Description: "Specifies password of the username to access the target source",
 			},
 			"enable_ssl_verification": {
