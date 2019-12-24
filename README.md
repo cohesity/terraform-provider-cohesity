@@ -319,21 +319,21 @@ resource "cohesity_source_vmware" "source1" {
 ```
 ### Argument Reference
 The following arguments are supported:
-- endpoint - (Required, string) The network endpoint of the Protection Source where it is reachable. It could be an URL or hostname or an IP address of the Protection Source
-- vmware_type - (Optional, string) The VMware entity type. The default vaule is **VCenter**. Supported types include VCenter, VCloudDirector and HostSystem (Standalone ESXi Host)
+- endpoint - (Required, string) The network endpoint of the protection source where it is reachable. It could be an URL or hostname or an IP address of the protection source
+- vmware_type - (Optional, string) The VMware entity type. The default vaule is **VCenter**. Supported types include **VCenter**, **VCloudDirector** and **HostSystem** (Standalone ESXi Host)
 - username - (Required, string) The username to access the target source
 - password - (Required, string) The password of the username to access the target source. This can also be read from **COHESITY_SOURCE_VMWARE_PASSWORD** environment variable
 - enable_ssl_verification - (Optional, bool) Specifies whether SSL verification should be performed or not. The default vaule is **false**
 - ca_certificate - (Optional, bool) The contents of CA certificate. Required when **enable_ssl_verification** is **true**
 - cap_streams_per_datastore - (Optional, bool) Specifies whether datastore streams are configured for all datastores that are part of the registered entity. If set
-				to true, number of streams from Cohesity cluster to the registered entity will be limited to the value set for number_of_streams. If
+				to true, number of streams from Cohesity cluster to the registered entity will be limited to the value set for **number_of_streams**. If
 				not set or set to false, there is no max limit for the number of concurrent streams. The default vaule is **false**
 - number_of_streams - (Optional, int) Specifies the limit on the number of streams Cohesity cluster will make concurrently to the datastores
-				of the registered entity. This limit is enforced only when the cap_streams_per_datastore is set to true. The default value is **1**
-- enable_latency_throttling - (Optional, bool) Indicates whether read operations to the datastores, which are part of the registered Protection Source are throttled or not.
+				of the registered entity. This limit is enforced only when the **cap_streams_per_datastore** is set to **true**. The default value is **1**
+- enable_latency_throttling - (Optional, bool) Indicates whether read operations to the datastores which are part of the registered Protection Source are throttled or not.
 The default vaule is **false**
-- new_task_latency - (Optional, int) If the latency of a datastore is above this value, then new backup tasks using the datastore will not be started. **enable_latency_throttling** must be set to **true** for apply this configuration. The default value is **30**
-- active_task_latency - (Optional, int) If the latency of a datastore is above this value, existing backup tasks using the datastore are throttled. **enable_latency_throttling** must be set to **true** for apply this configuration. The default value is **30**
+- new_task_latency - (Optional, int) If the latency of a datastore is above this value, then new backup tasks using the datastore will not be started. **enable_latency_throttling** must be set to **true** to apply this configuration. The default value is **30**
+- active_task_latency - (Optional, int) If the latency of a datastore is above this value, existing backup tasks using the datastore are throttled. **enable_latency_throttling** must be set to **true** to apply this configuration. The default value is **30**
 
 #### Attributes Reference
 The following attributes are exported:
@@ -374,8 +374,7 @@ resource "cohesity_job_vmware" "job1" {
 - exclude - (Optional, set of strings) The list of vm's names from the protection source that should not be protected and are excluded from being backed up by the protection job
 - policy - (Required, string) The protection policy name to be used by the protection job
 - storage_domain - (Required, string) The storage domain name where this job writes data
-- qos_type - (Optional, string) Specifies the QoS policy type to use for this protection job. The default vaule is **BackupHDD**. The supported types include **BackupHDD** and **BackupSSD**. 'BackupHDD' indicates the Cohesity cluster writes data directly to the HDD tier for this protection job. This is the recommended setting. 'BackupSSD' indicates the
-Cohesity cluster writes data directly to the SSD tier for this protection job. Only specify this policy if you need fast ingest speed for a small number of Protection Jobs
+- qos_type - (Optional, string) Specifies the QoS policy type to use for this protection job. The default vaule is **BackupHDD**. The supported types include **BackupHDD** and **BackupSSD**. **BackupHDD** indicates the Cohesity cluster writes data directly to the HDD tier for this protection job. This is the recommended setting. **BackupSSD** indicates the Cohesity cluster writes data directly to the SSD tier for this protection job. Only specify this policy if you need fast ingest speed for a small number of protection jobs
 - full_sla - (Optional, int) Specifies the number of minutes that a job run of a full (no CBT) backup schedule is expected to complete, which is known as a service level agreement (SLA). A SLA violation is reported when the run time of a job run exceeds the SLA time period specified for this backup schedule. The default vaule is **120**
 - incremental_sla - (Optional, init) Specifies the number of minutes that a job run of a CBT-based backup schedule is expected to complete, which is known as a service level ggreement (SLA). A SLA violation is reported when the run time of a job run exceeds the SLA time period specified for this backup schedule. The default value is **60**
 - priority - (Optional, string) Specifies the priority of execution for a protection job. The default vaule is **Medium**. The supported vaules include **Low, Medium, and High**
