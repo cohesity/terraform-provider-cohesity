@@ -27,7 +27,6 @@ func resourceCohesityJobRun() *schema.Resource {
 			"run_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				ForceNew:    true,
 				Default:     "Regular",
 				Description: "Specifies the type of backup",
 			},
