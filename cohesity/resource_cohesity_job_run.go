@@ -84,7 +84,8 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 	}
 	//start or stop the job run and wait for completion or operation timeout
 	if resourceData.Get("state").(string) == "start" {
-		if len(response) == 0 || (response[0].BackupRun.Status != models.StatusBackupRun_KACCEPTED && response[0].BackupRun.Status != models.StatusBackupRun_KRUNNING) {
+		if len(response) == 0 || (response[0].BackupRun.Status != models.StatusBackupRun_KACCEPTED &&
+			response[0].BackupRun.Status != models.StatusBackupRun_KRUNNING) {
 			log.Printf("[INFO] Start the protection job %s", jobName)
 			var requestParams models.RunProtectionJobParam
 			switch resourceData.Get("run_type").(string) {
@@ -119,8 +120,9 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 			time.Sleep(30 * time.Second)
 			timeout -= 30
 		}
-	} else if resourceData.Get("state").(string) == "stop" && len(response) != 0 && (response[0].BackupRun.Status == models.StatusBackupRun_KACCEPTED ||
-		response[0].BackupRun.Status == models.StatusBackupRun_KRUNNING) {
+	} else if resourceData.Get("state").(string) == "stop" && len(response) != 0 &&
+		(response[0].BackupRun.Status == models.StatusBackupRun_KACCEPTED ||
+			response[0].BackupRun.Status == models.StatusBackupRun_KRUNNING) {
 		log.Printf("[INFO] Stop the protection job run (%s)", jobName)
 		var cancelJobRunParams models.CancelProtectionJobRunParam
 		cancelJobRunParams.JobRunId = response[0].BackupRun.JobRunId
