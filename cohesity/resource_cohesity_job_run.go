@@ -46,7 +46,7 @@ func resourceCohesityJobRun() *schema.Resource {
 			"timestamp": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Specifies a random number to trigger a new resource on each terraform apply",
+				Description: "Specifies the current timestamp to trigger starting or stopping a job run",
 			},
 		},
 	}
