@@ -98,7 +98,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 				requestParams.RunType = models.RunTypeRunProtectionJobParam_KSYSTEM
 			}
 			err = client.ProtectionJobs().CreateRunProtectionJob(jobID, &requestParams)
-			time.Sleep(30 * time.Second)
+			time.Sleep(5 * time.Second)
 			if err != nil {
 				log.Printf(err.Error())
 				return nil, errors.New("Failed to run the protection job")
