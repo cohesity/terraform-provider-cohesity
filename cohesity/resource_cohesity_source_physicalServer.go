@@ -10,6 +10,9 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
+//ProtectionSourceID Id of protection source registered.
+var ProtectionSourceID int64
+
 func resourceCohesitySourcePhysicalServer() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceCohesitySourcePhysicalServerCreate,
@@ -20,15 +23,14 @@ func resourceCohesitySourcePhysicalServer() *schema.Resource {
 			"endpoint": {
 				Type:     schema.TypeString,
 				Required: true,
-				Description: `Specifies the network endpoint of the Protection
-				Source where it is reachable. It could be an URL or hostname or
+				Description: `Specifies the network endpoint of the Protection Source where it is reachable. It could be an URL or hostname or 
 				an IP address of the Protection Source`,
 			},
 			"force_register": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: `Forcefully register physical server to target cluster`,
+				Description: "Forcefully register physical server to target cluster",
 			},
 			"host_type": {
 				Type:        schema.TypeString,
@@ -45,7 +47,7 @@ func resourceCohesitySourcePhysicalServer() *schema.Resource {
 }
 
 func resourceCohesitySourcePhysicalServerCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	log.Printf("[INFO] Starting PS Registration")
+	log.Printf("[INFO] Starting Physical Server Registration")
 	var cohesityConfig = configMetaData.(Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
 		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
@@ -69,7 +71,7 @@ func resourceCohesitySourcePhysicalServerCreate(resourceData *schema.ResourceDat
 
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to register Cohesity protection source")
+		return errors.New("Failed to register source Physical Server")
 	}
 	resourceData.SetId(strconv.FormatInt(*result.Id, 10))
 	log.Printf("[INFO] Successfully registered physical server protection source %s", endpoint)
@@ -78,7 +80,7 @@ func resourceCohesitySourcePhysicalServerCreate(resourceData *schema.ResourceDat
 }
 
 func resourceCohesitySourcePhysicalServerRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	log.Printf("Starting Read")
+	log.Printf("[INFO] Starting Read")
 	var cohesityConfig = configMetaData.(Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
 		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
@@ -89,10 +91,12 @@ func resourceCohesitySourcePhysicalServerRead(resourceData *schema.ResourceData,
 	var trueValue = true
 	var environmentType = []models.EnvironmentListProtectionSourcesEnum{models.EnvironmentListProtectionSources_KPHYSICAL}
 	var endpoint = resourceData.Get("endpoint").(string)
-	protectionSourceID, _ := strconv.ParseInt(resourceData.Id(), 10, 64)
-	log.Printf("[INFO] Read Cohesity Physical Server protection source %d", protectionSourceID)
 
-	result, err := client.ProtectionSources().ListProtectionSources(&protectionSourceID, nil, nil, &trueValue, &trueValue, &trueValue, environmentType, nil, &trueValue, nil, nil, &trueValue)
+	// Converting to int64
+	ProtectionSourceID, _ = strconv.ParseInt(resourceData.Id(), 10, 64)
+	log.Printf("[INFO] Read Cohesity Physical Server protection source %v, %T", ProtectionSourceID, ProtectionSourceID)
+
+	result, err := client.ProtectionSources().ListProtectionSources(&ProtectionSourceID, nil, nil, &trueValue, &trueValue, &trueValue, environmentType, nil, &trueValue, nil, nil, &trueValue)
 
 	for _, protectionSource := range result {
 		log.Printf("[INFO] Protection Name: %s", *protectionSource.ProtectionSource.Name)
@@ -108,7 +112,7 @@ func resourceCohesitySourcePhysicalServerRead(resourceData *schema.ResourceData,
 }
 
 func resourceCohesitySourcePhysicalServerDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	log.Printf("Starting Delete")
+	log.Printf("[INFO] Starting Delete")
 	var cohesityConfig = configMetaData.(Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
 		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
@@ -117,6 +121,7 @@ func resourceCohesitySourcePhysicalServerDelete(resourceData *schema.ResourceDat
 		return errors.New("Failed to authenticate with Cohesity")
 	}
 
+	// Converting type to int64
 	protectionSourceID, _ := strconv.ParseInt(resourceData.Id(), 10, 64)
 	log.Printf("[INFO] Unregistering the Physical Server protection source %s", resourceData.
 		Get("endpoint").(string))
@@ -132,5 +137,5 @@ func resourceCohesitySourcePhysicalServerDelete(resourceData *schema.ResourceDat
 }
 
 func resourceCohesitySourcePhysicalServerUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	return nil
+	return errors.New("Update Operation is unavailable for source Physical Server")
 }
