@@ -41,7 +41,7 @@ func Provider() terraform.ResourceProvider {
 			"cohesity_source_vmware":            resourceCohesitySourceVMware(),
 			"cohesity_job_vmware":               resourceCohesityJobVMware(),
 			"cohesity_job_run":                  resourceCohesityJobRun(),
-			"cohesity_restore_vm":               resourceCohesityRestoreVM(),
+			"cohesity_restore_vmware_vm":        resourceCohesityRestoreVMwareVM(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

@@ -13,12 +13,12 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceCohesityRestoreVM() *schema.Resource {
+func resourceCohesityRestoreVMwareVM() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceCohesityRestoreVMCreate,
-		Read:   resourceCohesityRestoreVMRead,
-		Delete: resourceCohesityRestoreVMDelete,
-		Update: resourceCohesityRestoreVMUpdate,
+		Create: resourceCohesityRestoreVMwareVMCreate,
+		Read:   resourceCohesityRestoreVMwareVMRead,
+		Delete: resourceCohesityRestoreVMwareVMDelete,
+		Update: resourceCohesityRestoreVMwareVMUpdate,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -47,13 +47,6 @@ func resourceCohesityRestoreVM() *schema.Resource {
 				Set:         schema.HashString,
 				Description: "Specifies the names of the virtual machines to restore",
 			},
-			"environment": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "VMware",
-				ForceNew:    true,
-				Description: "Specifies the environment where the protected source exists",
-			},
 			"operation_timeout": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -78,35 +71,28 @@ func resourceCohesityRestoreVM() *schema.Resource {
 	}
 }
 
-// used in converting mircoseconds to seconds
+// Used in converting mircoseconds to seconds
 const epochTimestampToSeconds = 1000000
 
 func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData interface{}) (*int64, error) {
-	// authenticate with Cohesity cluster
+	// Authenticate with Cohesity cluster
 	log.Printf("[INFO] Authenticate with Cohesity cluster")
 	var cohesityConfig = configMetaData.(Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
 		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Printf("[ERROR] %s", err.Error())
 		return nil, errors.New("Failed to authenticate with Cohesity")
 	}
 
 	timeout := resourceData.Get("operation_timeout").(int) * WaitTimeToSeconds
 	var taskID int64
 	var restoreTaskDetails models.RestoreTask
-	var environment models.EnvironmentGetRestoreTasksEnum
 
-	// get the restore tasks and check if a task with given name exists
-	switch resourceData.Get("environment").(string) {
-	case "VMware":
-		environment = models.EnvironmentGetRestoreTasks_KVMWARE
-	case "HyperV":
-		environment = models.EnvironmentGetRestoreTasks_KHYPERV
-	}
+	// Get the restore tasks and check if a task with given name exists
 	log.Printf("[INFO] Get restore tasks")
 	result, err := client.RestoreTasks().GetRestoreTasks(nil, nil,
-		nil, nil, []string{"kRecoverVMs"}, environment)
+		nil, nil, []string{"kRecoverVMs"}, models.EnvironmentGetRestoreTasks_KVMWARE)
 	for _, restoreTask := range result {
 		if restoreTask.Name == resourceData.Get("name").(string) {
 			log.Printf("[INFO] The restore task %s exists", resourceData.Get("name").(string))
@@ -115,7 +101,7 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 		}
 	}
 
-	// start or stop a restore task based on the state
+	// Start or stop a restore task based on the state
 	if resourceData.Get("state").(string) == "start" {
 		log.Printf("[INFO] Creating the restore task %s", resourceData.Get("name").(string))
 		if taskID != 0 {
@@ -125,12 +111,12 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 		var recoverRequest models.RecoverTaskRequest
 		var taskName = resourceData.Get("name").(string)
 
-		// get the protection job id
+		// Get the protection job id
 		log.Printf("[INFO] Get id of protection job %s", resourceData.Get("job_name").(string))
 		protectionJobs, err := client.ProtectionJobs().GetProtectionJobs(nil,
 			[]string{resourceData.Get("job_name").(string)}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			return nil, fmt.Errorf("Failed to get protection job from Cohesity cluster")
 		}
 		if len(protectionJobs) == 0 {
@@ -143,7 +129,7 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 		objectList := make([]*models.RestoreObjectDetails, 0)
 		var foundObject = false
 
-		// search for vm's in the snapshots and construct the objects list
+		// Search for vm's in the snapshots and construct the objects list
 		if len(resourceData.Get("vm_names").(*schema.Set).List()) != 0 {
 			log.Printf("[INFO] Start searching for given vm's snapshots")
 			for _, vm := range resourceData.Get("vm_names").(*schema.Set).List() {
@@ -156,7 +142,7 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 				}
 				for _, snapshotObject := range objects.ObjectSnapshotInfo {
 					if *snapshotObject.ObjectName == vmName {
-						// if backup timestamp is not given, latest snaphot is considered
+						// If backup timestamp is not given, latest snaphot is considered
 						if resourceData.Get("backup_timestamp").(string) == "" {
 							log.Printf("[INFO] Found the snapshot for vm %s", vmName)
 							var object models.RestoreObjectDetails
@@ -171,7 +157,7 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 						} else {
 							userDateTime := strings.Split(resourceData.Get("backup_timestamp").(string), " ")
 							location, _ := time.LoadLocation(userDateTime[2])
-							//search for snapshot with given backup timestamp
+							// Search for snapshot with given backup timestamp
 							for _, snapshotObjectVersion := range snapshotObject.Versions {
 								backupDateTime := strings.Split(time.Unix((*snapshotObjectVersion.
 									StartedTimeUsecs)/epochTimestampToSeconds, 0).In(location).String(), " ")
@@ -196,22 +182,22 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 				foundObject = false
 			}
 		} else {
-			// if no vm's are given by the user, restore all the vm's in the protection job
-			log.Printf("[INFO] No vm's are given. All vm's backed by the job run are restored")
+			// If no VM's are given by the user, restore all the vm's in the protection job
+			log.Printf("[INFO] No VM's are given. All vm's backed by the job run are restored")
 			excludeRunsWithErrors := true
 			foundObject = false
 			log.Printf("[INFO] Get the protection job runs")
 			protectionRuns, err := client.ProtectionRuns().GetProtectionRuns(&protectionJobID,
 				nil, nil, nil, nil, nil, nil, nil, nil, &excludeRunsWithErrors, nil)
 			if err != nil {
-				log.Printf(err.Error())
+				log.Printf("[ERROR] %s", err.Error())
 				return nil, fmt.Errorf("Failed to get the protection job runs")
 			} else if len(protectionRuns) == 0 {
 				return nil, fmt.Errorf("There are no successful job runs for protection job %s",
 					resourceData.Get("job_name").(string))
 			}
 			for _, protectionRun := range protectionRuns {
-				// when backup timestamp is not given, latest successful backup is considered
+				// When backup timestamp is not given, latest successful backup is considered
 				if resourceData.Get("backup_timestamp").(string) == "" {
 					if protectionRun.BackupRun.Status == models.StatusBackupRun_KSUCCESS {
 						log.Printf("[INFO] Latest successful protection job run is used for restore")
@@ -247,10 +233,9 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 		recoverRequest.Name = taskName
 		recoverRequest.Objects = objectList
 		recoverRequest.Type = models.TypeRecoverTaskRequest_KRECOVERVMS
-		// set vmware parameters
+		// Set vmware parameters
 		log.Printf("[INFO] Setting the VMware parameters")
-		if resourceData.Get("environment").(string) == "VMware" &&
-			len(resourceData.Get("vmware_parameters").(map[string]interface{})) != 0 {
+		if len(resourceData.Get("vmware_parameters").(map[string]interface{})) != 0 {
 			var vmwareParameters models.VmwareRestoreParameters
 			vmParams := resourceData.Get("vmware_parameters").(map[string]interface{})
 			if prefix, ok := vmParams["prefix"]; ok {
@@ -266,10 +251,10 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 		log.Printf("[INFO] Request for restore task creation")
 		result, err := client.RestoreTasks().CreateRecoverTask(&recoverRequest)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			return nil, fmt.Errorf("Failed to create restore task %s", taskName)
 		}
-		// wait for restore task completion
+		// Wait for restore task completion
 		log.Printf("[INFO] Wait till restore task is complete")
 		for timeout > 0 {
 			result, err := client.RestoreTasks().GetRestoreTaskById(*result.Id)
@@ -281,7 +266,7 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 				result.Error != nil {
 				return nil, fmt.Errorf("The restore task is created but the task run errored out")
 			} else if err == nil && result.Status == models.StatusRestoreTask_KCANCELLED {
-				return nil, fmt.Errorf("The restore task is stated, but eventually cancelled")
+				return nil, fmt.Errorf("The restore task is started, but eventually cancelled")
 			}
 			time.Sleep(30 * time.Second)
 			timeout -= 30
@@ -301,10 +286,10 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 		}
 		err = client.RestoreTasks().UpdateCancelRestoreTask(taskID)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			return nil, fmt.Errorf("Failed to cancel the restore task")
 		}
-		// wait till restore task is cancelled
+		// Wait till restore task is cancelled
 		log.Printf("[INFO] Wait till the restore task is cancelled")
 		for timeout > 0 {
 			result, err := client.RestoreTasks().GetRestoreTaskById(taskID)
@@ -323,7 +308,7 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 	return nil, fmt.Errorf("Invalid restore task state. Should be start or stop")
 }
 
-func resourceCohesityRestoreVMCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityRestoreVMwareVMCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	taskID, err := restoreStartStopUtil(resourceData, configMetaData)
 	if err != nil {
 		return err
@@ -332,14 +317,14 @@ func resourceCohesityRestoreVMCreate(resourceData *schema.ResourceData, configMe
 	return nil
 }
 
-func resourceCohesityRestoreVMRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityRestoreVMwareVMRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	return nil
 }
 
-func resourceCohesityRestoreVMDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityRestoreVMwareVMDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	return nil
 }
 
-func resourceCohesityRestoreVMUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityRestoreVMwareVMUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	return nil
 }
