@@ -5,7 +5,7 @@ description: |-
   Create physical edition cluster, apply license key and destroy cluster.
 ---
 
-# cohesity\_branch\_protection
+# cohesity\_physical\_edition\_cluster
 
 Create physical edition cluster, apply license key and destroy cluster
 

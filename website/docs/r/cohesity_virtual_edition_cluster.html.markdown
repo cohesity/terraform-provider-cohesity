@@ -5,7 +5,7 @@ description: |-
   Create virtual edition cluster, apply license key and destroy cluster.
 ---
 
-# cohesity\_branch\_protection
+# cohesity\_virtual\_edition\_cluster
 
 Create virtual edition cluster, apply license key and destroy cluster
 

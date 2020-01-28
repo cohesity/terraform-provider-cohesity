@@ -5,7 +5,7 @@ description: |-
   Create cloud edition cluster, apply license key and destroy cluster.
 ---
 
-# cohesity\_branch\_protection
+# cohesity\_cloud\_edition\_cluster
 
 Create cloud edition cluster, apply license key and destroy cluster
 
