@@ -135,9 +135,21 @@ provider "cohesity" {
 	cluster_domain = "LOCAL"
 }
 
+
+resource "cohesity_source_vmware" "vmware_source"{
+	endpoint = "vc-67.eco.eng.cohesity.com"
+	username = "administrator"
+	vmware_type = "VCenter"
+	cap_streams_per_datastore = true
+	number_of_streams = 5
+	enable_latency_throttling = true
+	new_task_latency = 110
+	active_task_latency = 120
+}
+
 resource "cohesity_job_vmware" "job1" {
 	name = "protect_vcenter"
-	protection_source = "vc-67.eco.eng.cohesity.com"
+	protection_source = cohesity_source_vmware.vmware_source.endpoint
 	policy = "Bronze"
 	storage_domain = "DefaultStorageDomain"
 	delete_snapshots = true
@@ -155,9 +167,20 @@ provider "cohesity" {
 	cluster_domain = "LOCAL"
 }
 
+resource "cohesity_source_vmware" "vmware_source"{
+	endpoint = "vc-67.eco.eng.cohesity.com"
+	username = "administrator"
+	vmware_type = "VCenter"
+	cap_streams_per_datastore = true
+	number_of_streams = 5
+	enable_latency_throttling = true
+	new_task_latency = 110
+	active_task_latency = 120
+}
+
 resource "cohesity_job_vmware" "job1" {
 	name = "protect_vmware"
-	protection_source = "vc-67.eco.eng.cohesity.com"
+	protection_source = cohesity_source_vmware.vmware_source.endpoint
 	policy = "Bronze"
 	storage_domain = "DefaultStorageDomain"
 	delete_snapshots = true
