@@ -1,0 +1,31 @@
+<% wrap_layout :inner do %>
+    <% content_for :sidebar do %>
+      <div class="docs-sidebar hidden-print affix-top" role="complementary">
+        <ul class="nav docs-sidenav">
+          <li>
+          <a href="/docs/providers/index.html">All Providers</a>
+          </li>
+  
+          <li>
+          <a href="/docs/providers/cohesity/index.html">Cohesity Provider</a>
+          </li>
+          <li>
+          <a href="#">Resources</a>
+          <ul class="nav nav-visible">
+            <li>
+              <a href="/docs/providers/cohesity/r/cohesity_virtual_edition_cluster.html">cohesity_virtual_edition_cluster</a>
+            </li>
+            <li>
+              <a href="/docs/providers/cohesity/r/cohesity_cloud_edition_cluster.html">cohesity_cloud_edition_cluster</a>
+            </li>
+            <li>
+            <a href="/docs/providers/cohesity/r/cohesity_physical_edition_cluster.html">cohesity_physical_edition_cluster</a>
+            </li>
+          </ul>
+          </li>
+        </ul>
+      </div>
+    <% end %>
+  
+    <%= yield %>
+    <% end %>
