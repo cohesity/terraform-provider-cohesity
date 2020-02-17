@@ -18,13 +18,13 @@ func TestAccJobVmware(t *testing.T) {
 		CheckDestroy: testAccCheckJobVmwareDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccJobVmwareCreateConfig,
+				Config: fmt.Sprintf(testAccJobVmwareCreateConfig, jobVMwareCreateSourceEndpoint),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckJobVmwareCreated(),
 				),
 			},
 			{
-				Config: testAccJobVmwareUpdateConfig,
+				Config: fmt.Sprintf(testAccJobVmwareUpdateConfig, jobVMwareUpdateSourceEndpoint),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckJobVmwareUpdated(),
 				),
@@ -75,7 +75,7 @@ func testAccCheckJobVmwareCreated() resource.TestCheckFunc {
 			return fmt.Errorf("Can't find the resource: %s", resourceName)
 		}
 		if resource.Primary.ID == "" {
-			return fmt.Errorf("The ID for resoource %s for is not set", resourceName)
+			return fmt.Errorf("The ID for resource %s is not set", resourceName)
 		}
 		//parse a decimal string of base 10 and converts into int64
 		jobID, _ := strconv.ParseInt(resource.Primary.ID, 10, 64)
@@ -129,15 +129,8 @@ func testAccCheckJobVmwareUpdated() resource.TestCheckFunc {
 }
 
 const testAccJobVmwareCreateConfig = `
-provider "cohesity" {
-	cluster_vip = "10.2.145.47"
-	cluster_username = "admin"
-	cluster_domain = "LOCAL"
-}
-
-
 resource "cohesity_source_vmware" "vmware_source"{
-	endpoint = "vc-67.eco.eng.cohesity.com"
+	endpoint = "%s"
 	username = "administrator"
 	vmware_type = "VCenter"
 	cap_streams_per_datastore = true
@@ -147,7 +140,7 @@ resource "cohesity_source_vmware" "vmware_source"{
 	active_task_latency = 120
 }
 
-resource "cohesity_job_vmware" "job1" {
+resource "cohesity_job_vmware" "terraform_vmware_job" {
 	name = "protect_vcenter"
 	protection_source = cohesity_source_vmware.vmware_source.endpoint
 	policy = "Bronze"
@@ -161,14 +154,8 @@ resource "cohesity_job_vmware" "job1" {
 `
 
 const testAccJobVmwareUpdateConfig = `
-provider "cohesity" {
-	cluster_vip = "10.2.145.47"
-	cluster_username = "admin"
-	cluster_domain = "LOCAL"
-}
-
 resource "cohesity_source_vmware" "vmware_source"{
-	endpoint = "vc-67.eco.eng.cohesity.com"
+	endpoint = "%s"
 	username = "administrator"
 	vmware_type = "VCenter"
 	cap_streams_per_datastore = true
@@ -178,7 +165,7 @@ resource "cohesity_source_vmware" "vmware_source"{
 	active_task_latency = 120
 }
 
-resource "cohesity_job_vmware" "job1" {
+resource "cohesity_job_vmware" "terraform_vmware_job" {
 	name = "protect_vmware"
 	protection_source = cohesity_source_vmware.vmware_source.endpoint
 	policy = "Bronze"

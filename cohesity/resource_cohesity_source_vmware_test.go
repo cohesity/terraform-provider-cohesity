@@ -18,13 +18,13 @@ func TestAccSourceVmware(t *testing.T) {
 		CheckDestroy: testAccCheckSourceVmwareDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccSourceVmwareCreateConfig,
+				Config: fmt.Sprintf(testAccSourceVmwareCreateConfig, sourceVMwareCreateSourceEndpoint),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckSourceVmwareCreated(),
 				),
 			},
 			{
-				Config: testAccSourceVmwareUpdateConfig,
+				Config: fmt.Sprintf(testAccSourceVmwareUpdateConfig, sourceVMwareUpdateSourceEndpoint),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckSourceVmwareUpdated(),
 				),
@@ -148,14 +148,8 @@ func testAccCheckSourceVmwareUpdated() resource.TestCheckFunc {
 }
 
 const testAccSourceVmwareCreateConfig = `
-provider "cohesity" {
-	cluster_vip = "10.2.145.47"
-	cluster_username = "admin"
-	cluster_domain = "LOCAL"
-}
-
-resource "cohesity_source_vmware" "source1" {
-	endpoint = "vc-67.eco.eng.cohesity.com"
+resource "cohesity_source_vmware" "terraform_source_vmware" {
+	endpoint = "%s"
 	username = "administrator"
 	vmware_type = "VCenter"
 	cap_streams_per_datastore = true
@@ -167,14 +161,8 @@ resource "cohesity_source_vmware" "source1" {
 `
 
 const testAccSourceVmwareUpdateConfig = `
-provider "cohesity" {
-	cluster_vip = "10.2.145.47"
-	cluster_username = "admin"
-	cluster_domain = "LOCAL"
-}
-
-resource "cohesity_source_vmware" "source1" {
-	endpoint = "vc-67.eco.eng.cohesity.com"
+resource "cohesity_source_vmware" "terraform_source_vmware" {
+	endpoint = "%s"
 	username = "administrator"
 	vmware_type = "VCenter"
 	cap_streams_per_datastore = true

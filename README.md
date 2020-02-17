@@ -347,7 +347,7 @@ Create, update and delete a VMware protection job
 
 ```
 provider "cohesity" {
-	cluster_vip = "10.2.145.47"
+	cluster_vip = "10.2.33.137"
 	cluster_username = "admin"
 	cluster_domain = "LOCAL"
 }
