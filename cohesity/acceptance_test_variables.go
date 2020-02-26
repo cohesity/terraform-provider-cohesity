@@ -2,8 +2,7 @@ package cohesity
 
 // variables for vmware job run acceptance test
 var (
-	jobRunCreateName  = "terraform_vmware_protection_job"
-	jobRunUpdateName  = "terraform_vmware_protection_job_updated"
+	jobRunUpdateName  = "terraform_protect_vcenter_updated"
 	jobRunUpdateState = "stop"
 )
 
