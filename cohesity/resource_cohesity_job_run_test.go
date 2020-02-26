@@ -17,7 +17,7 @@ func TestAccJobRun(t *testing.T) {
 		CheckDestroy: testAccCheckJobRunDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: fmt.Sprintf(testAccJobRunCreateConfig, jobRunCreateName),
+				Config: fmt.Sprintf(testAccJobRunCreateConfig, restoreVMSourceEndpoint, restoreVMProtectionJobInclude),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckJobRunCreated(),
 				),
@@ -87,8 +87,31 @@ func testAccCheckJobRunUpdated() resource.TestCheckFunc {
 }
 
 const testAccJobRunCreateConfig = `
+resource "cohesity_source_vmware" "terraform_vmware_source"{
+	endpoint = "%s"
+	username = "administrator"
+	vmware_type = "VCenter"
+	cap_streams_per_datastore = true
+	number_of_streams = 5
+	enable_latency_throttling = true
+	new_task_latency = 110
+	active_task_latency = 120
+}
+resource "cohesity_job_vmware" "terraform_vmware_protection_job" {
+	name = "terraform_protect_vcenter"
+	protection_source = cohesity_source_vmware.terraform_vmware_source.endpoint
+	include = ["%s"]
+	policy = "Bronze"
+	storage_domain = "DefaultStorageDomain"
+	delete_snapshots = true
+	full_sla = 200
+	incremental_sla = 140
+	qos_type = "BackupSSD"
+	priority = "Low"
+}
+
 resource "cohesity_job_run" "terraform_vmware_job_run"{
-	name = "%s"
+	name = cohesity_job_vmware.terraform_vmware_protection_job.name
 	timestamp = "${formatdate("YYYYMMDD", timestamp())}"
 }`
 
