@@ -7,6 +7,7 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 - [Using the Providers](#using-provider)
 - [Quick Start Guide](#quick-start)
 - [Resources](#resources)
+- [Demo Videos](#videos)
 
 ## <a name="using-provider"></a> Using the Provider :arrow_forward:
 
@@ -254,3 +255,6 @@ The following arguments are supported:
 The following attributes are exported:
 - id - ID of the cluster
 
+## <a name="videos"></a> Demo Videos :video_camera:
+
+- [Get Started and Create a Cohesity Cloud Edition Cluster with Terraform](https://www.youtube.com/watch?v=LrPCchj9wP4&list=PLF0EROHcmi6kOQtRFgU_6yW1xooVaM8S4&index=8&t=92s&ab_channel=Cohesity)
