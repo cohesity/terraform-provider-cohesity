@@ -14,8 +14,8 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 ### Steps to create a cohesity virtual edition cluster
 - Install terraform 0.12.4 or above
 - Download the compiled binary from here or build the provider following the steps above <br>
-  MacOS : https://drive.google.com/drive/folders/1aX0yOcvnWFaqZ-r83FpIW7_Vo-Hs1ffH?usp=sharing<br>
-  Linux : https://drive.google.com/drive/folders/1QL3aTWePQUwZj7sXbCgQyPZHpMpfIO38?usp=sharing<br>
+  MacOS : [Link](./assets/binary/mac/terraform-provider-cohesity)<br>
+  Linux : [Link](./assets/binary/linux/terraform-provider-cohesity)<br>
 - Place the provider binary in `~/.terraform.d/plugins/` directory on Linux or Mac and `%APPDATA%\terraform.d\plugins\` directory on Windows
 - create a directory for example `cohesity_configuration` and change directory using `cd cohesity_configuration`
 
@@ -255,6 +255,96 @@ The following arguments are supported:
 The following attributes are exported:
 - id - ID of the cluster
 
+### cohesity_source_vmware
+Register, unregister and update a VMware protection source
+
+#### Example usage
+```
+provider "cohesity" {
+	cluster_vip = "10.22.135.47"
+	cluster_username = "admin"
+	cluster_domain = "LOCAL"
+}
+
+resource "cohesity_source_vmware" "source1" {
+	endpoint = "vcenter.lab.com"
+	username = "admin"
+	vmware_type = "VCenter"
+	cap_streams_per_datastore = true
+	number_of_streams = 5
+	enable_latency_throttling = true
+	new_task_latency = 110
+	active_task_latency = 120
+}
+```
+### Argument Reference
+The following arguments are supported:
+- endpoint - (Required, string) The network endpoint of the protection source where it is reachable. It could be an URL or hostname or an IP address of the protection source
+- vmware_type - (Optional, string) The VMware entity type. The default vaule is **VCenter**. Supported types include **VCenter**, **VCloudDirector** and **HostSystem** (Standalone ESXi Host)
+- username - (Required, string) The username to access the target source
+- password - (Required, string) The password of the username to access the target source. This can also be read from **COHESITY_SOURCE_VMWARE_PASSWORD** environment variable
+- enable_ssl_verification - (Optional, bool) Specifies whether SSL verification should be performed or not. The default vaule is **false**
+- ca_certificate - (Optional, bool) The contents of CA certificate. Required when **enable_ssl_verification** is **true**
+- cap_streams_per_datastore - (Optional, bool) Specifies whether datastore streams are configured for all datastores that are part of the registered entity. If set
+				to true, number of streams from Cohesity cluster to the registered entity will be limited to the value set for **number_of_streams**. If
+				not set or set to false, there is no max limit for the number of concurrent streams. The default vaule is **false**
+- number_of_streams - (Optional, int) Specifies the limit on the number of streams Cohesity cluster will make concurrently to the datastores
+				of the registered entity. This limit is enforced only when the **cap_streams_per_datastore** is set to **true**. The default value is **1**
+- enable_latency_throttling - (Optional, bool) Indicates whether read operations to the datastores which are part of the registered Protection Source are throttled or not.
+The default vaule is **false**
+- new_task_latency - (Optional, int) If the latency of a datastore is above this value, then new backup tasks using the datastore will not be started. **enable_latency_throttling** must be set to **true** to apply this configuration. The default value is **30**
+- active_task_latency - (Optional, int) If the latency of a datastore is above this value, existing backup tasks using the datastore are throttled. **enable_latency_throttling** must be set to **true** to apply this configuration. The default value is **30**
+
+#### Attributes Reference
+The following attributes are exported:
+- id - ID of the VMware protection source
+
+### cohesity_job_vmware
+
+Create, update and delete a VMware protection job
+
+#### Example usage
+
+```
+provider "cohesity" {
+	cluster_vip = "10.2.145.47"
+	cluster_username = "admin"
+	cluster_domain = "LOCAL"
+}
+
+resource "cohesity_job_vmware" "job1" {
+	name = "protect_vcenter"
+	protection_source = "vcenter.lab.com"
+	policy = "Bronze"
+	storage_domain = "DefaultStorageDomain"
+	delete_snapshots = true
+	full_sla = 200
+	incremental_sla = 140
+	qos_type = "BackupSSD"
+	priority = "Low"
+}
+```
+
+### Argument Reference
+- name - (Required, string) The name of the VMware protection job
+- protection_source - (Required, string) The name of the VMware protection source
+- timezone - (Optional, string) The timezone to use when calculating time for this VMware protection job. This is in the format **Area/Location**. The default vaule is 
+**America/Los_Angeles**
+- include - (Optional, set of strings) The list of vm's names from the protection source to be protected by this protection job. If this is not specified, entire vcenter is protected
+- exclude - (Optional, set of strings) The list of vm's names from the protection source that should not be protected and are excluded from being backed up by the protection job
+- policy - (Required, string) The protection policy name to be used by the protection job
+- storage_domain - (Required, string) The storage domain name where this job writes data
+- qos_type - (Optional, string) Specifies the QoS policy type to use for this protection job. The default vaule is **BackupHDD**. The supported types include **BackupHDD** and **BackupSSD**. **BackupHDD** indicates the Cohesity cluster writes data directly to the HDD tier for this protection job. This is the recommended setting. **BackupSSD** indicates the Cohesity cluster writes data directly to the SSD tier for this protection job. Only specify this policy if you need fast ingest speed for a small number of protection jobs
+- full_sla - (Optional, int) Specifies the number of minutes that a job run of a full (no CBT) backup schedule is expected to complete, which is known as a service level agreement (SLA). A SLA violation is reported when the run time of a job run exceeds the SLA time period specified for this backup schedule. The default vaule is **120**
+- incremental_sla - (Optional, init) Specifies the number of minutes that a job run of a CBT-based backup schedule is expected to complete, which is known as a service level ggreement (SLA). A SLA violation is reported when the run time of a job run exceeds the SLA time period specified for this backup schedule. The default value is **60**
+- priority - (Optional, string) Specifies the priority of execution for a protection job. The default vaule is **Medium**. The supported vaules include **Low, Medium, and High**
+- delete_snapshots - (Optional, bool) Specifies if snapshots generated by the protection job should also be deleted when the job is deleted. The default vaule is **false**
+
+#### Attributes Reference
+The following attributes are exported:
+- id - ID of the VMware protection job
+
 ## <a name="videos"></a> Demo Videos :video_camera:
 
 - [Get Started and Create a Cohesity Cloud Edition Cluster with Terraform](https://www.youtube.com/watch?v=LrPCchj9wP4&list=PLF0EROHcmi6kOQtRFgU_6yW1xooVaM8S4&index=8&t=92s&ab_channel=Cohesity)
+
