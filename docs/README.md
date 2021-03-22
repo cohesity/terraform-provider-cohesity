@@ -14,8 +14,8 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 ### Steps to create a cohesity virtual edition cluster
 - Install terraform 0.12.4 or above
 - Download the compiled binary from here or build the provider following the steps above <br>
-  MacOS : [Link](./assets/binary/mac/terraform-provider-cohesity)<br>
-  Linux : [Link](./assets/binary/linux/terraform-provider-cohesity)<br>
+  MacOS : [Link](https://github.com/cohesity/terraform-provider-cohesity/raw/master/docs/assets/binary/mac/terraform-provider-cohesity)<br>
+  Linux : [Link](https://github.com/cohesity/terraform-provider-cohesity/raw/master/docs/assets/binary/linux/terraform-provider-cohesity)<br>
 - Place the provider binary in `~/.terraform.d/plugins/` directory on Linux or Mac and `%APPDATA%\terraform.d\plugins\` directory on Windows
 - create a directory for example `cohesity_configuration` and change directory using `cd cohesity_configuration`
 
