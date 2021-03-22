@@ -7,6 +7,11 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 - [Using the Providers](#using-provider)
 - [Quick Start Guide](#quick-start)
 - [Resources](#resources)
+  - [cohesity_virtual_edition_cluster](#cohesity_virtual_edition_cluster)
+  - [cohesity_cloud_edition_cluster](#cohesity_cloud_edition_cluster)
+  - [cohesity_physical_edition_cluster](#cohesity_physical_edition_cluster)
+  - [cohesity_source_vmware](#cohesity_source_vmware)
+  - [cohesity_job_vmware](#cohesity_job_vmware)
 - [Demo Videos](#videos)
 
 ## <a name="using-provider"></a> Using the Provider :arrow_forward:
