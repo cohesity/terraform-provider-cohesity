@@ -16,6 +16,8 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 
 ## <a name="using-provider"></a> Using the Provider :arrow_forward:
 
+[top](#toc)
+
 ### Steps to create a cohesity virtual edition cluster
 - Install terraform 0.12.4 or above
 - Download the compiled binary from here or build the provider following the steps above <br>
@@ -69,6 +71,8 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 
 ## <a name="quick-start"></a> Quick Start Guide :page_with_curl:
 
+[top](#toc)
+
 ### Cohesity Terraform Provider
 Cohesity terraform provider is used to interact with cohesity and automate cluster workflows using Cohesity REST API's. The provider needs to be configured with proper credentials prior to managing its resources. Currently it supports physical, cloud, virtual edition cluster creation and destruction workflows
 
@@ -90,6 +94,8 @@ provider "cohesity" {
 - cluster_domain - (Optional, string) The domain name of cohesity user. Defaults to **LOCAL**
 
 ## <a name="resources"></a> Resources :books:
+
+[top](#toc)
 
 ### cohesity_virtual_edition_cluster
 
@@ -145,6 +151,8 @@ The following attributes are exported:
 
 ### cohesity_cloud_edition_cluster
 
+[top](#toc)
+
 Create cloud edition cluster, apply license key and destroy cluster
 
 #### Example usage
@@ -191,6 +199,9 @@ The following attributes are exported:
 - id - ID of the cluster
 
 ### cohesity_physical_edition_cluster
+
+[top](#toc)
+
 Create physical edition cluster, apply license key and destroy cluster
 
 #### Example usage
@@ -261,6 +272,9 @@ The following attributes are exported:
 - id - ID of the cluster
 
 ### cohesity_source_vmware
+
+[top](#toc)
+
 Register, unregister and update a VMware protection source
 
 #### Example usage
@@ -306,6 +320,8 @@ The following attributes are exported:
 
 ### cohesity_job_vmware
 
+[top](#toc)
+
 Create, update and delete a VMware protection job
 
 #### Example usage
@@ -350,6 +366,8 @@ The following attributes are exported:
 - id - ID of the VMware protection job
 
 ## <a name="videos"></a> Demo Videos :video_camera:
+
+[top](#toc)
 
 - [Get Started and Create a Cohesity Cloud Edition Cluster with Terraform](https://www.youtube.com/watch?v=LrPCchj9wP4&list=PLF0EROHcmi6kOQtRFgU_6yW1xooVaM8S4&index=8&t=92s&ab_channel=Cohesity)
 
