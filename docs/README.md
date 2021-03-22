@@ -99,7 +99,7 @@ provider "cohesity" {
 
 [top](#toc)
 
-### cohesity_virtual_edition_cluster
+## cohesity_virtual_edition_cluster
 
 Create virtual edition cluster, apply license key and destroy cluster
 
@@ -151,7 +151,7 @@ The following arguments are supported:
 The following attributes are exported:
 - id - ID of the cluster
 
-### cohesity_cloud_edition_cluster
+## cohesity_cloud_edition_cluster
 
 [top](#toc)
 
@@ -200,7 +200,7 @@ The following arguments are supported:
 The following attributes are exported:
 - id - ID of the cluster
 
-### cohesity_physical_edition_cluster
+## cohesity_physical_edition_cluster
 
 [top](#toc)
 
@@ -273,7 +273,7 @@ The following arguments are supported:
 The following attributes are exported:
 - id - ID of the cluster
 
-### cohesity_source_vmware
+## cohesity_source_vmware
 
 [top](#toc)
 
@@ -320,7 +320,7 @@ The default vaule is **false**
 The following attributes are exported:
 - id - ID of the VMware protection source
 
-### cohesity_job_vmware
+## cohesity_job_vmware
 
 [top](#toc)
 
@@ -367,7 +367,7 @@ resource "cohesity_job_vmware" "job1" {
 The following attributes are exported:
 - id - ID of the VMware protection job
 
-### cohesity_job_run
+## cohesity_job_run
 
 [top](#toc)
 
@@ -404,7 +404,7 @@ The following attributes are exported:
 
 - id - ID of the VMware protection job
 
-### cohesity_restore_vmware_vm
+## cohesity_restore_vmware_vm
 
 [top](#toc)
 
