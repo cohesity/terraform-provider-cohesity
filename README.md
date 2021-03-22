@@ -26,28 +26,29 @@ The pre-requisites for using the Cohesity Terraform Provider are as below:
 ## <a name="building"></a> Building the Provider :gear:
 
 - Install Go and setup the GOPATH
+
 - create the directory $GOPATH/src/github.com/cohesity <br>
 
-        ```
-        mkdir -p $GOPATH/src/github.com/cohesity
-        cd $GOPATH/src/github.com/cohesity
-        ```
+```
+  mkdir -p $GOPATH/src/github.com/cohesity
+  cd $GOPATH/src/github.com/cohesity
+```
 
 - clone the cohesity terraform provider repository <br>
 
-        ```
-        git clone https://github.com/cohesity/terraform-provider-cohesity.git
-        ```
+```
+  git clone https://github.com/cohesity/terraform-provider-cohesity.git
+```
 
 - clone v1.1.2 branch of cohesity management sdk for go <br>
 
-        ```
-        git clone -b v1.1.2 https://github.com/cohesity/management-sdk-go.git 
-        go get github.com/hashicorp/terraform
-        go get github.com/satori/go.uuid
-        go get github.com/apimatic/form
-        go build $GOPATH/src/github.com/cohesity/terraform-provider-cohesity
-        ```
+```
+  git clone -b v1.1.2 https://github.com/cohesity/management-sdk-go.git 
+  go get github.com/hashicorp/terraform
+  go get github.com/satori/go.uuid
+  go get github.com/apimatic/form
+  go build $GOPATH/src/github.com/cohesity/terraform-provider-cohesity
+```
 
  - If you want to build a binary for different OS and platform, set `GOOS` and `GOARCH` environment variables for target operating system and architecture
 
