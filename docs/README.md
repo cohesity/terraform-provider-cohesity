@@ -12,6 +12,8 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
   - [cohesity_physical_edition_cluster](#cohesity_physical_edition_cluster)
   - [cohesity_source_vmware](#cohesity_source_vmware)
   - [cohesity_job_vmware](#cohesity_job_vmware)
+  - [cohesity_job_run](#cohesity_job_run)
+  - [cohesity_restore_vmware_vm](#cohesity_restore_vmware_vm)
 - [Demo Videos](#videos)
 
 ## <a name="using-provider"></a> Using the Provider :arrow_forward:
@@ -364,6 +366,83 @@ resource "cohesity_job_vmware" "job1" {
 #### Attributes Reference
 The following attributes are exported:
 - id - ID of the VMware protection job
+
+### cohesity_job_run
+
+[top](#toc)
+
+Run a Protection Job on Cohesity Cluster
+
+#### Example Usage
+```
+provider "cohesity" {
+        cluster_vip = "10.2.45.143"
+        cluster_username = "abcd"
+        cluster_domain = "LOCAL"
+}
+
+
+resource "cohesity_job_run" "protect_vcenter" {
+	name = "Job1"
+	state = "start"
+	timestamp= "13:00"
+}
+```
+
+### Argument Reference
+The following arguments are supported:
+
+- name - (Required, string) The name of the protection job
+- run_type - (Optional, string) Specifies the type of backup. The default value is **Regular** The supported types include **Full**,  **Regular**, **Log** and **System**
+- state - (Optional, string) Specifies whether to start or stop a protection job run. The default value is **start**. The supported values are **start** and **stop**
+- operation_timeout - (Optional, int) Specifies the time to wait in minutes for the protection job run to complete the run or stop the run. The default value is **120**
+- timestamp - (Required, string) Specifies the current timestamp to trigger starting or stopping a job run. The format is HH:MM
+
+
+#### Attributes Reference
+The following attributes are exported:
+
+- id - ID of the VMware protection job
+
+### cohesity_restore_vmware_vm
+
+[top](#toc)
+
+Restore a VMware VM 
+
+#### Example Usage
+```
+provider "cohesity" {
+  cluster_vip = "10.2.45.143"
+  cluster_username = "abcd"
+  cluster_domain = "LOCAL"
+}
+
+
+resource "cohesity_restore_vmware_vm" "protect_vcenter" {
+  name = "Restore_Job1"
+  job_name = "Job1"
+  state = "start"
+  vm_name = ["vm1", "vm2"]
+}
+```
+
+### Argument Reference
+The following arguments are supported:
+
+- name - (Required, string) Specifies the name of the restore task
+- job_name - (Required, string) Specifies the name of the protection job that backed up the objects to be restored
+- backup_timestamp - (Optional, string) Specifies the time of the protection job run. Should be in the format YYYY-MM-DD HH:MM Area/Location. If the timestamp is not specified, snapshot from the latest run is used for the restore operation
+- vm_names - (Optional, set of strings) Specifies the names of the virtual machines to restore
+- operation_timeout - (Optional, int) Specifies the time to wait in minutes for the protection job run to complete the run or stop the run. The default value is **120**
+- state - (Optional, string) Specifies whether to start or stop a Restore task. The default value is **start**. The supported values are **start** and **stop**
+- vmware_parameters - (Optional, Map) Specifies vmware parameters for the restore task. The following values are supported. **prefix** and **suffix**. It can be passed as, `vmware_parameters = {"prefix" = "prod","suffix" = "one"}`
+
+
+#### Attributes Reference
+The following attributes are exported:
+
+- id - ID of the VMware Restore task
 
 ## <a name="videos"></a> Demo Videos :video_camera:
 
