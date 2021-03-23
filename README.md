@@ -11,6 +11,7 @@ This project provides a Terraform Provider for interacting with the [Cohesity Da
  - [Requirements](#get-startedt)
  - [Building the Provider](#building)
  - [Documentation](#doc)
+ - [Developing the Provider](#developing-the-provider)
  - [How can you contribute](#contribute)
  - [Suggestions and Feedback](#suggest)
  
@@ -46,6 +47,30 @@ The provider binary can be found in `$GOPATH/bin` directory.
 
 * [Documentation for Cohesity Terraform Provider](https://github.com/cohesity/terraform-provider-cohesity/tree/master/docs).
 
+## <a name ="developing-the-provider"></a> Developing the Provider :hammer_and_pick:
+
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.12 is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
+
+To compile the provider, run `make build`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
+
+```sh
+$ make build
+...
+$ $GOPATH/bin/terraform-provider-cohesity
+...
+```
+In order to test the provider, you can simply run `make test`.
+
+```sh
+$ make test
+```
+In order to run a specific acceptance test, change the variables in acceptance_test_variables.go to suit your environment and run `make testacc`
+
+*Note:* Set the environment variables for configuring the Cohesity provider and sensitive resource arguments not set in the acceptance_test_variables.go file
+
+```sh
+$ make testacc TEST=./cohesity TESTARGS='-run=TestAccVirtualEditionCluster_basic'
+```
 
 ## <a name="contribute"></a> Contribute :handshake:
 
