@@ -4,7 +4,6 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
 
 ## <a name="toc"></a> Table of contents :scroll:
 
-- [Using the Providers](#using-provider)
 - [Quick Start Guide](#quick-start)
 - [Resources](#resources)
   - [cohesity_virtual_edition_cluster](#cohesity_virtual_edition_cluster)
@@ -16,60 +15,6 @@ Refer the Cohesity Terraform Provider Documentation here. The documentation cove
   - [cohesity_restore_vmware_vm](#cohesity_restore_vmware_vm)
 - [Demo Videos](#videos)
 
-## <a name="using-provider"></a> Using the Provider :arrow_forward:
-
-[top](#toc)
-
-### Steps to create a cohesity virtual edition cluster
-- Install terraform 0.12.4 or above
-- Download the compiled binary from here or build the provider following the steps above <br>
-  MacOS : [Link](https://github.com/cohesity/terraform-provider-cohesity/raw/master/docs/assets/binary/mac/terraform-provider-cohesity)<br>
-  Linux : [Link](https://github.com/cohesity/terraform-provider-cohesity/raw/master/docs/assets/binary/linux/terraform-provider-cohesity)<br>
-- Place the provider binary in `~/.terraform.d/plugins/` directory on Linux or Mac and `%APPDATA%\terraform.d\plugins\` directory on Windows
-- create a directory for example `cohesity_configuration` and change directory using `cd cohesity_configuration`
-
-- Write terraform configuration in a file for example main.tf <br>
-
-    sample configuration:
-
-    ```
-    provider "cohesity" {
-            cluster_vip = "10.2.35.147"
-            cluster_username = "admin"
-            cluster_domain = "LOCAL"
-    }
-
-    resource "cohesity_virtual_edition_cluster" "virtual"{
-                cluster_name = "TerraformVirtaulEditionCluster"
-                dns_servers = ["10.2.145.14"]
-                ntp_servers = ["time.google.com"]
-                domain_names = ["eng.cohesity.com"]
-                cluster_subnet_mask = "255.255.240.0"
-                cluster_gateway = "10.2.32.1"
-                enable_encryption = true
-                enable_fips_mode = true
-                encryption_keys_rotation_period = 1
-                metadata_fault_tolerance = 0
-                virtual_ips = ["10.2.35.147"]
-                virtual_ip_hostname = "test"
-                node_ips = ["10.2.35.147"]
-    }
-
-    ```
-
-    In this sample configuration, the provider `credentails` `cohesity_vip`, `cohesity_username`, `cohesity_domain` are given in the configuration and `cohesity_password` is set in the environment variable, so it is not seen in the configuration. <br>
-
-    To set the cohesity password environment variable<br>
-    `export COHESITY_PASSWORD=abcd`
-
-    The cohesity provider credentails and cluster license keys can be set as static variables in the configuration or set as environment variables. When they are set as environment variables, they need not be set again in the configuration<br>
-
-    Set virtual edition cluster license key as environment variable <br>
-    `export VIRTUAL_COHESITY_CLUSTER_LICENCE_KEY=abcd-abcd-adbf-kdjs`
-
-- `terraform init` to initialize the configuration in the current directory
-- `terraform apply` apply the terraform configuration. The cluster is created
-- The created virtual edition cluster can be destroyed using `terraform destroy`
 
 ## <a name="quick-start"></a> Quick Start Guide :page_with_curl:
 
