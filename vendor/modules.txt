@@ -9,6 +9,7 @@ cloud.google.com/go/storage
 # github.com/agext/levenshtein v1.2.2
 github.com/agext/levenshtein
 # github.com/apimatic/form v0.0.0-20160503070951-57699fab37f4
+## explicit
 github.com/apimatic/form
 # github.com/apparentlymart/go-cidr v1.0.1
 github.com/apparentlymart/go-cidr/cidr
@@ -68,6 +69,7 @@ github.com/blang/semver
 # github.com/bmatcuk/doublestar v1.1.5
 github.com/bmatcuk/doublestar
 # github.com/cohesity/management-sdk-go v1.1.2
+## explicit
 github.com/cohesity/management-sdk-go/accesstokens
 github.com/cohesity/management-sdk-go/activedirectory
 github.com/cohesity/management-sdk-go/alerts
@@ -119,6 +121,7 @@ github.com/davecgh/go-spew/spew
 # github.com/fatih/color v1.7.0
 github.com/fatih/color
 # github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
+## explicit
 github.com/golang-collections/collections/queue
 # github.com/golang/protobuf v1.3.4
 github.com/golang/protobuf/proto
@@ -191,6 +194,7 @@ github.com/hashicorp/hil/ast
 github.com/hashicorp/hil/parser
 github.com/hashicorp/hil/scanner
 # github.com/hashicorp/terraform v0.12.28
+## explicit
 github.com/hashicorp/terraform/addrs
 github.com/hashicorp/terraform/command/format
 github.com/hashicorp/terraform/config
