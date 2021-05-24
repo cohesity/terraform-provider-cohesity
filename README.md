@@ -45,7 +45,7 @@ The provider binary can be found in `$GOPATH/bin` directory.
 
 ## <a name ="using-the-provider"></a> Using the provider :arrow_forward:
 
-The Cohesity provider documentation can be found on [provider's website](https://www.terraform.io/docs/providers/cohesity/index.html)
+The Cohesity provider documentation can be found on [provider's website](https://registry.terraform.io/providers/cohesity/cohesity/latest/docs)
 
 ## <a name ="developing-the-provider"></a> Developing the Provider :hammer_and_pick:
 
