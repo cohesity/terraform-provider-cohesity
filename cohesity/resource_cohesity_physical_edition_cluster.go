@@ -58,29 +58,29 @@ func resourceCohesityPhysicalEditionCluster() *schema.Resource {
 			},
 			"cluster_gateway": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "The default gateway IP address for the cluster network",
 			},
 			"ipmi_gateway": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "The default gateway IP address for the IPMI network",
 			},
 			"ipmi_password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("PHYSICAL_COHESITY_CLUSTER_IPMI_PASSWORD", ""),
 				Description: "The IPMI password",
 			},
 			"ipmi_subnet_mask": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "The subnet mask for the IPMI network",
 			},
 			"ipmi_username": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("PHYSICAL_COHESITY_CLUSTER_IPMI_USERNAME", ""),
 				Description: "The IPMI username",
 			},
@@ -91,7 +91,7 @@ func resourceCohesityPhysicalEditionCluster() *schema.Resource {
 			},
 			"domain_names": {
 				Type:        schema.TypeSet,
-				Required:    true,
+				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Set:         schema.HashString,
 				Description: "The domain names to configure on the cluster",
@@ -112,7 +112,7 @@ func resourceCohesityPhysicalEditionCluster() *schema.Resource {
 			},
 			"virtual_ips": {
 				Type:        schema.TypeSet,
-				Required:    true,
+				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Set:         schema.HashString,
 				Description: "The virtauls IPs for the new cluster",
@@ -141,7 +141,7 @@ func resourceCohesityPhysicalEditionCluster() *schema.Resource {
 						},
 						"node_ipmi_ip": {
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 							Description: "IPMI IP for this node",
 						},
 					},
@@ -199,11 +199,13 @@ func resourceCohesityPhysicalEditionClusterCreate(resourceData *schema.ResourceD
 	for i, config := range resourceData.Get("node_configs").(*schema.Set).List() {
 		nodeConfig := config.(map[string]interface{})
 		nodeIP := nodeConfig["node_ip"].(string)
-		NodeIpmiIP := nodeConfig["node_ipmi_ip"].(string)
-		nodeConfigs[i] = &models.PhysicalNodeConfiguration{
-			NodeIp:     &nodeIP,
-			NodeIpmiIp: &NodeIpmiIP,
+		nodeIpmiIP := nodeConfig["node_ipmi_ip"].(string)
+		physicalNodeConfiguration := new(models.PhysicalNodeConfiguration)
+		physicalNodeConfiguration.NodeIp = &nodeIP
+		if nodeIpmiIP != "" {
+			physicalNodeConfiguration.NodeIpmiIp = &nodeIpmiIP
 		}
+		nodeConfigs[i] = physicalNodeConfiguration
 	}
 
 	var requestBody models.CreatePhysicalClusterParameters
@@ -215,22 +217,40 @@ func resourceCohesityPhysicalEditionClusterCreate(resourceData *schema.ResourceD
 		EnableFipsMode:   &enableFipsMode,
 		RotationPeriod:   &encryptionKeysRotationPeriod,
 	}
-	requestBody.NetworkConfig = models.NetworkConfiguration{
-		ClusterGateway:    &clusterGateway,
+
+	networkConfig := models.NetworkConfiguration{
 		ClusterSubnetMask: &clusterSubnetMask,
-		DnsServers:        &dnsServers,
-		DomainNames:       &domainNames,
 		NtpServers:        &ntpServers,
 		VipHostname:       &vipHostName,
-		Vips:              &vips,
+		DnsServers:        &dnsServers,
 	}
+	if len(domainNames) != 0 {
+		networkConfig.DomainNames = &domainNames
+	}
+	if len(vips) != 0 {
+		networkConfig.Vips = &vips
+	}
+	if clusterGateway != "" {
+		networkConfig.ClusterGateway = &clusterGateway
+	}
+	requestBody.NetworkConfig = networkConfig
 
-	requestBody.IpmiConfig = models.IpmiConfiguration{
-		IpmiGateway:    &ipmiGateway,
-		IpmiPassword:   &ipmiPassword,
-		IpmiSubnetMask: &ipmiSubnetMask,
-		IpmiUsername:   &ipmiUsername,
+	ipmiConfig := models.IpmiConfiguration{}
+	if ipmiGateway != "" {
+		ipmiConfig.IpmiGateway = &ipmiGateway
 	}
+	if ipmiSubnetMask != "" {
+		ipmiConfig.IpmiSubnetMask = &ipmiSubnetMask
+	}
+	if (ipmiUsername == "" && ipmiPassword != "") ||
+		(ipmiUsername != "" && ipmiPassword == "") {
+		return errors.New("Both IPMI username and password has to be specified")
+	} else if ipmiUsername != "" && ipmiPassword != "" {
+		ipmiConfig.IpmiUsername = &ipmiUsername
+		ipmiConfig.IpmiPassword = &ipmiPassword
+	}
+	requestBody.IpmiConfig = ipmiConfig
+
 	result, err := client.Clusters().CreatePhysicalCluster(&requestBody)
 	if err != nil {
 		log.Printf(err.Error())
