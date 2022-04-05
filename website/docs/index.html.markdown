@@ -29,3 +29,7 @@ provider "cohesity" {
 - cluster_username - (Required, string) Cohesity cluster username. This can also be read from **COHESITY_USERNAME** environment variable
 - cluster_password - (Required, string) Cohesity cluster password. This can also be read from **COHESITY_PASSWORD** environment variable
 - cluster_domain - (Optional, string) The domain name of cohesity user. Defaults to **LOCAL**
+
+#### Minimum previleges required for the Terraform User:
+- Cluster Management : View Cluster Details, Manage Cluster , Upgrade Cluster
+- Data Protection : View Protection Group , Manage Protection Groups , Manage Sources, Search Objects , Manage Protection Policies ,View Protection Policies, Protection Group Operator
