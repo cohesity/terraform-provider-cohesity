@@ -8,7 +8,7 @@ import (
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
-    "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceCohesityCloudEditionCluster() *schema.Resource {
@@ -275,7 +275,7 @@ func resourceCohesityCloudEditionClusterUpdate(resourceData *schema.ResourceData
 			log.Printf(err.Error())
 			return errors.New("Failed to update cloud edition cluster")
 		}
-		// resourceData.SetPartial("license_key")
+		resourceData.SetPartial("license_key")
 		log.Printf("[INFO] Applied license to cloud edition cluster: %s", clusterName)
 		return resourceCohesityCloudEditionClusterRead(resourceData, configMetaData)
 	}

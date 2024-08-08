@@ -2,7 +2,6 @@ package cohesity
 
 // Config has cohesity provider configuration
 type Config struct {
-	Type       string
 	clusterVip      string
 	clusterUsername string
 	clusterPassword string

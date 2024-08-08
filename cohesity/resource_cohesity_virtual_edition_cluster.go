@@ -8,7 +8,7 @@ import (
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceCohesityVirtualEditionCluster() *schema.Resource {
@@ -299,7 +299,7 @@ func resourceCohesityVirtualEditionClusterUpdate(resourceData *schema.ResourceDa
 			log.Printf(err.Error())
 			return errors.New("Failed to update virtual edition cluster")
 		}
-		// resourceData.SetPartial("license_key")
+		resourceData.SetPartial("license_key")
 		log.Printf("[INFO] Applied license to virtual edition cluster: %s", clusterName)
 		return resourceCohesityVirtualEditionClusterRead(resourceData, configMetaData)
 	}
