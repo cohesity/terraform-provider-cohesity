@@ -8,7 +8,7 @@ import (
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceCohesityPhysicalEditionCluster() *schema.Resource {
@@ -348,7 +348,7 @@ func resourceCohesityPhysicalEditionClusterUpdate(resourceData *schema.ResourceD
 			log.Printf(err.Error())
 			return errors.New("Failed to update physical edition cluster")
 		}
-		resourceData.SetPartial("license_key")
+		// resourceData.SetPartial("license_key")
 		log.Printf("[INFO] Applied license to physical edition cluster: %s", clusterName)
 		return resourceCohesityPhysicalEditionClusterRead(resourceData, configMetaData)
 	}
