@@ -45,13 +45,21 @@ resource "cohesity_gcp_cluster" "cvm_commands" {
 }
 locals {
   cluster_config = jsondecode(file("gcp-resources/cluster_config.json"))
-  vm_name = local.cluster_config.cohesity_cluster_name
+  cluster_name = local.cluster_config.cohesity_cluster_name
+  cluster_gcp_zone = local.cluster_config.gcp_zone
+  num_nodes = local.cluster_config.gcp_num_vms
 }
 data "google_compute_instance" "cluster" {
+  count = num_nodes
   depends_on = [ cohesity_gcp_cluster.cvm_commands ]
-  name = format("%s%s",local.vm_name,"-vm-1")
-  zone = "us-west1-a"
+  name = format("%s-vm-%s",local.cluster_name,count.index+1)
+  zone = local.cluster_gcp_zone
 }
-output "cluster_ip" {
-  value = data.google_compute_instance.cluster.network_interface[0].network_ip
+output "cluster_private_ips" {
+  description = "A comma-separated list of all private IP addresses of the GCP nodes"
+  value = join(",",[for i in data.google_compute_instance.cluster : i.network_interface[0].network_ip])
+}
+output "instance_ids" {
+  description = "A comma-separated list of all the instance ids of the GCP nodes"
+  value = join(",", [for instance in data.google_compute_instance.cluster : instance.instance_id])
 }
