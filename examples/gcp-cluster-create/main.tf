@@ -1,8 +1,10 @@
+# Initialize google provider
 provider "google" {
   credentials = file(var.credential_file)
   project     = var.project
   region      = var.region
 }
+# Initialize cohesity provider
 provider "cohesity" {
   ssh {
     ssh_host        = google_compute_instance.control_vm.network_interface[0].access_config[0].nat_ip
@@ -44,6 +46,7 @@ resource "cohesity_gcp_cluster" "cvm_commands" {
   gcp_key_file = "gcp-resources/GCPKey.json"
   gcp_bucket_config_file = "gcp-resources/gcp_bucket_config"
 }
+# Read the cluster_config file to get cluster information
 locals {
   cluster_config = jsondecode(file("gcp-resources/cluster_config.json"))
   cluster_name = local.cluster_config.cohesity_cluster_name
@@ -57,6 +60,7 @@ data "google_compute_instance" "cluster" {
   name = format("%s-vm-%s",local.cluster_name,count.index+1)
   zone = local.cluster_gcp_zone
 }
+# Outputs
 output "cluster_private_ips" {
   description = "A comma-separated list of all private IP addresses of the GCP nodes"
   value = join(",",[for i in data.google_compute_instance.cluster : i.network_interface[0].network_ip])
