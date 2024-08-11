@@ -112,11 +112,11 @@ func resourceCohesityJobVMware() *schema.Resource {
 	}
 }
 
-//empty structure used as vaule in Map, this is used
-//to mimic HashSet with Map in golang
+// empty structure used as vaule in Map, this is used
+// to mimic HashSet with Map in golang
 type empty struct{}
 
-//parse the protection source node structure for vm ids
+// parse the protection source node structure for vm ids
 func parseGetSourceIDs(sources map[string]empty, sourceNode []interface{}) []int64 {
 	var nodesQueue *queue.Queue
 	nodesQueue = queue.New()

@@ -1,29 +1,25 @@
 package cohesity
 
 import (
-    "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-    "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-    "context"
-    // "log"
-    "github.com/hashicorp/terraform-plugin-log/tflog"
+	"context"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
 type CVMProviderConfig struct {
 	Type       string
-    Host       string
-    User       string
-    Password   string
-    PrivateKey string
-    Timeout    string
+	Host       string
+	User       string
+	Password   string
+	PrivateKey string
+	Timeout    string
 }
+
 // Provider represents a resource provider in terraform
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"type": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Type of the schema set ('cluster', 'ssh')",
-			},
 			"cluster_vip": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -48,28 +44,35 @@ func Provider() *schema.Provider {
 				Default:     "LOCAL",
 				Description: "The domain name of cohesity user",
 			},
-			"ssh_host": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Host for SSH connection",
+			"ssh": {
+				Type: schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+					"ssh_host": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Description: "Host for SSH connection",
+					},
+					"ssh_user": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Description: "User for SSH connection",
+					},
+					"ssh_password": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Sensitive:   true,
+						Description: "Password for SSH connection",
+					},
+					"ssh_timeout": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Default:     "60m",
+						Description: "Timeout for SSH connection",
+					},
+				}},
 			},
-			"ssh_user": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "User for SSH connection",
-			},
-			"ssh_password": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Sensitive:   true,
-				Description: "Password for SSH connection",
-			},
-			"ssh_timeout": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "60m",
-				Description: "Timeout for SSH connection",
-			},
+
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"cohesity_cloud_edition_cluster":    resourceCohesityCloudEditionCluster(),
@@ -79,7 +82,7 @@ func Provider() *schema.Provider {
 			"cohesity_job_vmware":               resourceCohesityJobVMware(),
 			"cohesity_job_run":                  resourceCohesityJobRun(),
 			"cohesity_restore_vmware_vm":        resourceCohesityRestoreVMwareVM(),
-			"cohesity_gcp_cluster": 			 resourceCohesityGcpCluster(),
+			"cohesity_gcp_cluster":              resourceCohesityGcpCluster(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -87,46 +90,47 @@ func Provider() *schema.Provider {
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 
-	typeField, ok := d.GetOk("type")
-	if !ok {
-		return nil, diag.Errorf("Missing required type field")
-	}
-	switch typeField {
-	case "cluster":
-		vip, ok1 := d.GetOk("cluster_vip")
+	vip, ok := d.GetOk("cluster_vip")
+
+	if ok {
 		username, ok2 := d.GetOk("cluster_username")
 		password, ok3 := d.GetOk("cluster_password")
 		domain, _ := d.GetOk("cluster_domain")
 
-		if !ok1 || !ok2 || !ok3 {
-			return nil, diag.Errorf("Missing required fields for cohesity type")
+		if !ok2 || !ok3 {
+			return nil, diag.Errorf("Missing cluster_username (required fields)")
+		}
+		if !ok3 {
+			return nil, diag.Errorf("Missing cluster_password (required fields)")
 		}
 
 		return Config{
-			Type:			   typeField.(string),
-			clusterVip:        vip.(string),
-			clusterUsername:   username.(string),
-			clusterPassword:   password.(string),
-			clusterDomain:     domain.(string),
+			clusterVip:      vip.(string),
+			clusterUsername: username.(string),
+			clusterPassword: password.(string),
+			clusterDomain:   domain.(string),
 		}, nil
-	case "ssh":
-		host, _ := d.GetOk("ssh_host")
-		user, ok2 := d.GetOk("ssh_user")
-		password, _ := d.GetOk("ssh_password")
-		timeout, _ := d.GetOk("ssh_timeout")
-
-		if !ok2 {
-			return nil, diag.Errorf("Missing user required fields for ssh type")
-		}
-		tflog.Info(ctx,"Successfully configured ssh provider "+host.(string))
-		return CVMProviderConfig{
-			Type:		typeField.(string),
-			Host:       host.(string),
-			User:       user.(string),
-			Password: password.(string),
-			Timeout:    timeout.(string),
-		}, nil
-	default:
-		return nil, diag.Errorf("unknown type: %s", typeField)
 	}
+	if v, ok := d.GetOk("ssh"); ok{
+		sshConfig := v.([]interface{})[0].(map[string]interface{})
+		host, _ := sshConfig["ssh_host"].(string)
+		user, ok1 := sshConfig["ssh_user"].(string)
+		password, ok2 := sshConfig["ssh_password"].(string)
+		timeout, _ := sshConfig["ssh_timeout"].(string)
+		if !ok1 || user == "" {
+			return nil, diag.Errorf("Missing ssh_username (required field) for ssh type")
+		}
+		if !ok2 || password == "" {
+			return nil, diag.Errorf("Missing ssh_password (required field) for ssh type")
+		}
+		tflog.Info(ctx, "Successfully configured ssh provider "+host)
+		return CVMProviderConfig{
+			Host:     host,
+			User:     user,
+			Password: password,
+			Timeout:  timeout,
+		}, nil
+	}
+
+	return nil, diag.Errorf("Fields incorrect or missing")
 }

@@ -6,6 +6,7 @@ require (
 	github.com/cohesity/management-sdk-go v1.1.2
 	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
 	github.com/hashicorp/terraform v0.12.28
+	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0
 	golang.org/x/crypto v0.23.0
 )
@@ -55,7 +56,6 @@ require (
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20191212124732-c6ae6269b9d7 // indirect
 	github.com/hashicorp/terraform-plugin-go v0.23.0 // indirect
-	github.com/hashicorp/terraform-plugin-log v0.9.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.2.3 // indirect
 	github.com/hashicorp/terraform-svchost v0.1.1 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect

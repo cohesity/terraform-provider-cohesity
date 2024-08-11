@@ -4,11 +4,12 @@ provider "google" {
   region      = var.region
 }
 provider "cohesity" {
-  type            = "ssh"
-  ssh_host        = google_compute_instance.control_vm.network_interface[0].access_config[0].nat_ip
-  ssh_user        = var.ssh_username
-  ssh_password    = var.ssh_password
-  ssh_timeout     = "60m"
+  ssh {
+    ssh_host        = google_compute_instance.control_vm.network_interface[0].access_config[0].nat_ip
+    ssh_user        = var.ssh_username
+    ssh_password    = var.ssh_password
+    ssh_timeout     = "60m"
+  }
 }
 resource "google_compute_instance" "control_vm" {
 
@@ -28,7 +29,7 @@ resource "google_compute_instance" "control_vm" {
     access_config {
     }
   }
-  labels = merge(var.labels, { expiry = local.expiry_date })
+  labels = var.labels
   tags = ["ssh", "http"]
   provisioner "local-exec" {
     command = "sleep 20"
@@ -45,7 +46,6 @@ resource "cohesity_gcp_cluster" "cvm_commands" {
 locals {
   cluster_config = jsondecode(file("gcp-resources/cluster_config.json"))
   vm_name = local.cluster_config.cohesity_cluster_name
-  expiry_date = formatdate("MM-DD-YYYY", timeadd(timestamp(),"336h"))
 }
 data "google_compute_instance" "cluster" {
   depends_on = [ cohesity_gcp_cluster.cvm_commands ]

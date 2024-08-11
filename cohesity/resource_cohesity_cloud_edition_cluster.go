@@ -8,7 +8,7 @@ import (
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
-    "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceCohesityCloudEditionCluster() *schema.Resource {
