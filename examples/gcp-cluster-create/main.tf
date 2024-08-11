@@ -11,6 +11,7 @@ provider "cohesity" {
     ssh_timeout     = "60m"
   }
 }
+# Create the Control VM
 resource "google_compute_instance" "control_vm" {
 
   name         = var.instance_name
@@ -36,7 +37,7 @@ resource "google_compute_instance" "control_vm" {
   }
 
 }
-
+# Use the Control VM to deploy the cluster
 resource "cohesity_gcp_cluster" "cvm_commands" {
   depends_on = [ google_compute_instance.control_vm ]
   cluster_config_file = "gcp-resources/cluster_config.json"
@@ -49,6 +50,7 @@ locals {
   cluster_gcp_zone = local.cluster_config.gcp_zone
   num_nodes = local.cluster_config.gcp_num_vms
 }
+# Get information of all the nodes on the cluster
 data "google_compute_instance" "cluster" {
   count = num_nodes
   depends_on = [ cohesity_gcp_cluster.cvm_commands ]
