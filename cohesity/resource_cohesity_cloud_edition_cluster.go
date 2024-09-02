@@ -25,7 +25,7 @@ func resourceCohesityCloudEditionCluster() *schema.Resource {
 			},
 			"license_key": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("CLOUD_COHESITY_CLUSTER_LICENSE_KEY", ""),
 				Description: "Cohesity license key to apply after cluster creation",
@@ -106,8 +106,8 @@ func resourceCohesityCloudEditionCluster() *schema.Resource {
 
 func resourceCohesityCloudEditionClusterCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")
@@ -176,28 +176,28 @@ func resourceCohesityCloudEditionClusterCreate(resourceData *schema.ResourceData
 		timeout -= 30
 	}
 
-	client, err = CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
-
-	if err != nil {
-		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
-	}
-
-	var requestBodyLicence models.LicenceClusterParameters
-	signedTime := int64(time.Now().Unix())
-	signedVersion := int64(2)
-	requestBodyLicence.LicenseKey = resourceData.Get("license_key").(string)
-	requestBodyLicence.SignedByUser = cohesityConfig.clusterUsername
-	requestBodyLicence.SignedVersion = &signedVersion
-	requestBodyLicence.SignedTime = &signedTime
-	err = client.Clusters().ApplyClusterLicence(&requestBodyLicence)
-
-	if err != nil {
-		log.Printf("[WARNING] Failed to apply license for cloud edition cluster %s, %s", clusterName, err.Error())
-		resourceData.Set("license_key", "")
-	}
-	log.Printf("[INFO] Successfully created and applied license to cloud edition cluster %s", clusterName)
+	//client, err = CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+	//	cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
+	//
+	//if err != nil {
+	//	log.Printf(err.Error())
+	//	return errors.New("Failed to authenticate with Cohesity")
+	//}
+	//
+	//var requestBodyLicence models.LicenceClusterParameters
+	//signedTime := int64(time.Now().Unix())
+	//signedVersion := int64(2)
+	//requestBodyLicence.LicenseKey = resourceData.Get("license_key").(string)
+	//requestBodyLicence.SignedByUser = cohesityConfig.ClusterUsername
+	//requestBodyLicence.SignedVersion = &signedVersion
+	//requestBodyLicence.SignedTime = &signedTime
+	//err = client.Clusters().ApplyClusterLicence(&requestBodyLicence)
+	//
+	//if err != nil {
+	//	log.Printf("[WARNING] Failed to apply license for cloud edition cluster %s, %s", clusterName, err.Error())
+	//	resourceData.Set("license_key", "")
+	//}
+	log.Printf("[INFO] Successfully created cloud edition cluster %s", clusterName)
 	resourceData.SetId(strconv.FormatInt(*result.ClusterId, 10))
 	return resourceCohesityCloudEditionClusterRead(resourceData, configMetaData)
 }
@@ -205,8 +205,8 @@ func resourceCohesityCloudEditionClusterCreate(resourceData *schema.ResourceData
 func resourceCohesityCloudEditionClusterRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var clusterName = resourceData.Get("cluster_name").(string)
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")
@@ -224,8 +224,8 @@ func resourceCohesityCloudEditionClusterDelete(resourceData *schema.ResourceData
 	var clusterName = resourceData.Get("cluster_name").(string)
 	log.Printf("[INFO] Destroy cloud edition cluster: %s", clusterName)
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")
@@ -253,31 +253,33 @@ func resourceCohesityCloudEditionClusterDelete(resourceData *schema.ResourceData
 func resourceCohesityCloudEditionClusterUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var clusterName = resourceData.Get("cluster_name").(string)
 	log.Printf("[INFO] Update cloud edition cluster: %s", clusterName)
-	resourceData.Partial(true)
-	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
-	if err != nil {
-		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
-	}
-	oldLicenceValue, _ := resourceData.GetChange("license_key")
-	if resourceData.HasChange("license_key") && oldLicenceValue == "" {
-		var requestBodyLicence models.LicenceClusterParameters
-		signedTime := int64(time.Now().Unix())
-		signedVersion := int64(2)
-		requestBodyLicence.LicenseKey = resourceData.Get("license_key").(string)
-		requestBodyLicence.SignedByUser = cohesityConfig.clusterUsername
-		requestBodyLicence.SignedVersion = &signedVersion
-		requestBodyLicence.SignedTime = &signedTime
-		err := client.Clusters().ApplyClusterLicence(&requestBodyLicence)
-		if err != nil {
-			log.Printf(err.Error())
-			return errors.New("Failed to update cloud edition cluster")
-		}
-		// resourceData.SetPartial("license_key")
-		log.Printf("[INFO] Applied license to cloud edition cluster: %s", clusterName)
-		return resourceCohesityCloudEditionClusterRead(resourceData, configMetaData)
-	}
-	return errors.New("Failed to update cloud edition cluster")
+	//resourceData.Partial(true)
+	//var cohesityConfig = configMetaData.(Config)
+	//client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+	//	cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
+	//if err != nil {
+	//	log.Printf(err.Error())
+	//	return errors.New("Failed to authenticate with Cohesity")
+	//}
+	//oldLicenceValue, _ := resourceData.GetChange("license_key")
+	//if resourceData.HasChange("license_key") && oldLicenceValue == "" {
+	//	var requestBodyLicence models.LicenceClusterParameters
+	//	signedTime := int64(time.Now().Unix())
+	//	signedVersion := int64(2)
+	//	requestBodyLicence.LicenseKey = resourceData.Get("license_key").(string)
+	//	requestBodyLicence.SignedByUser = cohesityConfig.ClusterUsername
+	//	requestBodyLicence.SignedVersion = &signedVersion
+	//	requestBodyLicence.SignedTime = &signedTime
+	//	err := client.Clusters().ApplyClusterLicence(&requestBodyLicence)
+	//	if err != nil {
+	//		log.Printf(err.Error())
+	//		return errors.New("Failed to update cloud edition cluster")
+	//	}
+	//	// resourceData.SetPartial("license_key")
+	//	log.Printf("[INFO] Applied license to cloud edition cluster: %s", clusterName)
+	//	return resourceCohesityCloudEditionClusterRead(resourceData, configMetaData)
+	//}
+	return resourceCohesityCloudEditionClusterRead(resourceData, configMetaData)
+
+	//return errors.New("Failed to update cloud edition cluster")
 }

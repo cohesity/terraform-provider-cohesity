@@ -103,8 +103,8 @@ func resourceCohesitySourceVMware() *schema.Resource {
 
 func resourceCohesitySourceVMwareCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")
@@ -174,8 +174,8 @@ func resourceCohesitySourceVMwareCreate(resourceData *schema.ResourceData, confi
 
 func resourceCohesitySourceVMwareRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")
@@ -203,8 +203,8 @@ func resourceCohesitySourceVMwareRead(resourceData *schema.ResourceData, configM
 
 func resourceCohesitySourceVMwareDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")
@@ -229,8 +229,8 @@ func resourceCohesitySourceVMwareDelete(resourceData *schema.ResourceData, confi
 func resourceCohesitySourceVMwareUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	resourceData.Partial(true)
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return errors.New("Failed to authenticate with Cohesity")

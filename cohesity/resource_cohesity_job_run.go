@@ -56,8 +56,8 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 	var cohesityConfig = configMetaData.(Config)
 	// authenticate with Cohesity cluster
 	log.Printf("[INFO] Authenticate with Cohesity cluster")
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return nil, errors.New("Failed to authenticate with Cohesity")

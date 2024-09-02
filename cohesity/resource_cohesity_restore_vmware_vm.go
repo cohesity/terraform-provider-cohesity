@@ -78,8 +78,8 @@ func restoreStartStopUtil(resourceData *schema.ResourceData, configMetaData inte
 	// Authenticate with Cohesity cluster
 	log.Printf("[INFO] Authenticate with Cohesity cluster")
 	var cohesityConfig = configMetaData.(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf("[ERROR] %s", err.Error())
 		return nil, errors.New("Failed to authenticate with Cohesity")

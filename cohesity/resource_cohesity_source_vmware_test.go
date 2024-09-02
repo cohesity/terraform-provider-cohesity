@@ -8,8 +8,8 @@ import (
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccSourceVmware_basic(t *testing.T) {
@@ -35,8 +35,8 @@ func TestAccSourceVmware_basic(t *testing.T) {
 
 func testAccCheckSourceVmwareDestroy(s *terraform.State) error {
 	var cohesityConfig = testAccProvider.Meta().(Config)
-	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-		cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
 		return fmt.Errorf("Failed to authenticate with Cohesity")
@@ -66,8 +66,8 @@ func testAccCheckSourceVmwareDestroy(s *terraform.State) error {
 func testAccCheckSourceVmwareCreated() resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		var cohesityConfig = testAccProvider.Meta().(Config)
-		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-			cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
 			log.Printf(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
@@ -108,8 +108,8 @@ func testAccCheckSourceVmwareCreated() resource.TestCheckFunc {
 func testAccCheckSourceVmwareUpdated() resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		var cohesityConfig = testAccProvider.Meta().(Config)
-		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-			cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
 			log.Printf(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
