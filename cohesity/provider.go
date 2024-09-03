@@ -51,13 +51,11 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"cohesity_cloud_edition_cluster":    resourceCohesityCloudEditionCluster(),
 			"cohesity_virtual_edition_cluster":  resourceCohesityVirtualEditionCluster(),
 			"cohesity_physical_edition_cluster": resourceCohesityPhysicalEditionCluster(),
 			"cohesity_source_vmware":            resourceCohesitySourceVMware(),
 			"cohesity_job_vmware":               resourceCohesityJobVMware(),
 			"cohesity_job_run":                  resourceCohesityJobRun(),
-			"cohesity_restore_vmware_vm":        resourceCohesityRestoreVMwareVM(),
 			"cohesity_ngce_cluster":             resourceCohesityNGCECluster(),
 			"cohesity_gcp_external_target":      resourceGCPExternalTarget(),
 		},
