@@ -2,18 +2,11 @@ package cohesity
 
 import (
 	"context"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
-
-type CVMProviderConfig struct {
-	Host       string
-	User       string
-	Password   string
-	PrivateKey string
-	Timeout    string
-}
 
 // Provider represents a resource provider in terraform
 func Provider() *schema.Provider {
@@ -21,7 +14,7 @@ func Provider() *schema.Provider {
 		Schema: map[string]*schema.Schema{
 			"cluster_vip": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("COHESITY_IP", ""),
 				Description: "IP or hostname of Cohesity cluster node",
 			},
@@ -75,6 +68,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		SupportPassword: d.Get("support_password").(string),
 		ClusterDomain:   d.Get("cluster_domain").(string),
 	}
+	log.Printf("[INFO] vip: %s", config.ClusterVIP)
 
 	// Validate mandatory fields
 	if config.ClusterUsername == "" {

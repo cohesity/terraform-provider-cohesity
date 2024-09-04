@@ -22,10 +22,6 @@ func resourceGCPExternalTarget() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"cluster_vip": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"client_private_key_file_path": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -51,7 +47,7 @@ func resourceGCPExternalTarget() *schema.Resource {
 }
 
 func resourceGCPExternalTargetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	clusterIp := d.Get("cluster_vip").(string)
+	// clusterIp := d.Get("cluster_vip").(string)
 	privateKeyFilePath := d.Get("client_private_key_file_path").(string)
 	bucketName := d.Get("bucket_name").(string)
 	projectId := d.Get("project_id").(string)
@@ -61,9 +57,11 @@ func resourceGCPExternalTargetCreate(ctx context.Context, d *schema.ResourceData
 	clusterPassword := config.ClusterPassword
 	supportPassword := config.SupportPassword
 	clusterUsername := config.ClusterUsername
+	clusterIp := config.ClusterVIP
 	log.Printf("[INFO] pass: %s", clusterPassword)
 	clusterPassword = utils.EscapeSpecialSymbols(clusterPassword)
 	log.Printf("[INFO] pass: %s", clusterPassword)
+	log.Printf("[INFO] cluster ip: %s", clusterIp)
 
 	client, err := services.NewSSHClient(clusterIp, "support", supportPassword, time.Hour)
 	if err != nil {

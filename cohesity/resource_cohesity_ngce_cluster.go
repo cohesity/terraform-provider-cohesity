@@ -185,6 +185,8 @@ func resourceCohesityNGCEClusterCreate(ctx context.Context, d *schema.ResourceDa
 
 	config := m.(Config)
 	supportPassword := config.SupportPassword
+	// clusterVip := config.ClusterVIP
+	// log.Printf("[INFO] cluster vip: %s", clusterVip)
 
 	// Validate the IPs.
 	if err := utils.AreValidIPs(clusterParams.NodeIps); err != nil {

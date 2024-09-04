@@ -130,9 +130,11 @@ data "local_file" "subnet_mask" {
 }
 
 provider "cohesity" {
+  cluster_vip = var.allot_external_ip ? google_compute_instance.nodes[0].network_interface[0].access_config[0].nat_ip : google_compute_instance.nodes[0].network_interface[0].network_ip
   cluster_username = var.cohesity_username
   cluster_password = var.cohesity_password
   support_password = var.support_password
+  cluster_domain = "LOCAL"
 }
 
 resource "cohesity_ngce_cluster" "cluster" {
