@@ -14,13 +14,13 @@ terraform {
       version = "~> 0.7" # Specify the version of the time provider
     }
     null = {
-        source  = "hashicorp/null"
-        version = "~> 3.2.2"
+      source  = "hashicorp/null"
+      version = "~> 3.2.2"
     }
     local = {
-        source = "hashicorp/local"
-        version = "~> 2.5.1"
-     }
+      source  = "hashicorp/local"
+      version = "~> 2.5.1"
+    }
   }
 }
 
@@ -130,11 +130,11 @@ data "local_file" "subnet_mask" {
 }
 
 provider "cohesity" {
-  cluster_vip = var.allot_external_ip ? google_compute_instance.nodes[0].network_interface[0].access_config[0].nat_ip : google_compute_instance.nodes[0].network_interface[0].network_ip
+  cluster_vip      = var.allot_external_ip ? google_compute_instance.nodes[0].network_interface[0].access_config[0].nat_ip : google_compute_instance.nodes[0].network_interface[0].network_ip
   cluster_username = var.cohesity_username
   cluster_password = var.cohesity_password
   support_password = var.support_password
-  cluster_domain = "LOCAL"
+  cluster_domain   = "LOCAL"
 }
 
 resource "cohesity_ngce_cluster" "cluster" {
@@ -156,7 +156,6 @@ resource "cohesity_ngce_cluster" "cluster" {
 
 resource "cohesity_gcp_external_target" "gcp_external_target" {
   depends_on                   = [cohesity_cluster.cluster]
-  cluster_vip                  = local.hostname
   client_private_key_file_path = var.gcp_external_target.client_private_key_file_path
   bucket_name                  = var.gcp_external_target.bucket_name
   project_id                   = var.gcp_external_target.project_id

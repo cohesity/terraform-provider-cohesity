@@ -1,16 +1,16 @@
 variable "cohesity_username" {
-    description = "Cohesity IRIS username"
-    type        = string
+  description = "Cohesity IRIS username"
+  type        = string
 }
 
 variable "cohesity_password" {
-    description = "Cohesity IRIS user password"
-    type        = string
+  description = "Cohesity IRIS user password"
+  type        = string
 }
 
 variable "support_password" {
-    description = "Cohesity support user password"
-    type        = string
+  description = "Cohesity support user password"
+  type        = string
 }
 
 variable "credential_file" {
@@ -37,7 +37,7 @@ variable "cluster_name" {
   type        = string
 }
 variable "num_instances" {
-	description = "The number of instances to create"
+  description = "The number of instances to create"
   type        = number
 
   validation {
@@ -58,7 +58,7 @@ variable "disk_image" {
 variable "labels" {
   description = "A map of labels to assign to the instance"
   type        = map(string)
-  default     = {
+  default = {
   }
 }
 variable "network" {
@@ -73,7 +73,7 @@ variable "subnetwork" {
 
 variable "allot_external_ip" {
   description = "Whether to attach public IPs or not"
-  type    = bool
+  type        = bool
 }
 variable "dns-server-ips" {
   description = "Comma seperated DNS server IPs"
@@ -91,32 +91,32 @@ variable "domain-names" {
 }
 variable "add-apps" {
   description = "whether to allow apps or not, defaults to false"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 variable "apps-subnet" {
   description = "Apps subnet"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "apps-subnet-mask" {
   description = "Apps subnet mask"
   type        = string
-  default = ""
+  default     = ""
 }
 variable "add_gcp_external_target" {
   description = "whether to add a gcp-external-target"
-  type = bool
+  type        = bool
 }
 variable "gcp_external_target" {
   description = "gcp external target information"
   type = object({
-    project_id = string
-    client_email_id = string
+    project_id                   = string
+    client_email_id              = string
     client_private_key_file_path = string
-    bucket_name = string
-    tier_type = string
+    bucket_name                  = string
+    tier_type                    = string
   })
-  
+
 }

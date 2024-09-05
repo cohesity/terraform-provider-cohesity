@@ -10,12 +10,12 @@ terraform {
       version = "~> 0.7" # Specify the version of the time provider
     }
     null = {
-        source  = "hashicorp/null"
-        version = "~> 3.2.2"
+      source  = "hashicorp/null"
+      version = "~> 3.2.2"
     }
     local = {
-        source = "hashicorp/local"
-        version = "~> 2.5.1"
-     }
+      source  = "hashicorp/local"
+      version = "~> 2.5.1"
+    }
   }
 }

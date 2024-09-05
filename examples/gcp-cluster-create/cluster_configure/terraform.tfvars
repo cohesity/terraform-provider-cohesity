@@ -8,7 +8,7 @@ machine_type    = "n1-standard-32"
 network         = "cohesity-google-subnet"
 subnetwork      = "cohesity-google-subnet-us-west1"
 labels = {
-  "key"             = "value"
+  "key" = "value"
 }
 disk_image              = "cohesity-gcp-7-2-release-20240711-0083b4c9-cluster-image"
 allot_external_ip       = true
@@ -25,4 +25,4 @@ gcp_external_target = {
 }
 cohesity_username = "admin"
 cohesity_password = "admin"
-support_password = "Cohe$1tyCohe$1ty"
+support_password  = "Cohe$1tyCohe$1ty"
