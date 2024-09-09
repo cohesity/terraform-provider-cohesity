@@ -1,12 +1,15 @@
 package cohesity
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"context"
+	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // Provider represents a resource provider in terraform
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"cluster_vip": {
@@ -27,6 +30,12 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("COHESITY_PASSWORD", ""),
 				Description: "Cohesity cluster password",
 			},
+			"support_password": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Sensitive:   true,
+				Description: "support password for the Cohesity cluster",
+			},
 			"cluster_domain": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -35,25 +44,38 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"cohesity_cloud_edition_cluster":    resourceCohesityCloudEditionCluster(),
-			"cohesity_virtual_edition_cluster":  resourceCohesityVirtualEditionCluster(),
-			"cohesity_physical_edition_cluster": resourceCohesityPhysicalEditionCluster(),
-			"cohesity_source_vmware":            resourceCohesitySourceVMware(),
-			"cohesity_job_vmware":               resourceCohesityJobVMware(),
-			"cohesity_job_run":                  resourceCohesityJobRun(),
-			"cohesity_restore_vmware_vm":        resourceCohesityRestoreVMwareVM(),
+			"cohesity_source_vmware":       resourceCohesitySourceVMware(),
+			"cohesity_job_vmware":          resourceCohesityJobVMware(),
+			"cohesity_job_run":             resourceCohesityJobRun(),
+			"cohesity_ngce_cluster":        resourceCohesityNGCECluster(),
+			"cohesity_gcp_external_target": resourceGCPExternalTarget(),
 		},
-		ConfigureFunc: providerConfigure,
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+// providerConfigure reads the configuration and returns it as a Config struct
+func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	var diags diag.Diagnostics
 
+	// Retrieve the configuration values
 	config := Config{
-		clusterVip:      d.Get("cluster_vip").(string),
-		clusterUsername: d.Get("cluster_username").(string),
-		clusterPassword: d.Get("cluster_password").(string),
-		clusterDomain:   d.Get("cluster_domain").(string),
+		ClusterVIP:      d.Get("cluster_vip").(string),
+		ClusterUsername: d.Get("cluster_username").(string),
+		ClusterPassword: d.Get("cluster_password").(string),
+		SupportPassword: d.Get("support_password").(string),
+		ClusterDomain:   d.Get("cluster_domain").(string),
 	}
-	return config, nil
+	log.Printf("[INFO] vip: %s", config.ClusterVIP)
+
+	// Validate mandatory fields
+	if config.ClusterUsername == "" {
+		return nil, diag.Errorf("cluster_username is required")
+	}
+
+	if config.ClusterPassword == "" {
+		return nil, diag.Errorf("cluster_password is required")
+	}
+
+	return config, diags
 }

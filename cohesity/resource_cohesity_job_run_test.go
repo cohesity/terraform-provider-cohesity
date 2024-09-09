@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccJobRun_basic(t *testing.T) {
@@ -33,8 +33,8 @@ func testAccCheckJobRunDestroy(s *terraform.State) error {
 func testAccCheckJobRunCreated() resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		var cohesityConfig = testAccProvider.Meta().(Config)
-		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.clusterVip,
-			cohesityConfig.clusterUsername, cohesityConfig.clusterPassword, cohesityConfig.clusterDomain)
+		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
+			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
 			log.Printf(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
@@ -49,7 +49,7 @@ func testAccCheckJobRunCreated() resource.TestCheckFunc {
 			return errors.New("Failed to find the protection job")
 		}
 		jobID := *protectionJob[0].Id
-		//get the protection runs to check the the status of recent job run
+		//get the protection runs to check the status of recent job run
 		log.Printf("[INFO] Protection job %s found with ID %d ", jobName, jobID)
 		return nil
 	}
