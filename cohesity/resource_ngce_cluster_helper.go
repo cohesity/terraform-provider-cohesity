@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/services"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
@@ -555,5 +556,36 @@ func ValidateAppSubnetFields(appSubnet, appSubnetMask string) error {
 	if !utils.IsValidIP(appSubnetMask) {
 		return fmt.Errorf("invalid apps_subnet_mask specified. %s", appSubnetMask)
 	}
+	return nil
+}
+
+// ValidateSupportPassword validates the support password input.
+func ValidateSupportPassword(password string) error {
+	if len(password) < 14 {
+		return fmt.Errorf("support password must be at least 14 characters long")
+	}
+
+	var checks int
+	for _, char := range password {
+		switch {
+		case unicode.IsUpper(char):
+			checks |= 1
+		case unicode.IsLower(char):
+			checks |= 2
+		case unicode.IsDigit(char):
+			checks |= 4
+		case strings.ContainsRune("@#$%^&*()_+-=[]{}|;:,.<>?", char):
+			checks |= 8
+		}
+	}
+
+	if checks != 15 {
+		return fmt.Errorf("support password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol")
+	}
+
+	if strings.ContainsAny(password, "!`\"\\") {
+		return fmt.Errorf("!, `, \", and \\ are not allowed in the support password")
+	}
+
 	return nil
 }
