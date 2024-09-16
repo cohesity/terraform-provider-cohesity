@@ -6,8 +6,8 @@ terraform {
       version = "5.40.0"
     }
     cohesity = {
-      source  = "terraform-providers/cohesity"
-      version = "0.1.0"
+      source  = "cohesity/cohesity"
+      version = "2.1.0"
     }
     time = {
       source  = "hashicorp/time"
