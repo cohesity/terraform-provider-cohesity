@@ -48,7 +48,7 @@ func Provider() *schema.Provider {
 			"cohesity_job_vmware":          resourceCohesityJobVMware(),
 			"cohesity_job_run":             resourceCohesityJobRun(),
 			"cohesity_ngce_cluster":        resourceCohesityNGCECluster(),
-			"cohesity_gcp_external_target": resourceGCPExternalTarget(),
+			"cohesity_gcp_external_target": resourceCohesityGCPExternalTarget(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

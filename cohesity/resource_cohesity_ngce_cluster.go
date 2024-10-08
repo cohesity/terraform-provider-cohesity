@@ -48,9 +48,14 @@ func resourceCohesityNGCECluster() *schema.Resource {
 				Required: true,
 			},
 			"node_ips": {
-				Type:     schema.TypeList,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Required: true,
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type:         schema.TypeString,
+					ValidateFunc: validation.IsIPAddress,
+				},
+				Required:         true,
+				DiffSuppressFunc: utils.SuppressNodeIPsDiff,
+				// MinItems: 3,
 			},
 			"hostname": {
 				Type:     schema.TypeString,
@@ -350,7 +355,7 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 		}
 		log.Printf("[INFO] ips %v to %v", oldNodeIPs, newNodeIPs)
 		// Find removed and added nodes
-		removedNodes, addedNodes := difference(oldNodeIPs, newNodeIPs)
+		removedNodes, addedNodes := utils.ListDifference(oldNodeIPs, newNodeIPs)
 		log.Printf("[INFO] Cluster node IPs updated to: %v", newNodeIPs)
 		nodeIPMap := d.Get("node_ip_map").([]interface{})
 
@@ -399,6 +404,9 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 
 	// If there are changes in other params.
 	if d.HasChangesExcept("node_ips") {
+		if d.HasChange("hostname") {
+			return diag.Errorf("cannot change hostname once set")
+		}
 		// Fetch the cluster status through making an API call.
 		token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword)
 		if err != nil {
@@ -416,7 +424,6 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 		log.Printf("cluster update params %+v", clusterParams)
 		// Update the vars.
 		currentClusterInfo.Name = clusterParams.Name
-		currentClusterInfo.NetworkConfig.VipHostName = clusterParams.Hostname
 		currentClusterInfo.NetworkConfig.ManualNetworkConfig.Gateway = clusterParams.SubnetGateway
 		currentClusterInfo.NetworkConfig.ManualNetworkConfig.SubnetMask = clusterParams.SubnetMask
 		currentClusterInfo.NetworkConfig.ManualNetworkConfig.DnsServers = clusterParams.DnsServerIps
