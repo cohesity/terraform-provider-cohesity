@@ -12,12 +12,12 @@ import (
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
-func resourceGCPExternalTarget() *schema.Resource {
+func resourceCohesityGCPExternalTarget() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceGCPExternalTargetCreate,
-		ReadContext:   resourceGCPExternalTargetRead,
-		UpdateContext: resourceGCPExternalTargetUpdate,
-		DeleteContext: resourceGCPExternalTargetDelete,
+		CreateContext: resourceCohesityGCPExternalTargetCreate,
+		ReadContext:   resourceCohesityGCPExternalTargetRead,
+		UpdateContext: resourceCohesityGCPExternalTargetUpdate,
+		DeleteContext: resourceCohesityGCPExternalTargetDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -46,7 +46,7 @@ func resourceGCPExternalTarget() *schema.Resource {
 	}
 }
 
-func resourceGCPExternalTargetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityGCPExternalTargetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// clusterIp := d.Get("cluster_vip").(string)
 	privateKeyFilePath := d.Get("client_private_key_file_path").(string)
 	bucketName := d.Get("bucket_name").(string)
@@ -82,12 +82,12 @@ func resourceGCPExternalTargetCreate(ctx context.Context, d *schema.ResourceData
 	d.SetId(bucketName)
 	return nil
 }
-func resourceGCPExternalTargetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityGCPExternalTargetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return nil
 }
-func resourceGCPExternalTargetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityGCPExternalTargetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return nil
 }
-func resourceGCPExternalTargetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityGCPExternalTargetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return nil
 }

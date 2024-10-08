@@ -180,37 +180,6 @@ func extractJSONFromCreateClusterCmdOutput(output string) string {
 	return jsonOutput
 }
 
-//----------------------------------------------------------------------------------------
-
-func difference(oldList, newList []interface{}) (removed []interface{}, added []interface{}) {
-	oldMap := make(map[interface{}]bool)
-	newMap := make(map[interface{}]bool)
-
-	// Populate maps
-	for _, old := range oldList {
-		oldMap[old] = true
-	}
-	for _, newIP := range newList {
-		newMap[newIP] = true
-	}
-
-	// Determine removed items
-	for _, old := range oldList {
-		if !newMap[old] {
-			removed = append(removed, old)
-		}
-	}
-
-	// Determine added items
-	for _, newIP := range newList {
-		if !oldMap[newIP] {
-			added = append(added, newIP)
-		}
-	}
-
-	return removed, added
-}
-
 // getNodeIDByIP takes a slice of node_ip_map as []interface{} and returns node ID for a given IP
 func getNodeIDByIP(nodeIPMapInterface []interface{}, searchIP string) (int, bool) {
 	for _, item := range nodeIPMapInterface {
@@ -498,21 +467,24 @@ func getClusterCreateScriptContent() string {
 
 				# Initial cluster creation command
 				cmd="iris_cli --output=prettyjson --username=admin --password=admin --skip_password_prompt=true --skip_force_password_change=true cluster cloud-create cluster-size=nextGen enable-software-encryption=true name=${CLUSTER_NAME} node-ips=${NODE_IPS} hostname=${HOSTNAME} subnet-gateway=${SUBNET_GATEWAY} subnet-mask=${SUBNET_MASK} dns-server-ips=${DNS_SERVER_IPS} ntp-servers=${NTP_SERVERS} domain-names=${DOMAIN_NAMES} metadata-fault-tolerance=${METADATA_FAULT_TOLERANCE}"
-
 				if [ "${ADD_APPS}" = "true" ]; then
 					cmd="${cmd} apps-subnet=${APPS_SUBNET} apps-subnet-mask=${APPS_SUBNET_MASK}"
 				fi
+				echo "${cmd}"
 
 				# Run the cluster creation command and check for the desired output
 				for i in {1..100}; do
 					output=$(${cmd})
-
+					echo "${output}"
 					if echo "${output}" | grep -q "clusterId"; then
 						echo "Cluster create command issued successfully."
 						break
 					else
 						echo "Cluster create command not yet issued, retrying in 30s..."
 						sleep 30
+					fi
+					if i==100; then
+						exit 1
 					fi
 				done
 				sleep 120
@@ -522,7 +494,7 @@ func getClusterCreateScriptContent() string {
 				for i in {1..100}; do
 					sleep 30
 					status_output=$(iris_cli --username=admin --password=admin --skip_password_prompt=true --skip_force_password_change=true cluster status)
-
+					echo "${status_output}"
 					if echo "${status_output}" | grep -Eq "CLUSTER ACTIVE OPERATION\s*:\s*$"; then
 						echo "Cluster creation completed successfully."
 						final_status_output=$(iris_cli --output=prettyjson --username=admin --password=admin --skip_password_prompt=true --skip_force_password_change=true cluster status)
@@ -532,6 +504,9 @@ func getClusterCreateScriptContent() string {
 						break
 					else
 						echo "Cluster creation still in progress..."
+					fi
+					if i==100; then
+						exit 1
 					fi
 				done
 
