@@ -75,15 +75,18 @@ func enableSupportUser(clusterHostname, supportPassword string) error {
 			time.Sleep(30 * time.Second)
 		}
 
-		// Get the token
-		token, err := services.GetAccessToken(clusterHostname, "admin", "admin")
-		if err != nil || token == "" {
-			log.Println("Failed to retrieve token")
-			continue
+		config := utils.Config{
+			ClusterUsername: "admin",
+			ClusterPassword: "admin",
+			ClusterVIP:      clusterHostname,
+			ClusterDomain:   "LOCAL",
 		}
-
+		client, err := services.NewCohesityClientV1(config)
+		if err != nil {
+			return err
+		}
 		// Update Linux password
-		err = services.UpdateLinuxPassword(clusterHostname, supportPassword, token)
+		err = client.UpdateLinuxPassword(supportPassword)
 		if err != nil {
 			log.Printf("Failed to update Linux password: %v\n", err)
 			continue
@@ -92,7 +95,7 @@ func enableSupportUser(clusterHostname, supportPassword string) error {
 		}
 
 		// Enable sudo access
-		err = services.EnableSudoAccess(clusterHostname, token)
+		err = client.EnableSudoAccess()
 		if err != nil {
 			log.Printf("Failed to enable sudo access: %v\n", err)
 			continue

@@ -188,7 +188,7 @@ func resourceCohesityNGCEClusterCreate(ctx context.Context, d *schema.ResourceDa
 	// Parse the input params.
 	clusterParams := setClusterConfigParamsFromSchema(d)
 
-	config := m.(Config)
+	config := m.(utils.Config)
 	supportPassword := config.SupportPassword
 	if err := ValidateSupportPassword(supportPassword); err != nil {
 		return diag.FromErr(err)
@@ -252,9 +252,10 @@ func resourceCohesityNGCEClusterRead(ctx context.Context, d *schema.ResourceData
 	// Parse the input params.
 	clusterParams := setClusterConfigParamsFromSchema(d)
 
-	config := m.(Config)
+	config := m.(utils.Config)
 	clusterUsername := config.ClusterUsername
 	clusterPassword := config.ClusterPassword
+	clusterDomain := config.ClusterDomain
 	escapedClusterPassword := utils.EscapeSpecialSymbols(clusterPassword)
 	supportPassword := config.SupportPassword
 
@@ -268,7 +269,7 @@ func resourceCohesityNGCEClusterRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	// Fetch the cluster status through making an API call.
-	token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword)
+	token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword, clusterDomain)
 	if err != nil {
 		log.Printf("failed to get access token. check credentials %s", err.Error())
 		return diag.FromErr(err)
@@ -335,11 +336,12 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 	// Parse the input params.
 	clusterParams := setClusterConfigParamsFromSchema(d)
 
-	config := m.(Config)
+	config := m.(utils.Config)
 	clusterPassword := config.ClusterPassword
 	escapedClusterPassword := utils.EscapeSpecialSymbols(clusterPassword)
 	supportPassword := config.SupportPassword
 	clusterUsername := config.ClusterUsername
+	clusterDomain := config.ClusterDomain
 
 	if d.HasChange("node_ips") {
 		// There are changes in the node ip. Add or remove node op req.
@@ -408,7 +410,7 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 			return diag.Errorf("cannot change hostname once set")
 		}
 		// Fetch the cluster status through making an API call.
-		token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword)
+		token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword, clusterDomain)
 		if err != nil {
 			log.Printf("failed to get access token. check credentials %s", err.Error())
 			return diag.FromErr(err)
