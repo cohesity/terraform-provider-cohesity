@@ -7,6 +7,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+// WaitTimeToSeconds is used to convert operation time to seconds
+const WaitTimeToSeconds int = 60
+
 func EscapeSpecialSymbols(input string) string {
 	specialSymbols := `\.$^*+?()[]{}|`
 
@@ -67,4 +70,7 @@ func SuppressNodeIPsDiff(k, old, new string, d *schema.ResourceData) bool {
 		return true
 	}
 	return false
+}
+func SuppressNetworkNameDiff(k, old, new string, d *schema.ResourceData) bool {
+	return strings.HasSuffix(new, old)
 }

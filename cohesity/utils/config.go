@@ -1,4 +1,4 @@
-package cohesity
+package utils
 
 // Config has cohesity provider configuration
 type Config struct {
@@ -8,6 +8,3 @@ type Config struct {
 	SupportPassword string
 	ClusterDomain   string
 }
-
-// WaitTimeToSeconds is used to convert operation time to seconds
-const WaitTimeToSeconds int = 60

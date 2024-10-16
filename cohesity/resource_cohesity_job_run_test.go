@@ -9,6 +9,7 @@ import (
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 func TestAccJobRun_basic(t *testing.T) {
@@ -32,7 +33,7 @@ func testAccCheckJobRunDestroy(s *terraform.State) error {
 
 func testAccCheckJobRunCreated() resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		var cohesityConfig = testAccProvider.Meta().(Config)
+		var cohesityConfig = testAccProvider.Meta().(utils.Config)
 		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {

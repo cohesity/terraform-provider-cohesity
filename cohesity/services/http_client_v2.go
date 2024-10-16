@@ -8,7 +8,14 @@ import (
 	"log"
 	"net/http"
 
+	apiClientV2 "github.com/cohesity/go-sdk/v2/client"
+	"github.com/cohesity/go-sdk/v2/client/access_token"
+	modelsV2 "github.com/cohesity/go-sdk/v2/models"
+	"github.com/go-openapi/runtime"
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
 	v2 "github.com/terraform-providers/terraform-provider-cohesity/cohesity/models/v2"
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 // GetClusterInfo calls the v2 /clusters API and returns the API response.
@@ -102,4 +109,42 @@ func UpdateClusterInfo(clusterVip string, toUpdateClusterInfo v2.Cluster, access
 	}
 
 	return &cluster, nil
+}
+
+type CohesityClientV2 struct {
+	client      *apiClientV2.CohesityRESTAPI
+	bearerToken runtime.ClientAuthInfoWriter
+}
+
+func NewCohesityClientV2(config utils.Config) (*CohesityClientV2, error) {
+	client := GetClientV2(config.ClusterVIP)
+	bearerToken, err := GetAccessTokenV2(client, config.ClusterUsername, config.ClusterPassword, config.ClusterDomain)
+	if err != nil {
+		return nil, err
+	}
+	return &CohesityClientV2{
+		client:      client,
+		bearerToken: bearerToken,
+	}, nil
+}
+func GetClientV2(clusterVip string) *apiClientV2.CohesityRESTAPI {
+	return apiClientV2.New(httptransport.NewWithClient(clusterVip, "/v2", nil, initHttpClientInstance()), strfmt.Default)
+}
+
+func GetAccessTokenV2(client *apiClientV2.CohesityRESTAPI, username, password, domain string) (runtime.ClientAuthInfoWriter, error) {
+	body := &modelsV2.CreateAccessTokenRequestParams{
+		Username: &username,
+		Password: &password,
+		Domain:   &domain,
+	}
+	accessTokenResponse, err := client.AccessToken.CreateAccessToken(access_token.NewCreateAccessTokenParams().WithBody(body), nil)
+	if err != nil {
+		return nil, err
+	}
+	bearerToken := httptransport.BearerToken(*accessTokenResponse.Payload.AccessToken)
+	return bearerToken, nil
+}
+
+func toStrPtr(variable string) *string {
+	return &variable
 }

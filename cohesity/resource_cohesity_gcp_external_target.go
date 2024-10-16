@@ -53,7 +53,7 @@ func resourceCohesityGCPExternalTargetCreate(ctx context.Context, d *schema.Reso
 	projectId := d.Get("project_id").(string)
 	clientEmail := d.Get("client_email").(string)
 	tierType := d.Get("tier_type").(string)
-	config := m.(Config)
+	config := m.(utils.Config)
 	clusterPassword := config.ClusterPassword
 	supportPassword := config.SupportPassword
 	clusterUsername := config.ClusterUsername
