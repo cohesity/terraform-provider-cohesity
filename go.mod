@@ -3,7 +3,11 @@ module github.com/terraform-providers/terraform-provider-cohesity
 go 1.22
 
 require (
+	github.com/cohesity/go-sdk v0.72.1002
 	github.com/cohesity/management-sdk-go v1.1.2
+	github.com/go-openapi/runtime v0.28.0
+	github.com/go-openapi/strfmt v0.23.0
+	github.com/go-openapi/swag v0.23.0
 	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0
@@ -21,10 +25,20 @@ require (
 	github.com/apimatic/form v0.0.0-20160503070951-57699fab37f4 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/fatih/color v1.16.0 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-openapi/analysis v0.23.0 // indirect
+	github.com/go-openapi/errors v0.22.0 // indirect
+	github.com/go-openapi/jsonpointer v0.21.0 // indirect
+	github.com/go-openapi/jsonreference v0.21.0 // indirect
+	github.com/go-openapi/loads v0.22.0 // indirect
+	github.com/go-openapi/spec v0.21.0 // indirect
+	github.com/go-openapi/validate v0.24.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -50,6 +64,8 @@ require (
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
+	github.com/josharian/intern v1.0.0 // indirect
+	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
@@ -59,11 +75,12 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/oklog/run v1.0.0 // indirect
+	github.com/oklog/ulid v1.3.1 // indirect
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
@@ -71,9 +88,14 @@ require (
 	github.com/yuin/goldmark-meta v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	go.abhg.dev/goldmark/frontmatter v0.2.0 // indirect
+	go.mongodb.org/mongo-driver v1.14.0 // indirect
+	go.opentelemetry.io/otel v1.24.0 // indirect
+	go.opentelemetry.io/otel/metric v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
