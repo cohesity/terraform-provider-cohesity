@@ -486,7 +486,7 @@ func getClusterCreateScriptContent() string {
 						echo "Cluster create command not yet issued, retrying in 30s..."
 						sleep 30
 					fi
-					if i==100; then
+					if [ $i -eq 100 ]; then
 						exit 1
 					fi
 				done
@@ -508,7 +508,7 @@ func getClusterCreateScriptContent() string {
 					else
 						echo "Cluster creation still in progress..."
 					fi
-					if i==100; then
+					if [ $i -eq 100 ]; then
 						exit 1
 					fi
 				done
