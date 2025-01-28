@@ -56,6 +56,12 @@ func ListDifference(oldList, newList []interface{}) (removed []interface{}, adde
 }
 func SuppressNodeIPsDiff(k, old, new string, d *schema.ResourceData) bool {
 	oldNodeIPsInterface, newNodeIPsInterface := d.GetChange("node_ips")
+	if oldNodeIPsInterface == nil {
+        oldNodeIPsInterface = []interface{}{}
+    }
+    if newNodeIPsInterface == nil {
+        newNodeIPsInterface = []interface{}{}
+    }
 	// Assert the types to []interface{}
 	oldNodeIPs, ok1 := oldNodeIPsInterface.([]interface{})
 	newNodeIPs, ok2 := newNodeIPsInterface.([]interface{})
@@ -63,7 +69,7 @@ func SuppressNodeIPsDiff(k, old, new string, d *schema.ResourceData) bool {
 	if !ok1 || !ok2 {
 		log.Fatalf("Failed to assert types of oldNodeIPs or newNodeIPs")
 	}
-	// log.Printf("[INFO] ips %v to %v", oldNodeIPs, newNodeIPs)
+	log.Printf("[INFO] ips %v to %v", oldNodeIPs, newNodeIPs)
 	// Find removed and added nodes
 	removedNodes, addedNodes := ListDifference(oldNodeIPs, newNodeIPs)
 	if len(removedNodes) == 0 && len(addedNodes) == 0 {
@@ -72,5 +78,5 @@ func SuppressNodeIPsDiff(k, old, new string, d *schema.ResourceData) bool {
 	return false
 }
 func SuppressNetworkNameDiff(k, old, new string, d *schema.ResourceData) bool {
-	return strings.HasSuffix(new, old)
+	return strings.HasSuffix(old, "networks/"+new)
 }

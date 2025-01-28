@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/go-openapi/swag"
 
@@ -18,7 +19,7 @@ type sourceNetapp struct {
 func NewSourceNetapp(username, password, endpoint, sourceType string, backupSMBVolumes bool) *sourceNetapp {
 	return &sourceNetapp{
 		CommonSourceRegistrationRequestParams: modelsV2.CommonSourceRegistrationRequestParams{
-			Environment: toStrPtr("kNetApp"),
+			Environment: toStrPtr("kNetapp"),
 		},
 		NetappParams: &modelsV2.NetappRegistrationParams{
 			Credentials: &modelsV2.Credentials{
@@ -83,7 +84,7 @@ func (c *CohesityClientV2) AddNetappProtectionSource(netAppSource *sourceNetapp)
 		return -1, err
 	}
 
-	resp, err := c.client.Source.RegisterProtectionSource(source.NewRegisterProtectionSourceParams().WithBody(body), c.bearerToken)
+	resp, err := c.client.Source.RegisterProtectionSource(source.NewRegisterProtectionSourceParams().WithBody(body).WithTimeout(300*time.Second), c.bearerToken)
 	if err != nil {
 		return -1, err
 	}
@@ -114,7 +115,7 @@ func (c *CohesityClientV2) GetNetAppSource(id string) (*sourceNetapp, error) {
 	return sourceResp, nil
 }
 
-func (c *CohesityClientV2) UpdateNetAppSource(netAppSource *sourceNetapp) (int64, error) {
+func (c *CohesityClientV2) UpdateNetAppSource(netAppSource *sourceNetapp,id string) (int64, error) {
 	body := &modelsV2.SourceRegistrationUpdateRequestParams{}
 	marshalledData, err := netAppSource.MarshalBinary()
 	if err != nil {
@@ -124,9 +125,13 @@ func (c *CohesityClientV2) UpdateNetAppSource(netAppSource *sourceNetapp) (int64
 	if err != nil {
 		return -1, err
 	}
-	resp, err := c.client.Source.UpdateProtectionSourceRegistration(source.NewUpdateProtectionSourceRegistrationParams().WithBody(body), c.bearerToken)
+	idInt64, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		return -1, err
+		return -1, fmt.Errorf("invalid id: %v", err)
+	}
+	resp, err := c.client.Source.UpdateProtectionSourceRegistration(source.NewUpdateProtectionSourceRegistrationParams().WithBody(body).WithTimeout(300*time.Second).WithID(idInt64), c.bearerToken)
+	if err != nil {
+		return -1, fmt.Errorf("err: %v \n body:%v", err,convertASCIISliceToString(marshalledData))
 	}
 	return *resp.Payload.SourceID, nil
 

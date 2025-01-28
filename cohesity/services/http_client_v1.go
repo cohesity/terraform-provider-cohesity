@@ -8,74 +8,23 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 
-	apiClientV1 "github.com/cohesity/go-sdk/v1/client"
-	"github.com/cohesity/go-sdk/v1/client/access_tokens"
-	"github.com/cohesity/go-sdk/v1/client/principals"
-	"github.com/cohesity/go-sdk/v1/client/protection_sources"
-	modelsV1 "github.com/cohesity/go-sdk/v1/models"
-	"github.com/go-openapi/runtime"
-	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 type TokenResponse struct {
 	Token string `json:"accessToken"`
 }
-type CohesityClientV1 struct {
-	client      *apiClientV1.CohesityInternalRESTAPI
-	bearerToken runtime.ClientAuthInfoWriter
-}
-
-// initHttpClientInstance Creates a http client instance.
-func initHttpClientInstance() *http.Client {
-	return &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
-}
-
-func NewCohesityClientV1(config utils.Config) (*CohesityClientV1, error) {
-	client := GetClientV1(config.ClusterVIP)
-	bearerToken, err := GetAccessToken(config.ClusterVIP, config.ClusterUsername, config.ClusterPassword, config.ClusterDomain)
-	if err != nil {
-		return nil, err
-	}
-	return &CohesityClientV1{
-		client:      client,
-		bearerToken: httptransport.BearerToken(bearerToken),
-	}, nil
-}
-func GetClientV1(clusterVip string) *apiClientV1.CohesityInternalRESTAPI {
-	return apiClientV1.New(httptransport.NewWithClient(clusterVip, "/v2", nil, initHttpClientInstance()), strfmt.Default)
-}
-func GetAccessTokenV1(client *apiClientV1.CohesityInternalRESTAPI, username, password, domain string) (runtime.ClientAuthInfoWriter, error) {
-	body := &modelsV1.AccessTokenCredential{
-		Username: &username,
-		Password: &password,
-		Domain:   &domain,
-	}
-	accessTokenResponse, err := client.AccessTokens.GenerateAccessToken(access_tokens.NewGenerateAccessTokenParams().WithBody(body), nil)
-	if err != nil {
-		return nil, err
-	}
-	bearerToken := httptransport.BearerToken(*accessTokenResponse.Payload.AccessToken)
-	return bearerToken, nil
-}
 
 // GetAccessToken generates an API access token for the provided user.
-// Using this so as to ensure we don't get asked to change password.
-func GetAccessToken(clusterVip, username, password, domain string) (string, error) {
-	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/accessTokens", clusterVip)
+func GetAccessToken(config utils.Config) (string, error) {
+	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/accessTokens", config.ClusterVIP)
 
 	// Request body.
 	requestBody, err := json.Marshal(map[string]interface{}{
-		"username":                username,
-		"password":                password,
-		"domain":                  domain,
+		"username":                config.ClusterUsername,
+		"password":                config.ClusterPassword,
+		"domain":                  config.ClusterDomain,
 		"skipForcePasswordChange": true,
 	})
 	if err != nil {
@@ -90,7 +39,7 @@ func GetAccessToken(clusterVip, username, password, domain string) (string, erro
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		fmt.Printf("failed to make http call. error %s", err.Error())
-		return "", err
+		return "", fmt.Errorf("failed to make http call. error %s", err.Error())
 	}
 	defer resp.Body.Close()
 
@@ -105,44 +54,65 @@ func GetAccessToken(clusterVip, username, password, domain string) (string, erro
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		fmt.Printf("failed to unmarshal response into struct:%v", err)
-		return "", err
+		return "", fmt.Errorf("failed to unmarshal response into struct:%v", err)
+
 	}
 
 	return tokenResponse.Token, nil
 }
 
 // UpdateLinuxPassword sends a PUT request to update the Linux password.
-func (c *CohesityClientV1) UpdateLinuxPassword(supportPassword string) error {
-	body := &modelsV1.UpdateLinuxPasswordReqParams{
-		LinuxUsername: toStrPtr("support"),
-		LinuxPassword: &supportPassword,
-	}
-	_, err := c.client.Principals.UpdateLinuxCredentials(principals.NewUpdateLinuxCredentialsParams().WithBody(body), c.bearerToken)
-	if err != nil {
-		return err
-	}
-	return nil
+func UpdateLinuxPassword(config utils.Config, token string) error {
+	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/users/linuxPassword", config.ClusterVIP)
+	requestBody := fmt.Sprintf("{\"linuxUsername\" : \"support\", \"linuxPassword\" : \"%s\"}", config.SupportPassword)
+
+	return sendPutRequest(url, token, requestBody)
 }
 
 // EnableSudoAccess sends a PUT request to enable sudo access.
-func (c *CohesityClientV1) EnableSudoAccess() error {
-	enable := true
-	body := &modelsV1.LinuxSupportUserSudoAccessReqParams{
-		SudoAccessEnable: &enable,
-	}
-	_, err := c.client.Principals.LinuxSupportUserSudoAccess(principals.NewLinuxSupportUserSudoAccessParams().WithBody(body), c.bearerToken)
+func EnableSudoAccess(target, token string) error {
+	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/users/linuxSupportUserSudoAccess", target)
+	requestBody := `{"sudoAccessEnable" : true}`
+
+	return sendPutRequest(url, token, requestBody)
+}
+
+// sendPutRequest sends a PUT request to the specified URL with the given token and request body.
+func sendPutRequest(url, token, requestBody string) error {
+	// Create a custom HTTP client with insecure TLS config
+	client := initHttpClientInstance()
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer([]byte(requestBody)))
 	if err != nil {
 		return err
 	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("error: %s", string(body))
+	}
+	fmt.Println(string(body))
+	fmt.Printf("\nStatus Code: %d\n", resp.StatusCode)
+	fmt.Printf("Content-Type: %s\n", resp.Header.Get("Content-Type"))
 	return nil
 }
-func (c *CohesityClientV1) DeleteProtectionSource(id string) error {
-	// Convert string to int64
-	idInt64, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return fmt.Errorf("invalid id: %v", err)
-	}
 
-	_, err = c.client.ProtectionSources.UnregisterProtectionSource(protection_sources.NewUnregisterProtectionSourceParams().WithID(idInt64), c.bearerToken)
-	return err
+// initHttpClientInstance Creates a http client instance.
+func initHttpClientInstance() *http.Client {
+	return &http.Client{
+		Timeout: 0,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
 }

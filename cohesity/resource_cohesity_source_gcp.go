@@ -2,6 +2,7 @@ package cohesity
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -41,6 +42,7 @@ func resourceCohesitySourceGcp() *schema.Resource {
 			"vpc_subnetwork": {
 				Type:     schema.TypeString,
 				Required: true,
+				DiffSuppressFunc: utils.SuppressNetworkNameDiff,
 			},
 		},
 	}
@@ -48,11 +50,12 @@ func resourceCohesitySourceGcp() *schema.Resource {
 
 func resourceCohesitySourceGcpCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
-	client, err := services.NewCohesityClientV1(config)
+	token, err := services.GetAccessToken(config)
 	if err != nil {
-		return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
+		return diag.Errorf("Failed to get a bearer token with the given details, %s", err.Error())
 	}
-	sourceId, err := client.AddGCPProtectionSource(d.Get("client_email_address").(string), d.Get("client_private_key").(string), d.Get("project_id").(string), d.Get("vpc_network").(string), d.Get("vpc_subnetwork").(string))
+	log.Printf("[INFO]token:%v",token)
+	sourceId, err := services.AddGCPProtectionSource(config.ClusterVIP, token, d.Get("client_email_address").(string), d.Get("client_private_key").(string), d.Get("project_id").(string), d.Get("vpc_network").(string), d.Get("vpc_subnetwork").(string))
 	if err != nil {
 		return diag.Errorf("Failed to create a GCP source with the given details, %s", err.Error())
 	}
@@ -61,40 +64,46 @@ func resourceCohesitySourceGcpCreate(ctx context.Context, d *schema.ResourceData
 }
 func resourceCohesitySourceGcpRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
-	client, err := services.NewCohesityClientV1(config)
+	token, err := services.GetAccessToken(config)
 	if err != nil {
-		return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
+		return diag.Errorf("Failed to get a bearer toke with the given details, %s", err.Error())
 	}
-	sourceInfo, err := client.GetGcpProtectionSource(d.Id())
+	sourceInfo, err := services.GetGcpProtectionSource(config.ClusterVIP, token, d.Id())
 	if err != nil {
 		return diag.Errorf("Failed to get details of the Gcp source, %s", err.Error())
 	}
 	gcpInfo := sourceInfo.Entity.GcpEntity
-	d.Set("client_email_address", *gcpInfo.OwnerID)
-	d.Set("project_id", *gcpInfo.ProjectID)
-	d.Set("vpc_network", *gcpInfo.VpcNetwork)
-	d.Set("vpc_subnetwork", *gcpInfo.VpcSubnetwork)
+	d.Set("client_email_address", gcpInfo.OwnerID)
+	d.Set("project_id", gcpInfo.ProjectID)
+	d.Set("vpc_network", gcpInfo.VpcNetwork)
+	d.Set("vpc_subnetwork", gcpInfo.VpcSubnetwork)
 	return nil
 }
 func resourceCohesitySourceGcpUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	// config := m.(utils.Config)
-	// client, err := services.NewCohesityClientV1(config)
-	// if err != nil {
-	// 	return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
-	// }
-	// not implemented yet
-	if d.HasChanges("client_email_address", "project_id", "vpc_network", "vpc_subnetwork", "client_private_key") {
-		return diag.Errorf("changes are not yet allowed, to be implemented")
+	if d.HasChange( "project_id"){
+		return diag.Errorf("changes to project Id are not allowed")
+	}
+	if d.HasChanges("client_email_address", "vpc_network", "vpc_subnetwork", "client_private_key") {
+		config := m.(utils.Config)
+		token, err := services.GetAccessToken(config)
+		if err != nil {
+			return diag.Errorf("Failed to get a bearer toke with the given details, %s", err.Error())
+		}
+		err = services.UpdateGcpProtectionSource(config.ClusterVIP, token, d.Id(), d.Get("client_email_address").(string), d.Get("client_private_key").(string),d.Get("project_id").(string), d.Get("vpc_network").(string), d.Get("vpc_subnetwork").(string))
+		if err != nil {
+			return diag.Errorf("Failed to update the GCP source with the given details, %s", err.Error())
+		}
+		return nil
 	}
 	return nil
 }
 func resourceCohesitySourceGcpDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
-	client, err := services.NewCohesityClientV1(config)
+	token, err := services.GetAccessToken(config)
 	if err != nil {
-		return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
+		return diag.Errorf("Failed to get a bearer token with the given details, %s", err.Error())
 	}
-	err = client.DeleteProtectionSource(d.Id())
+	err = services.DeleteProtectionSource(config.ClusterVIP, token, d.Id())
 	if err != nil {
 		return diag.Errorf("Failed to delete the GCP source, %s", err.Error())
 	}
