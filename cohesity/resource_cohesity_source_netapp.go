@@ -2,6 +2,7 @@ package cohesity
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -61,7 +62,7 @@ func resourceCohesitySourceNetapp() *schema.Resource {
 					Type:         schema.TypeString,
 					ValidateFunc: validation.IsIPAddress,
 				},
-				DiffSuppressFunc: utils.SuppressNodeIPsDiff,
+				// DiffSuppressFunc: utils.SuppressNodeIPsDiff,
 			},
 			"disallowed_ips": {
 				Type:     schema.TypeList,
@@ -70,10 +71,17 @@ func resourceCohesitySourceNetapp() *schema.Resource {
 					Type:         schema.TypeString,
 					ValidateFunc: validation.IsIPAddress,
 				},
-				DiffSuppressFunc: utils.SuppressNodeIPsDiff,
+				// DiffSuppressFunc: utils.SuppressNodeIPsDiff,
 			},
 		},
 	}
+}
+func getStringList(rawVal interface{}) ([]string) {
+	listVal := make([]string, len(rawVal.([]interface{})))
+	for i, v := range rawVal.([]interface{}) {
+		listVal[i] = v.(string)
+	}
+	return listVal
 }
 
 func resourceCohesitySourceNetappCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -90,11 +98,11 @@ func resourceCohesitySourceNetappCreate(ctx context.Context, d *schema.ResourceD
 		}
 		sourceNetapp = sourceNetapp.WithSMBCredentials(d.Get("smb_username").(string), d.Get("smb_password").(string))
 	}
-	if len(d.Get("allowed_ips").([]string)) != 0 {
-		sourceNetapp = sourceNetapp.WithAllowedIPAddresses(d.Get("allowed_ips").([]string))
+	if len(getStringList(d.Get("allowed_ips"))) != 0 {
+		sourceNetapp = sourceNetapp.WithAllowedIPAddresses(getStringList(d.Get("allowed_ips")))
 	}
-	if len(d.Get("disallowed_ips").([]string)) != 0 {
-		sourceNetapp = sourceNetapp.WithDeniedIPAddresses(d.Get("disallowed_ips").([]string))
+	if len(getStringList(d.Get("disallowed_ips"))) != 0 {
+		sourceNetapp = sourceNetapp.WithDeniedIPAddresses(getStringList(d.Get("disallowed_ips")))
 	}
 	sourceId, err := client.AddNetappProtectionSource(sourceNetapp)
 	if err != nil {
@@ -110,6 +118,7 @@ func resourceCohesitySourceNetappRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
 	}
 	sourceInfo, err := client.GetNetAppSource(d.Id())
+	// log.Printf("[INFO] sourceInfo:%v",*sourceInfo.NetappParams)
 	if err != nil {
 		return diag.Errorf("Failed to get details of the Netapp source, %s", err.Error())
 	}
@@ -117,12 +126,16 @@ func resourceCohesitySourceNetappRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("username", *netappInfo.Credentials.Username)
 	d.Set("source_type", *netappInfo.SourceType)
 	d.Set("endpoint", *netappInfo.Endpoint)
-	d.Set("backup_smb_volumes", *netappInfo.BackUpSMBVolumes)
-	if *netappInfo.BackUpSMBVolumes {
+	if netappInfo.BackUpSMBVolumes!=nil {
+		d.Set("backup_smb_volumes", *netappInfo.BackUpSMBVolumes)
+
 		d.Set("smb_username", *netappInfo.SmbCredentials.Username)
 	}
-	d.Set("allowed_ips", netappInfo.FilterIPConfig.AllowedIPAddresses)
-	d.Set("disallowed_ips", netappInfo.FilterIPConfig.DeniedIPAddresses)
+	// if *netappInfo.FilterIPConfig {
+	log.Printf("[INFO] allowedIPs: %v",netappInfo.FilterIPConfig.AllowedIPAddresses)
+		d.Set("allowed_ips", netappInfo.FilterIPConfig.AllowedIPAddresses)
+		d.Set("disallowed_ips", netappInfo.FilterIPConfig.DeniedIPAddresses)
+	// }
 	return nil
 }
 func resourceCohesitySourceNetappUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -140,13 +153,17 @@ func resourceCohesitySourceNetappUpdate(ctx context.Context, d *schema.ResourceD
 			}
 			sourceNetapp = sourceNetapp.WithSMBCredentials(d.Get("smb_username").(string), d.Get("smb_password").(string))
 		}
-		if len(d.Get("allowed_ips").([]string)) != 0 {
-			sourceNetapp = sourceNetapp.WithAllowedIPAddresses(d.Get("allowed_ips").([]string))
+		if len(getStringList(d.Get("allowed_ips"))) != 0 {
+			sourceNetapp = sourceNetapp.WithAllowedIPAddresses(getStringList(d.Get("allowed_ips")))
+		} else {
+			sourceNetapp = sourceNetapp.WithAllowedIPAddresses([]string{})
 		}
-		if len(d.Get("disallowed_ips").([]string)) != 0 {
-			sourceNetapp = sourceNetapp.WithDeniedIPAddresses(d.Get("disallowed_ips").([]string))
+		if len(getStringList(d.Get("disallowed_ips"))) != 0 {
+			sourceNetapp = sourceNetapp.WithDeniedIPAddresses(getStringList(d.Get("disallowed_ips")))
+		} else {
+			sourceNetapp = sourceNetapp.WithDeniedIPAddresses([]string{})
 		}
-		_, err = client.UpdateNetAppSource(sourceNetapp)
+		_, err = client.UpdateNetAppSource(sourceNetapp,d.Id())
 		if err != nil {
 			return diag.Errorf("Failed to update the Netapp source with the given details, %s", err.Error())
 		}
@@ -155,11 +172,11 @@ func resourceCohesitySourceNetappUpdate(ctx context.Context, d *schema.ResourceD
 }
 func resourceCohesitySourceNetappDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
-	client, err := services.NewCohesityClientV1(config)
+	token, err := services.GetAccessToken(config)
 	if err != nil {
-		return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
+		return diag.Errorf("Failed to get a bearer token with the given details, %s", err.Error())
 	}
-	err = client.DeleteProtectionSource(d.Id())
+	err = services.DeleteProtectionSource(config.ClusterVIP, token, d.Id())
 	if err != nil {
 		return diag.Errorf("Failed to delete the Netapp source, %s", err.Error())
 	}
