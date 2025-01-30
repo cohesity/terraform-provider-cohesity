@@ -1,6 +1,6 @@
 module github.com/terraform-providers/terraform-provider-cohesity
 
-go 1.22
+go 1.22.0
 
 require (
 	github.com/cohesity/go-sdk v0.72.1002
