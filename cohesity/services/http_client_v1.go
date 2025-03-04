@@ -8,6 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 type TokenResponse struct {
@@ -15,13 +17,14 @@ type TokenResponse struct {
 }
 
 // GetAccessToken generates an API access token for the provided user.
-func GetAccessToken(clusterVip, username, password string) (string, error) {
-	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/accessTokens", clusterVip)
+func GetAccessToken(config utils.Config) (string, error) {
+	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/accessTokens", config.ClusterVIP)
 
 	// Request body.
 	requestBody, err := json.Marshal(map[string]interface{}{
-		"username":                username,
-		"password":                password,
+		"username":                config.ClusterUsername,
+		"password":                config.ClusterPassword,
+		"domain":                  config.ClusterDomain,
 		"skipForcePasswordChange": true,
 	})
 	if err != nil {
@@ -36,7 +39,7 @@ func GetAccessToken(clusterVip, username, password string) (string, error) {
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		fmt.Printf("failed to make http call. error %s", err.Error())
-		return "", err
+		return "", fmt.Errorf("failed to make http call. error %s", err.Error())
 	}
 	defer resp.Body.Close()
 
@@ -51,16 +54,17 @@ func GetAccessToken(clusterVip, username, password string) (string, error) {
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		fmt.Printf("failed to unmarshal response into struct:%v", err)
-		return "", err
+		return "", fmt.Errorf("failed to unmarshal response into struct:%v", err)
+
 	}
 
 	return tokenResponse.Token, nil
 }
 
 // UpdateLinuxPassword sends a PUT request to update the Linux password.
-func UpdateLinuxPassword(target, supportPassword, token string) error {
-	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/users/linuxPassword", target)
-	requestBody := fmt.Sprintf("{\"linuxUsername\" : \"support\", \"linuxPassword\" : \"%s\"}", supportPassword)
+func UpdateLinuxPassword(config utils.Config, token string) error {
+	url := fmt.Sprintf("https://%s/irisservices/api/v1/public/users/linuxPassword", config.ClusterVIP)
+	requestBody := fmt.Sprintf("{\"linuxUsername\" : \"support\", \"linuxPassword\" : \"%s\"}", config.SupportPassword)
 
 	return sendPutRequest(url, token, requestBody)
 }
@@ -106,6 +110,7 @@ func sendPutRequest(url, token, requestBody string) error {
 // initHttpClientInstance Creates a http client instance.
 func initHttpClientInstance() *http.Client {
 	return &http.Client{
+		Timeout: 0,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},

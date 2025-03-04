@@ -9,6 +9,7 @@ import (
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 func resourceCohesityJobRun() *schema.Resource {
@@ -53,7 +54,7 @@ func resourceCohesityJobRun() *schema.Resource {
 }
 
 func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interface{}) (*int64, error) {
-	var cohesityConfig = configMetaData.(Config)
+	var cohesityConfig = configMetaData.(utils.Config)
 	// authenticate with Cohesity cluster
 	log.Printf("[INFO] Authenticate with Cohesity cluster")
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
@@ -63,7 +64,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 		return nil, errors.New("Failed to authenticate with Cohesity")
 	}
 	jobName := resourceData.Get("name").(string)
-	timeout := resourceData.Get("operation_timeout").(int) * WaitTimeToSeconds
+	timeout := resourceData.Get("operation_timeout").(int) * utils.WaitTimeToSeconds
 	//get the protection job details
 	log.Printf("[INFO] Get the protection job (%s) details", jobName)
 	protectionJob, err := client.ProtectionJobs().GetProtectionJobs(nil, []string{jobName}, nil,

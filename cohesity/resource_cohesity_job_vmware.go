@@ -9,6 +9,7 @@ import (
 	"github.com/cohesity/management-sdk-go/models"
 	"github.com/golang-collections/collections/queue"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 func resourceCohesityJobVMware() *schema.Resource {
@@ -147,7 +148,7 @@ func parseGetSourceIDs(sources map[string]empty, sourceNode []interface{}) []int
 }
 
 func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	var cohesityConfig = configMetaData.(Config)
+	var cohesityConfig = configMetaData.(utils.Config)
 	// authenticate with Cohesity cluster
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
@@ -292,7 +293,7 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 }
 
 func resourceCohesityJobVMwareRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	var cohesityConfig = configMetaData.(Config)
+	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
@@ -312,7 +313,7 @@ func resourceCohesityJobVMwareRead(resourceData *schema.ResourceData, configMeta
 }
 
 func resourceCohesityJobVMwareDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
-	var cohesityConfig = configMetaData.(Config)
+	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
@@ -337,7 +338,7 @@ func resourceCohesityJobVMwareDelete(resourceData *schema.ResourceData, configMe
 
 func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	resourceData.Partial(true)
-	var cohesityConfig = configMetaData.(Config)
+	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {

@@ -188,7 +188,7 @@ func resourceCohesityNGCEClusterCreate(ctx context.Context, d *schema.ResourceDa
 	// Parse the input params.
 	clusterParams := setClusterConfigParamsFromSchema(d)
 
-	config := m.(Config)
+	config := m.(utils.Config)
 	supportPassword := config.SupportPassword
 	if err := ValidateSupportPassword(supportPassword); err != nil {
 		return diag.FromErr(err)
@@ -252,7 +252,7 @@ func resourceCohesityNGCEClusterRead(ctx context.Context, d *schema.ResourceData
 	// Parse the input params.
 	clusterParams := setClusterConfigParamsFromSchema(d)
 
-	config := m.(Config)
+	config := m.(utils.Config)
 	clusterUsername := config.ClusterUsername
 	clusterPassword := config.ClusterPassword
 	escapedClusterPassword := utils.EscapeSpecialSymbols(clusterPassword)
@@ -260,29 +260,35 @@ func resourceCohesityNGCEClusterRead(ctx context.Context, d *schema.ResourceData
 
 	log.Printf("[INFO] Cluster host is %s", clusterParams.Hostname)
 
-	// SSH into the cluster.
-	client, err := services.NewSSHClient(clusterParams.Hostname, "support", supportPassword, time.Hour)
+	// // SSH into the cluster.
+	sshClient, err := services.NewSSHClient(config.ClusterVIP, "support", supportPassword, time.Hour)
 	if err != nil {
 		log.Printf("failed to init ssh client on host %s", clusterParams.Hostname)
 		return diag.FromErr(err)
 	}
 
 	// Fetch the cluster status through making an API call.
-	token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword)
+	client, err := services.NewCohesityClientV2(config)
 	if err != nil {
-		log.Printf("failed to get access token. check credentials %s", err.Error())
-		return diag.FromErr(err)
+		return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
 	}
+	clusterInfo, err := client.GetClusterInfo()
+
+	// token, err := services.GetAccessToken(config)
+	// if err != nil {
+	// 	log.Printf("failed to get access token. check credentials %s", err.Error())
+	// 	return diag.FromErr(err)
+	// }
 
 	// Fetch the clusters details /v2/clusters.
-	clusterInfo, err := services.GetClusterInfo(clusterParams.Hostname, token)
+	// clusterInfo, err := services.GetClusterInfo(clusterParams.Hostname, token)
 	if err != nil {
 		log.Printf("failed to fetch the cluster info. error %s", err.Error())
 		return diag.FromErr(err)
 	}
 
 	// Fetch the cluster status
-	clusterStatus, err := fetchClusterStatus(clusterUsername, escapedClusterPassword, client)
+	clusterStatus, err := fetchClusterStatus(clusterUsername, escapedClusterPassword, sshClient)
 	if err != nil {
 		log.Printf("failed to fetch the cluster status. error %s", err.Error())
 		return diag.FromErr(err)
@@ -292,12 +298,12 @@ func resourceCohesityNGCEClusterRead(ctx context.Context, d *schema.ResourceData
 	nodeIpsMap, nodeIps, _ := getNodeInformationFromClusterStatus(*clusterStatus)
 
 	// Update the information in the struct.
-	clusterParams.Name = clusterInfo.Name
+	clusterParams.Name = *clusterInfo.Name
 	clusterParams.NodeIps = nodeIps
-	clusterParams.Hostname = clusterInfo.NetworkConfig.VipHostName
-	clusterParams.SubnetGateway = clusterInfo.NetworkConfig.ManualNetworkConfig.Gateway
-	clusterParams.SubnetMask = clusterInfo.NetworkConfig.ManualNetworkConfig.SubnetMask
-	clusterParams.DnsServerIps = clusterInfo.NetworkConfig.ManualNetworkConfig.DnsServers
+	clusterParams.Hostname = *clusterInfo.NetworkConfig.VipHostName
+	clusterParams.SubnetGateway = *clusterInfo.NetworkConfig.ManualNetworkConfig.Gateway
+	clusterParams.SubnetMask = *clusterInfo.NetworkConfig.ManualNetworkConfig.SubnetMask
+	clusterParams.DnsServerIps = clusterInfo.NetworkConfig.ManualNetworkConfig.DNSServers
 	clusterParams.NtpServers = strings.Join(clusterInfo.NetworkConfig.NtpServers, ",")
 	clusterParams.DomainNames = strings.Join(clusterInfo.NetworkConfig.DomainNames, ",")
 
@@ -335,7 +341,7 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 	// Parse the input params.
 	clusterParams := setClusterConfigParamsFromSchema(d)
 
-	config := m.(Config)
+	config := m.(utils.Config)
 	clusterPassword := config.ClusterPassword
 	escapedClusterPassword := utils.EscapeSpecialSymbols(clusterPassword)
 	supportPassword := config.SupportPassword
@@ -360,7 +366,7 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 		nodeIPMap := d.Get("node_ip_map").([]interface{})
 
 		// Init SSH client.
-		client, err := services.NewSSHClient(clusterParams.Hostname, "support", supportPassword, time.Hour)
+		client, err := services.NewSSHClient(config.ClusterVIP, "support", supportPassword, time.Hour)
 		if err != nil {
 			log.Printf("failed to init ssh client using support user on host %s", clusterParams.Hostname)
 			d.Set("node_ips", oldNodeIPs)
@@ -408,14 +414,20 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 			return diag.Errorf("cannot change hostname once set")
 		}
 		// Fetch the cluster status through making an API call.
-		token, err := services.GetAccessToken(clusterParams.Hostname, clusterUsername, clusterPassword)
+		// token, err := services.GetAccessToken(config)
+		// if err != nil {
+		// 	log.Printf("failed to get access token. check credentials %s", err.Error())
+		// 	return diag.FromErr(err)
+		// }
+		// Fetch the clusters details /v2/clusters.
+
+		client, err := services.NewCohesityClientV2(config)
 		if err != nil {
-			log.Printf("failed to get access token. check credentials %s", err.Error())
-			return diag.FromErr(err)
+			return diag.Errorf("Failed to create a client with the given details, %s", err.Error())
 		}
 
-		// Fetch the clusters details /v2/clusters.
-		currentClusterInfo, err := services.GetClusterInfo(clusterParams.Hostname, token)
+		currentClusterInfo, err := client.GetClusterInfo()
+
 		if err != nil {
 			log.Printf("failed to fetch the cluster info. error %s", err.Error())
 			return diag.FromErr(err)
@@ -423,15 +435,16 @@ func resourceCohesityNGCEClusterUpdate(ctx context.Context, d *schema.ResourceDa
 
 		log.Printf("cluster update params %+v", clusterParams)
 		// Update the vars.
-		currentClusterInfo.Name = clusterParams.Name
-		currentClusterInfo.NetworkConfig.ManualNetworkConfig.Gateway = clusterParams.SubnetGateway
-		currentClusterInfo.NetworkConfig.ManualNetworkConfig.SubnetMask = clusterParams.SubnetMask
-		currentClusterInfo.NetworkConfig.ManualNetworkConfig.DnsServers = clusterParams.DnsServerIps
+		currentClusterInfo.Name = &clusterParams.Name
+		currentClusterInfo.NetworkConfig.ManualNetworkConfig.Gateway = &clusterParams.SubnetGateway
+		currentClusterInfo.NetworkConfig.ManualNetworkConfig.SubnetMask = &clusterParams.SubnetMask
+		currentClusterInfo.NetworkConfig.ManualNetworkConfig.DNSServers = clusterParams.DnsServerIps
 		currentClusterInfo.NetworkConfig.NtpServers = strings.Split(clusterParams.NtpServers, ",")
 		currentClusterInfo.NetworkConfig.DomainNames = strings.Split(clusterParams.DomainNames, ",")
 
 		// Make API call to update the cluster info.
-		_, err = services.UpdateClusterInfo(clusterParams.Hostname, *currentClusterInfo, token)
+		// _, err = services.UpdateClusterInfo(clusterParams.Hostname, *currentClusterInfo, token)
+		_, err = client.UpdateClusterInfo(currentClusterInfo)
 		if err != nil {
 			log.Printf("failed to update the cohesity cluster info. err %s", err.Error())
 			return diag.FromErr(err)

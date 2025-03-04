@@ -75,15 +75,19 @@ func enableSupportUser(clusterHostname, supportPassword string) error {
 			time.Sleep(30 * time.Second)
 		}
 
-		// Get the token
-		token, err := services.GetAccessToken(clusterHostname, "admin", "admin")
-		if err != nil || token == "" {
-			log.Println("Failed to retrieve token")
-			continue
+		config := utils.Config{
+			ClusterUsername: "admin",
+			ClusterPassword: "admin",
+			ClusterVIP:      clusterHostname,
+			ClusterDomain:   "LOCAL",
+			SupportPassword: supportPassword,
 		}
-
+		token, err := services.GetAccessToken(config)
+		if err != nil {
+			return err
+		}
 		// Update Linux password
-		err = services.UpdateLinuxPassword(clusterHostname, supportPassword, token)
+		err = services.UpdateLinuxPassword(config, token)
 		if err != nil {
 			log.Printf("Failed to update Linux password: %v\n", err)
 			continue
@@ -92,7 +96,7 @@ func enableSupportUser(clusterHostname, supportPassword string) error {
 		}
 
 		// Enable sudo access
-		err = services.EnableSudoAccess(clusterHostname, token)
+		err = services.EnableSudoAccess(config.ClusterVIP, token)
 		if err != nil {
 			log.Printf("Failed to enable sudo access: %v\n", err)
 			continue
@@ -483,7 +487,7 @@ func getClusterCreateScriptContent() string {
 						echo "Cluster create command not yet issued, retrying in 30s..."
 						sleep 30
 					fi
-					if i==100; then
+					if [ $i -eq 100 ]; then
 						exit 1
 					fi
 				done
@@ -491,7 +495,7 @@ func getClusterCreateScriptContent() string {
 
 				# Wait for the cluster creation to complete and capture the final status output
 				final_status_output=""
-				for i in {1..100}; do
+				for ii in {1..100}; do
 					sleep 30
 					status_output=$(iris_cli --username=admin --password=admin --skip_password_prompt=true --skip_force_password_change=true cluster status)
 					echo "${status_output}"
@@ -505,7 +509,8 @@ func getClusterCreateScriptContent() string {
 					else
 						echo "Cluster creation still in progress..."
 					fi
-					if i==100; then
+					if [ $ii -eq 100 ]; then
+						echo "num retries exceeded"
 						exit 1
 					fi
 				done
