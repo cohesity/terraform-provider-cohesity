@@ -1,0 +1,333 @@
+{
+  "rules": [
+    {
+      "protocol": "tcp",
+      "from_port": 53,
+      "to_port": 53,
+      "description": "External DNS server",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 53,
+      "to_port": 53,
+      "description": "DNS",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 123,
+      "to_port": 123,
+      "description": "Management - NTP",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 323,
+      "to_port": 323,
+      "description": "Management - NTP",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 162,
+      "to_port": 162,
+      "description": "Management - SNMP trap",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 161,
+      "to_port": 161,
+      "description": "Management - SNMP",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 22,
+      "to_port": 22,
+      "description": "SSH",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 443,
+      "to_port": 443,
+      "description": "Backup, Recovery, Replication, IPMI and Management",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 80,
+      "to_port": 80,
+      "description": "Backup, Recovery, Replication, IPMI and Management",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 5353,
+      "to_port": 5353,
+      "description": "Management - mDNS multicast",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 111,
+      "to_port": 111,
+      "description": "Backup and Recovery",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 111,
+      "to_port": 111,
+      "description": "Backup and Recovery",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 2049,
+      "to_port": 2049,
+      "description": "Backup and Recovery",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 2049,
+      "to_port": 2049,
+      "description": "Backup and Recovery",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 11111,
+      "to_port": 11111,
+      "description": "Data network",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 11111,
+      "to_port": 11111,
+      "description": "Data network",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 135,
+      "to_port": 135,
+      "description": "Management - DHCP",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 445,
+      "to_port": 445,
+      "description": "Management - SMB target",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 3000,
+      "to_port": 3000,
+      "description": "f",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 20000,
+      "to_port": 20000,
+      "description": "Management - Interaction Handling",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 22222,
+      "to_port": 22222,
+      "description": "Cohesity services orchestration",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 23456,
+      "to_port": 23456,
+      "description": "Cluster Management, Dashboard Proxy",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 3260,
+      "to_port": 3260,
+      "description": "Backup Recovery - Pure",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 2222,
+      "to_port": 2222,
+      "description": "secure shell",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 22223,
+      "to_port": 22223,
+      "description": "New inbound rule for port 22223",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 11112,
+      "to_port": 11116,
+      "description": "Data path handling",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 24567,
+      "to_port": 24567,
+      "description": "Iris Proxy",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 24680,
+      "to_port": 24680,
+      "description": "Cluster healing services",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 25566,
+      "to_port": 25566,
+      "description": "Statistics Service",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 25678,
+      "to_port": 25680,
+      "description": "Hardware and Health Monitoring",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 25801,
+      "to_port": 25801,
+      "description": "Analytics",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "udp",
+      "from_port": 25801,
+      "to_port": 25801,
+      "description": "Analytics",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 25998,
+      "to_port": 25999,
+      "description": "Analytics. Analytics Workbench",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 26000,
+      "to_port": 26001,
+      "description": "Librarain-Lucene",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 27999,
+      "to_port": 27999,
+      "description": "Librarain-Lucene",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 22000,
+      "to_port": 22000,
+      "description": "Key Management",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 20001,
+      "to_port": 20002,
+      "description": "Storage Proxy-SMB Proxy",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 12222,
+      "to_port": 12222,
+      "description": "Metadata services",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 12321,
+      "to_port": 12321,
+      "description": "Scribe upgrade connection",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 21111,
+      "to_port": 21111,
+      "description": "Alerts",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 23458,
+      "to_port": 23458,
+      "description": "Tricoder",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 25700,
+      "to_port": 25700,
+      "description": "Analytics",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 25800,
+      "to_port": 25800,
+      "description": "Analytics",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 26999,
+      "to_port": 26999,
+      "description": "Librarain-Lucene",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 9111,
+      "to_port": 9111,
+      "description": "Serviceability",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 23460,
+      "to_port": 23460,
+      "description": "Siren-Eagle Agent",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 28999,
+      "to_port": 28999,
+      "description": "Reporting Service",
+      "cidr_blocks": ["0.0.0.0/0"]
+    }
+  ]
+}

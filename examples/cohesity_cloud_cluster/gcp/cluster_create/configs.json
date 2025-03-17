@@ -1,0 +1,59 @@
+{
+  "Configurations" : [
+    {
+      "Name": "Entry",
+      "Id" : "1",
+      "InstanceCPUCount" : "16",
+      "SSDTierNumDisks" : 1,
+      "SSDTierDiskSizeinGB" : 1023,
+      "SSDTierDiskType" : "pd-balanced",
+      "HDDTierNumDisks" : 1,
+      "HDDTierDiskSizeinGB" : 1024,
+      "HDDTierDiskType" : "pd-balanced"
+    },
+    {
+      "Name": "Core",
+      "Id" : "2",
+      "InstanceCPUCount" : "16",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 1023,
+      "SSDTierDiskType" : "pd-balanced",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 1024,
+      "HDDTierDiskType" : "pd-balanced"
+    },
+    {
+      "Name": "Archive",
+      "Id" : "3",
+      "InstanceCPUCount" : "16",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 2047,
+      "SSDTierDiskType" : "pd-balanced",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 2048,
+      "HDDTierDiskType" : "pd-balanced"
+    },
+    {
+      "Name": "Performance",
+      "Id" : "4",
+      "InstanceCPUCount" : "32",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 1023,
+      "SSDTierDiskType" : "pd-balanced",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 1024,
+      "HDDTierDiskType" : "pd-balanced"
+    },
+    {
+      "Name": "Original",
+      "Id" : "99",
+      "InstanceCPUCount" : "32",
+      "SSDTierNumDisks" : 1,
+      "SSDTierDiskSizeinGB" : 1946,
+      "SSDTierDiskType" : "pd-ssd",
+      "HDDTierNumDisks" : 1,
+      "HDDTierDiskSizeinGB" : 2048,
+      "HDDTierDiskType" : "pd-standard"
+    }
+  ]
+}

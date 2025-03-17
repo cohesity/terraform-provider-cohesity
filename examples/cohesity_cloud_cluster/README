@@ -1,0 +1,27 @@
+# Terraform Project for Cohesity Cluster Deployment
+
+# Overview
+This project automates the deployment of the Cohesity Cluster infrastructure in Cloud.
+
+# Prerequisites
+- Terraform v1.7.5+
+- sshpass installed (Only needed when issuing cluster create command)
+
+# Directory Structure
+- main.tf - Main configuration file for Cloud resources.
+- variables.tf - Defines variables used in the configuration.
+- outputs.tf - Defines outputs from Terraform.
+- example_variables.tfvars - Example variable file to be modified by the user.
+- configs.json - Contains the supported configurations.
+
+
+# Usage. Run
+1) Make a copy or update example_variables.tfvars file
+2) Run the below commands
+terraform init
+terraform plan -out=create_plan -var-file="example_variables.tfvars"
+3) Inspect the plan created and the run apply as below
+terraform apply "create_plan"
+
+# To destroy the terraform deployment, run:
+terraform destroy -var-file="example_variables.tfvars"

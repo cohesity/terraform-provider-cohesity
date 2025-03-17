@@ -1,0 +1,64 @@
+{
+  "Configurations" : [
+    {
+      "Name" : "Entry",
+      "Id" : "1",
+      "InstanceType" : "m6i.2xlarge",
+      "SSDTierDiskType" : "gp3",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 511,
+      "SSDTierDiskIops" : 3000,
+      "SSDTierDiskThroughputinMBps" : 200,
+      "HDDTierDiskType" : "gp3",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 512,
+      "HDDTierDiskIops" : 3000,
+      "HDDTierDiskThroughputinMBps" : 200
+    },
+    {
+      "Name" : "Core",
+      "Id" : "2",
+      "InstanceType" : "m6i.4xlarge",
+      "SSDTierDiskType" : "gp3",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 1023,
+      "SSDTierDiskIops" : 3000,
+      "SSDTierDiskThroughputinMBps" : 200,
+      "HDDTierDiskType" : "gp3",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 1024,
+      "HDDTierDiskIops" : 3000,
+      "HDDTierDiskThroughputinMBps" : 400
+    },
+    {
+      "Name" : "Archive",
+      "Id" : "3",
+      "InstanceType" : "m6i.4xlarge",
+      "SSDTierDiskType" : "gp3",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 2047,
+      "SSDTierDiskIops" : 3000,
+      "SSDTierDiskThroughputinMBps" : 200,
+      "HDDTierDiskType" : "gp3",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 2048,
+      "HDDTierDiskIops" : 3000,
+      "HDDTierDiskThroughputinMBps" : 400
+    },
+    {
+      "Name" : "Performance",
+      "Id" : "4",
+      "InstanceType" : "m6i.8xlarge",
+      "SSDTierDiskType" : "gp3",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 1023,
+      "SSDTierDiskIops" : 3000,
+      "SSDTierDiskThroughputinMBps" : 200,
+      "HDDTierDiskType" : "gp3",
+      "HDDTierNumDisks" : 2,
+      "HDDTierDiskSizeinGB" : 1024,
+      "HDDTierDiskIops" : 3000,
+      "HDDTierDiskThroughputinMBps" : 500
+    }
+  ]
+}
