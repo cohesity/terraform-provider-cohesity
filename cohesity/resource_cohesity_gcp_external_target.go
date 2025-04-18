@@ -48,12 +48,13 @@ func resourceCohesityGCPExternalTarget() *schema.Resource {
 
 func resourceCohesityGCPExternalTargetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// clusterIp := d.Get("cluster_vip").(string)
+	log.Printf("[INFO] starting create process")
 	privateKeyFilePath := d.Get("client_private_key_file_path").(string)
 	bucketName := d.Get("bucket_name").(string)
 	projectId := d.Get("project_id").(string)
 	clientEmail := d.Get("client_email").(string)
 	tierType := d.Get("tier_type").(string)
-	config := m.(Config)
+	config := m.(utils.Config)
 	clusterPassword := config.ClusterPassword
 	supportPassword := config.SupportPassword
 	clusterUsername := config.ClusterUsername
@@ -67,6 +68,8 @@ func resourceCohesityGCPExternalTargetCreate(ctx context.Context, d *schema.Reso
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	log.Printf("[INFO] starting transfer process")
+
 	err = services.TransferFile(client, privateKeyFilePath, "/tmp/gcp_bucket_config")
 	if err != nil {
 		return diag.FromErr(err)

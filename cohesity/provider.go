@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 // Provider represents a resource provider in terraform
@@ -49,6 +50,8 @@ func Provider() *schema.Provider {
 			"cohesity_job_run":             resourceCohesityJobRun(),
 			"cohesity_ngce_cluster":        resourceCohesityNGCECluster(),
 			"cohesity_gcp_external_target": resourceCohesityGCPExternalTarget(),
+			"cohesity_source_netapp":       resourceCohesitySourceNetapp(),
+			"cohesity_source_gcp":          resourceCohesitySourceGcp(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -59,7 +62,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	var diags diag.Diagnostics
 
 	// Retrieve the configuration values
-	config := Config{
+	config := utils.Config{
 		ClusterVIP:      d.Get("cluster_vip").(string),
 		ClusterUsername: d.Get("cluster_username").(string),
 		ClusterPassword: d.Get("cluster_password").(string),

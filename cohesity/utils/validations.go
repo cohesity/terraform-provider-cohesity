@@ -48,3 +48,11 @@ func AreValidIPs(nodeIps []string) error {
 
 	return nil
 }
+
+func IsValidNetappSourceType(val interface{}, key string) (warns []string, errs []error) {
+	v := val.(string)
+	if v != "kCluster" && v != "kVserver" {
+		errs = append(errs, fmt.Errorf("%q must be either 'kCluster' or 'kVserver', got: %s", key, v))
+	}
+	return
+}
