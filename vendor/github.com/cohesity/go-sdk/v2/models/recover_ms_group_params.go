@@ -27,14 +27,23 @@ type RecoverMsGroupParams struct {
 	// Specifies whether or not all groups are restored to original location.
 	RestoreToOriginal *bool `json:"restoreToOriginal,omitempty"`
 
-	// Specifies target group nickname in case restoreToOriginal is false. This needs to be specifid when restoreToOriginal is false.
+	// This field is deprecated. Specifies target group nickname in case restoreToOriginal is false. This needs to be specified when restoreToOriginal is false. Use targetMsGroupParam instead of this field.
 	TargetGroup *string `json:"targetGroup,omitempty"`
 
-	// Specifies target group name in case restore_to_original is false. This needs to be specifid when restoreToOriginal is false. However, this will be ignored if restoring to alternate existing group (i.e. to a group the nickname of which is same as the one supplied by the end user).
+	// This field is deprecated. Specifies target group name in case restoreToOriginal is false. This needs to be specified when restoreToOriginal is false. However, this will be ignored if restoring to alternate existing group (i.e. to a group the nickname of which is same as the one supplied by the end user). Use targetMsGroupParam instead of this field.
 	TargetGroupName *string `json:"targetGroupName,omitempty"`
+
+	// Specifies whether the original members/owners should be part of the newly created target group. If restoreOriginalOwners is null or false, original group owners are not used.
+	RestoreOriginalOwners *bool `json:"restoreOriginalOwners,omitempty"`
 
 	// Specifies whether to continue recovering other MS groups if one of MS groups failed to recover. Default value is false.
 	ContinueOnError *bool `json:"continueOnError,omitempty"`
+
+	// Specifies additional owner entity information for the selected target group. If targetGroupOwner is present then these will be added as owner and members of target group.
+	TargetGroupOwner *RecoveryObjectIdentifier `json:"targetGroupOwner,omitempty"`
+
+	// Specifies the target MS group parameters in case restoreToOriginal is false.
+	TargetMsGroupParam *TargetMsGroupParam `json:"targetMsGroupParam,omitempty"`
 }
 
 // Validate validates this recover ms group params
@@ -42,6 +51,14 @@ func (m *RecoverMsGroupParams) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateMsGroups(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTargetGroupOwner(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTargetMsGroupParam(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -78,11 +95,57 @@ func (m *RecoverMsGroupParams) validateMsGroups(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *RecoverMsGroupParams) validateTargetGroupOwner(formats strfmt.Registry) error {
+	if swag.IsZero(m.TargetGroupOwner) { // not required
+		return nil
+	}
+
+	if m.TargetGroupOwner != nil {
+		if err := m.TargetGroupOwner.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("targetGroupOwner")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("targetGroupOwner")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *RecoverMsGroupParams) validateTargetMsGroupParam(formats strfmt.Registry) error {
+	if swag.IsZero(m.TargetMsGroupParam) { // not required
+		return nil
+	}
+
+	if m.TargetMsGroupParam != nil {
+		if err := m.TargetMsGroupParam.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("targetMsGroupParam")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("targetMsGroupParam")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this recover ms group params based on the context it is used
 func (m *RecoverMsGroupParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateMsGroups(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTargetGroupOwner(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTargetMsGroupParam(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -112,6 +175,48 @@ func (m *RecoverMsGroupParams) contextValidateMsGroups(ctx context.Context, form
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *RecoverMsGroupParams) contextValidateTargetGroupOwner(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.TargetGroupOwner != nil {
+
+		if swag.IsZero(m.TargetGroupOwner) { // not required
+			return nil
+		}
+
+		if err := m.TargetGroupOwner.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("targetGroupOwner")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("targetGroupOwner")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *RecoverMsGroupParams) contextValidateTargetMsGroupParam(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.TargetMsGroupParam != nil {
+
+		if swag.IsZero(m.TargetMsGroupParam) { // not required
+			return nil
+		}
+
+		if err := m.TargetMsGroupParam.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("targetMsGroupParam")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("targetMsGroupParam")
+			}
+			return err
+		}
 	}
 
 	return nil

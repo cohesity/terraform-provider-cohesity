@@ -67,7 +67,7 @@ type RegisterRemoteClusterParams struct {
 
 	   Specifies the request to register Remote Cluster.
 	*/
-	Body *models.RegisterRemoteClusterParams
+	Body *models.RegisterRemoteClusterParameters
 
 	timeout    time.Duration
 	Context    context.Context
@@ -123,13 +123,13 @@ func (o *RegisterRemoteClusterParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the register remote cluster params
-func (o *RegisterRemoteClusterParams) WithBody(body *models.RegisterRemoteClusterParams) *RegisterRemoteClusterParams {
+func (o *RegisterRemoteClusterParams) WithBody(body *models.RegisterRemoteClusterParameters) *RegisterRemoteClusterParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the register remote cluster params
-func (o *RegisterRemoteClusterParams) SetBody(body *models.RegisterRemoteClusterParams) {
+func (o *RegisterRemoteClusterParams) SetBody(body *models.RegisterRemoteClusterParameters) {
 	o.Body = body
 }
 

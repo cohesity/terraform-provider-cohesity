@@ -54,11 +54,53 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	ListFirewallSettings(params *ListFirewallSettingsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListFirewallSettingsOK, error)
+
 	RemoveFirewallProfiles(params *RemoveFirewallProfilesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RemoveFirewallProfilesOK, error)
 
 	UpdateFirewallProfile(params *UpdateFirewallProfileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateFirewallProfileOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+ListFirewallSettings lists all firewall settings
+
+**Privileges:** ```CLUSTER_VIEW``` <br><br>List the firewall settings available in the cluster.
+*/
+func (a *Client) ListFirewallSettings(params *ListFirewallSettingsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListFirewallSettingsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListFirewallSettingsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListFirewallSettings",
+		Method:             "GET",
+		PathPattern:        "/network/firewall",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListFirewallSettingsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListFirewallSettingsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListFirewallSettingsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*

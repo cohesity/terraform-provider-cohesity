@@ -33,6 +33,12 @@ type OraclePdbRestoreParams struct {
 
 	// Specifies whether to restore or skip the provided PDBs list.
 	IncludeInRestore *bool `json:"includeInRestore,omitempty"`
+
+	// Specifies the keystore password of the source CDB.
+	SourceCdbKeystorePassword *string `json:"sourceCdbKeystorePassword,omitempty"`
+
+	// Specifies the keystore password of the target CDB.
+	TargetCdbKeystorePassword *string `json:"targetCdbKeystorePassword,omitempty"`
 }
 
 // Validate validates this oracle pdb restore params

@@ -33,7 +33,20 @@ type ClusterStateParams struct {
 	// Specifies the software version of the cluster.
 	SoftwareVersion string `json:"softwareVersion,omitempty"`
 
-	// Specifies the operations running on the cluster. 'None' indicates that there are no operations currently running on the cluster. 'Destroy' indicates that the cluster is currently being destroyed. 'Upgrade' indicates that the cluster is currently being upgraded. 'Clean' indicates that the cluster is being cleaned. 'NodeRemoval' indicates that a node is being removed from the cluster. 'DiskRemoval' indicates that a disk is being removed from the cluster. 'DiskAddition' indicates that a disk is being added tos the cluster. 'UploadPackageByUrl' indicates that a package is being uploaded using a URL. 'UploadPackageAndUpgrade' indicates package upload by URL and upgrade operation. 'BaseOSUpgrade' indicates that the BaseOSUpgrade operation on the cluster is set. 'ServiceRestart' indicates that the services on the Cluster are currently being restarted. 'SystemServiceRestart' indicates that system services on the Cluster are currently being restarted.
+	// Specifies the operations running on the cluster.
+	// * `None` indicates that there are no operations currently running on the cluster.
+	// * `Destroy` indicates that the cluster is currently being destroyed.
+	// * `Clean` indicates that the cluster is being cleaned.
+	// * `NodeRemoval` indicates that a node is being removed from the cluster.
+	// * `DiskRemoval` indicates that a disk is being removed from the cluster.
+	// * `DiskAddition` indicates that a disk is being added tos the cluster.
+	// * `Upgrade` indicates to upgrade the software on the cluster.
+	// * `ApplyPatch` indicates to apply the patch.
+	// * `RevertPatch` indicates to revert the patch.
+	// * `BaseOSUpgrade` indicates that the BaseOSUpgrade operation on the cluster is set.
+	// * `ServiceRestart` indicates that the services on the Cluster are currently being restarted.
+	// * `SystemServiceRestart' indicates that system services on the Cluster are currently being restarted.
+	//
 	Operations []string `json:"operations,omitempty"`
 
 	// Specifies the details of each system app state on the cluster.
@@ -62,7 +75,7 @@ var clusterStateParamsOperationsItemsEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["None","Destroy","Upgrade","Clean","NodeRemoval","DiskRemoval","DiskAddition","NodeAddition","UploadPackageByUrl","UploadPackageAndUpgrade","BaseOSUpgrade","ServiceRestart","SystemServiceRestart"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["None","Destroy","Clean","NodeRemoval","DiskRemoval","DiskAddition","NodeAddition","BaseOSUpgrade","ServiceRestart","SystemServiceRestart","DownloadUpgradePackage","DownloadPatchPackage","DownloadUpgradeAndPatchPackages","DownloadAndUpgrade","DownloadAndApplyPatch","DownloadAndUpgradeWithPatch","Upgrade","ApplyPatch","RevertPatch","UpgradeAndPatch","AssessSoftwareUpdate","AbortApplyPatch","AbortUpgrade"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

@@ -42,6 +42,9 @@ type CreateRecoveryRequest struct {
 	// Specifies the parameters which are specific to Exchange related Recovery.
 	ExchangeParams *RecoverExchangeParams `json:"exchangeParams,omitempty"`
 
+	// Specifies the parameters which are specific to Experimental Adapter Recovery.
+	ExperimentalAdapterParams *ExperimentalAdapterParams `json:"experimentalAdapterParams,omitempty"`
+
 	// Specifies the parameters which are specific to FlashBlade related Recovery.
 	FlashbladeParams *RecoverFlashbladeParams `json:"flashbladeParams,omitempty"`
 
@@ -77,6 +80,9 @@ type CreateRecoveryRequest struct {
 
 	// Specifies the parameters which are specific to KVM related Recovery.
 	KvmParams *RecoverKvmParams `json:"kvmParams,omitempty"`
+
+	// Specifies the parameters which are specific to MongoDB Physical Recovery.
+	MongodbOpsParams *MongodbOpsManagerParams `json:"mongodbOpsParams,omitempty"`
 
 	// Specifies the parameters which are specific to MongoDB Recovery.
 	MongodbParams *MongodbParams `json:"mongodbParams,omitempty"`
@@ -140,6 +146,8 @@ func (m *CreateRecoveryRequest) UnmarshalJSON(raw []byte) error {
 
 		ExchangeParams *RecoverExchangeParams `json:"exchangeParams,omitempty"`
 
+		ExperimentalAdapterParams *ExperimentalAdapterParams `json:"experimentalAdapterParams,omitempty"`
+
 		FlashbladeParams *RecoverFlashbladeParams `json:"flashbladeParams,omitempty"`
 
 		GcpParams *RecoverGcpParams `json:"gcpParams,omitempty"`
@@ -163,6 +171,8 @@ func (m *CreateRecoveryRequest) UnmarshalJSON(raw []byte) error {
 		KubernetesParams *RecoverKubernetesParams `json:"kubernetesParams,omitempty"`
 
 		KvmParams *RecoverKvmParams `json:"kvmParams,omitempty"`
+
+		MongodbOpsParams *MongodbOpsManagerParams `json:"mongodbOpsParams,omitempty"`
 
 		MongodbParams *MongodbParams `json:"mongodbParams,omitempty"`
 
@@ -206,6 +216,8 @@ func (m *CreateRecoveryRequest) UnmarshalJSON(raw []byte) error {
 
 	m.ExchangeParams = dataAO1.ExchangeParams
 
+	m.ExperimentalAdapterParams = dataAO1.ExperimentalAdapterParams
+
 	m.FlashbladeParams = dataAO1.FlashbladeParams
 
 	m.GcpParams = dataAO1.GcpParams
@@ -229,6 +241,8 @@ func (m *CreateRecoveryRequest) UnmarshalJSON(raw []byte) error {
 	m.KubernetesParams = dataAO1.KubernetesParams
 
 	m.KvmParams = dataAO1.KvmParams
+
+	m.MongodbOpsParams = dataAO1.MongodbOpsParams
 
 	m.MongodbParams = dataAO1.MongodbParams
 
@@ -281,6 +295,8 @@ func (m CreateRecoveryRequest) MarshalJSON() ([]byte, error) {
 
 		ExchangeParams *RecoverExchangeParams `json:"exchangeParams,omitempty"`
 
+		ExperimentalAdapterParams *ExperimentalAdapterParams `json:"experimentalAdapterParams,omitempty"`
+
 		FlashbladeParams *RecoverFlashbladeParams `json:"flashbladeParams,omitempty"`
 
 		GcpParams *RecoverGcpParams `json:"gcpParams,omitempty"`
@@ -304,6 +320,8 @@ func (m CreateRecoveryRequest) MarshalJSON() ([]byte, error) {
 		KubernetesParams *RecoverKubernetesParams `json:"kubernetesParams,omitempty"`
 
 		KvmParams *RecoverKvmParams `json:"kvmParams,omitempty"`
+
+		MongodbOpsParams *MongodbOpsManagerParams `json:"mongodbOpsParams,omitempty"`
 
 		MongodbParams *MongodbParams `json:"mongodbParams,omitempty"`
 
@@ -344,6 +362,8 @@ func (m CreateRecoveryRequest) MarshalJSON() ([]byte, error) {
 
 	dataAO1.ExchangeParams = m.ExchangeParams
 
+	dataAO1.ExperimentalAdapterParams = m.ExperimentalAdapterParams
+
 	dataAO1.FlashbladeParams = m.FlashbladeParams
 
 	dataAO1.GcpParams = m.GcpParams
@@ -367,6 +387,8 @@ func (m CreateRecoveryRequest) MarshalJSON() ([]byte, error) {
 	dataAO1.KubernetesParams = m.KubernetesParams
 
 	dataAO1.KvmParams = m.KvmParams
+
+	dataAO1.MongodbOpsParams = m.MongodbOpsParams
 
 	dataAO1.MongodbParams = m.MongodbParams
 
@@ -437,6 +459,10 @@ func (m *CreateRecoveryRequest) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateExperimentalAdapterParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateFlashbladeParams(formats); err != nil {
 		res = append(res, err)
 	}
@@ -482,6 +508,10 @@ func (m *CreateRecoveryRequest) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateKvmParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMongodbOpsParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -671,6 +701,26 @@ func (m *CreateRecoveryRequest) validateExchangeParams(formats strfmt.Registry) 
 				return ve.ValidateName("exchangeParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("exchangeParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CreateRecoveryRequest) validateExperimentalAdapterParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+		return nil
+	}
+
+	if m.ExperimentalAdapterParams != nil {
+		if err := m.ExperimentalAdapterParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
 			}
 			return err
 		}
@@ -911,6 +961,26 @@ func (m *CreateRecoveryRequest) validateKvmParams(formats strfmt.Registry) error
 				return ve.ValidateName("kvmParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kvmParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CreateRecoveryRequest) validateMongodbOpsParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.MongodbOpsParams) { // not required
+		return nil
+	}
+
+	if m.MongodbOpsParams != nil {
+		if err := m.MongodbOpsParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
 			}
 			return err
 		}
@@ -1196,6 +1266,10 @@ func (m *CreateRecoveryRequest) ContextValidate(ctx context.Context, formats str
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateExperimentalAdapterParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateFlashbladeParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -1241,6 +1315,10 @@ func (m *CreateRecoveryRequest) ContextValidate(ctx context.Context, formats str
 	}
 
 	if err := m.contextValidateKvmParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMongodbOpsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1437,6 +1515,27 @@ func (m *CreateRecoveryRequest) contextValidateExchangeParams(ctx context.Contex
 				return ve.ValidateName("exchangeParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("exchangeParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CreateRecoveryRequest) contextValidateExperimentalAdapterParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ExperimentalAdapterParams != nil {
+
+		if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+			return nil
+		}
+
+		if err := m.ExperimentalAdapterParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
 			}
 			return err
 		}
@@ -1689,6 +1788,27 @@ func (m *CreateRecoveryRequest) contextValidateKvmParams(ctx context.Context, fo
 				return ve.ValidateName("kvmParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kvmParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CreateRecoveryRequest) contextValidateMongodbOpsParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MongodbOpsParams != nil {
+
+		if swag.IsZero(m.MongodbOpsParams) { // not required
+			return nil
+		}
+
+		if err := m.MongodbOpsParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
 			}
 			return err
 		}

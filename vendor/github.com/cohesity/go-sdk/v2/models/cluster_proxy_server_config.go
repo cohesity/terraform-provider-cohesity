@@ -38,6 +38,9 @@ type ClusterProxyServerConfig struct {
 
 	// Specifies the password for the proxy.
 	Password *string `json:"password,omitempty"`
+
+	// Disable proxy is used to turn the proxy on and off.
+	IsDisabled *bool `json:"isDisabled,omitempty"`
 }
 
 // Validate validates this cluster proxy server config

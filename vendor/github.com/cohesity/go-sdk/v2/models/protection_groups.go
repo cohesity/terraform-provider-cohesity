@@ -21,6 +21,9 @@ type ProtectionGroups struct {
 
 	// Specifies the list of Protection Groups which were returned by the request.
 	ProtectionGroups []*ProtectionGroup `json:"protectionGroups"`
+
+	// Specifies the information needed in order to support pagination. This will not be included for the last page of results.
+	PaginationCookie *string `json:"paginationCookie,omitempty"`
 }
 
 // Validate validates this protection groups

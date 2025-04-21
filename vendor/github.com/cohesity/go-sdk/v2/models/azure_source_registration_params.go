@@ -38,7 +38,6 @@ type AzureSourceRegistrationParams struct {
 	ApplicationCredentials []*AzureApplicationCredentials `json:"applicationCredentials"`
 
 	// Specifies the list subscription ids to be registered.
-	// Min Items: 1
 	// Unique: true
 	SubscriptionDetails []*AzureSubscription `json:"subscriptionDetails"`
 
@@ -46,6 +45,12 @@ type AzureSourceRegistrationParams struct {
 	// Min Items: 1
 	// Unique: true
 	UseCases []string `json:"useCases"`
+
+	// Specifies the graph access token for using Azure graph API's.
+	GraphAccessToken *string `json:"graphAccessToken,omitempty"`
+
+	// Specifies the management access token for using Azure management API's.
+	ManagementAccessToken *string `json:"managementAccessToken,omitempty"`
 }
 
 // Validate validates this azure source registration params
@@ -195,12 +200,6 @@ func (m *AzureSourceRegistrationParams) validateSubscriptionDetails(formats strf
 		return nil
 	}
 
-	iSubscriptionDetailsSize := int64(len(m.SubscriptionDetails))
-
-	if err := validate.MinItems("subscriptionDetails", "body", iSubscriptionDetailsSize, 1); err != nil {
-		return err
-	}
-
 	if err := validate.UniqueItems("subscriptionDetails", "body", m.SubscriptionDetails); err != nil {
 		return err
 	}
@@ -230,7 +229,7 @@ var azureSourceRegistrationParamsUseCasesItemsEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVirtualMachine","kSQL"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVirtualMachine","kSQL","kEntraID","kFileShare"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

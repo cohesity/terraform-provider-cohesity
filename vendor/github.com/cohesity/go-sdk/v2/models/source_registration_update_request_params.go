@@ -86,6 +86,15 @@ type SourceRegistrationUpdateRequestParams struct {
 
 	// Specifies the parameters to register an Azure source.
 	AzureParams *AzureSourceRegistrationParams `json:"azureParams,omitempty"`
+
+	// Specifies the parameters to register an Experimental Adapter source.
+	ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
+
+	// Specifies the parameters to register a MongoDB Ops Manager Source.
+	MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
+
+	// Specifies the parameters to register an Kubernetes source.
+	KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -142,6 +151,12 @@ func (m *SourceRegistrationUpdateRequestParams) UnmarshalJSON(raw []byte) error 
 		LastModifiedTimestampUsecs *int64 `json:"lastModifiedTimestampUsecs,omitempty"`
 
 		AzureParams *AzureSourceRegistrationParams `json:"azureParams,omitempty"`
+
+		ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
+
+		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
+
+		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -190,6 +205,12 @@ func (m *SourceRegistrationUpdateRequestParams) UnmarshalJSON(raw []byte) error 
 	m.LastModifiedTimestampUsecs = dataAO1.LastModifiedTimestampUsecs
 
 	m.AzureParams = dataAO1.AzureParams
+
+	m.ExperimentalAdapterParams = dataAO1.ExperimentalAdapterParams
+
+	m.MongodbOpsParams = dataAO1.MongodbOpsParams
+
+	m.KubernetesParams = dataAO1.KubernetesParams
 
 	return nil
 }
@@ -247,6 +268,12 @@ func (m SourceRegistrationUpdateRequestParams) MarshalJSON() ([]byte, error) {
 		LastModifiedTimestampUsecs *int64 `json:"lastModifiedTimestampUsecs,omitempty"`
 
 		AzureParams *AzureSourceRegistrationParams `json:"azureParams,omitempty"`
+
+		ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
+
+		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
+
+		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 
 	dataAO1.VmwareParams = m.VmwareParams
@@ -292,6 +319,12 @@ func (m SourceRegistrationUpdateRequestParams) MarshalJSON() ([]byte, error) {
 	dataAO1.LastModifiedTimestampUsecs = m.LastModifiedTimestampUsecs
 
 	dataAO1.AzureParams = m.AzureParams
+
+	dataAO1.ExperimentalAdapterParams = m.ExperimentalAdapterParams
+
+	dataAO1.MongodbOpsParams = m.MongodbOpsParams
+
+	dataAO1.KubernetesParams = m.KubernetesParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -391,6 +424,18 @@ func (m *SourceRegistrationUpdateRequestParams) Validate(formats strfmt.Registry
 	}
 
 	if err := m.validateAzureParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExperimentalAdapterParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMongodbOpsParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -820,6 +865,66 @@ func (m *SourceRegistrationUpdateRequestParams) validateAzureParams(formats strf
 	return nil
 }
 
+func (m *SourceRegistrationUpdateRequestParams) validateExperimentalAdapterParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+		return nil
+	}
+
+	if m.ExperimentalAdapterParams != nil {
+		if err := m.ExperimentalAdapterParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistrationUpdateRequestParams) validateMongodbOpsParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.MongodbOpsParams) { // not required
+		return nil
+	}
+
+	if m.MongodbOpsParams != nil {
+		if err := m.MongodbOpsParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistrationUpdateRequestParams) validateKubernetesParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.KubernetesParams) { // not required
+		return nil
+	}
+
+	if m.KubernetesParams != nil {
+		if err := m.KubernetesParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this source registration update request params based on the context it is used
 func (m *SourceRegistrationUpdateRequestParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -910,6 +1015,18 @@ func (m *SourceRegistrationUpdateRequestParams) ContextValidate(ctx context.Cont
 	}
 
 	if err := m.contextValidateAzureParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateExperimentalAdapterParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMongodbOpsParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1352,6 +1469,69 @@ func (m *SourceRegistrationUpdateRequestParams) contextValidateAzureParams(ctx c
 				return ve.ValidateName("azureParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azureParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistrationUpdateRequestParams) contextValidateExperimentalAdapterParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ExperimentalAdapterParams != nil {
+
+		if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+			return nil
+		}
+
+		if err := m.ExperimentalAdapterParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistrationUpdateRequestParams) contextValidateMongodbOpsParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MongodbOpsParams != nil {
+
+		if swag.IsZero(m.MongodbOpsParams) { // not required
+			return nil
+		}
+
+		if err := m.MongodbOpsParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistrationUpdateRequestParams) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.KubernetesParams != nil {
+
+		if swag.IsZero(m.KubernetesParams) { // not required
+			return nil
+		}
+
+		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

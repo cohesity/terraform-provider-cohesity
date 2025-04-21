@@ -23,7 +23,7 @@ type CommonSourceRegistrationRequestParams struct {
 
 	// Specifies the environment type of the Protection Source.
 	// Required: true
-	// Enum: ["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment"`
 
 	// A user specified name for this source.
@@ -46,6 +46,9 @@ type CommonSourceRegistrationRequestParams struct {
 
 	// Specifies the advanced configuration for a protection source.
 	AdvancedConfigs []*KeyValuePair `json:"advancedConfigs"`
+
+	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. Also, this is the 'string' of connectionId. This property was added to accommodate for ID values that exceed 2^53 - 1, which is the max value for which JS maintains precision.
+	DataSourceConnectionID *string `json:"dataSourceConnectionId,omitempty"`
 }
 
 // Validate validates this common source registration request params
@@ -74,7 +77,7 @@ var commonSourceRegistrationRequestParamsTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -176,6 +179,12 @@ const (
 
 	// CommonSourceRegistrationRequestParamsEnvironmentKSfdc captures enum value "kSfdc"
 	CommonSourceRegistrationRequestParamsEnvironmentKSfdc string = "kSfdc"
+
+	// CommonSourceRegistrationRequestParamsEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonSourceRegistrationRequestParamsEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonSourceRegistrationRequestParamsEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonSourceRegistrationRequestParamsEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

@@ -23,7 +23,7 @@ import (
 type AzureCommonObjectProtectionParams struct {
 
 	// Specifies the Azure Protection Job type.
-	// Enum: ["kAgent","kNative","kSnapshotManager","kAzureSQL"]
+	// Enum: ["kAgent","kNative","kSnapshotManager","kAzureSQL","kAzureEntraID"]
 	ProtectionType string `json:"protectionType,omitempty"`
 }
 
@@ -45,7 +45,7 @@ var azureCommonObjectProtectionParamsTypeProtectionTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kAzureSQL"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kAzureSQL","kAzureEntraID"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -66,6 +66,9 @@ const (
 
 	// AzureCommonObjectProtectionParamsProtectionTypeKAzureSQL captures enum value "kAzureSQL"
 	AzureCommonObjectProtectionParamsProtectionTypeKAzureSQL string = "kAzureSQL"
+
+	// AzureCommonObjectProtectionParamsProtectionTypeKAzureEntraID captures enum value "kAzureEntraID"
+	AzureCommonObjectProtectionParamsProtectionTypeKAzureEntraID string = "kAzureEntraID"
 )
 
 // prop value enum

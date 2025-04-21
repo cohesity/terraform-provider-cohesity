@@ -23,7 +23,7 @@ import (
 type AwsCommonObjectProtectionParams struct {
 
 	// Specifies the AWS Protection Job type.
-	// Enum: ["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres"]
+	// Enum: ["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAwsDynamoDB"]
 	ProtectionType string `json:"protectionType,omitempty"`
 }
 
@@ -45,7 +45,7 @@ var awsCommonObjectProtectionParamsTypeProtectionTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAwsDynamoDB"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -81,6 +81,9 @@ const (
 
 	// AwsCommonObjectProtectionParamsProtectionTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
 	AwsCommonObjectProtectionParamsProtectionTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
+
+	// AwsCommonObjectProtectionParamsProtectionTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	AwsCommonObjectProtectionParamsProtectionTypeKAwsDynamoDB string = "kAwsDynamoDB"
 )
 
 // prop value enum

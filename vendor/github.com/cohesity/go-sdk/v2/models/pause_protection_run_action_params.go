@@ -25,6 +25,9 @@ type PauseProtectionRunActionParams struct {
 	// Required: true
 	// Pattern: ^\d+:\d+$
 	RunID *string `json:"runId"`
+
+	// A note from the current user explaining the reason for pausing runs, if applicable.
+	PausedNote *string `json:"pausedNote,omitempty"`
 }
 
 // Validate validates this pause protection run action params

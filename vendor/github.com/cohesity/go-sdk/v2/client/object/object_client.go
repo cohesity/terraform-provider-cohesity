@@ -270,7 +270,7 @@ func (a *Client) ConstructMetaInfo(params *ConstructMetaInfoParams, authInfo run
 /*
 DeleteEntityMetadata deletes metadata with entity
 
-```Unknown Privileges``` <br><br>Deletes entity metadata for the given entity Id. Currently only supported for RDS and Aurora Postgres Credential metadata.
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Deletes entity metadata for the given entity Id. Currently only supported for RDS and Aurora Postgres Credential metadata.
 */
 func (a *Client) DeleteEntityMetadata(params *DeleteEntityMetadataParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteEntityMetadataNoContent, error) {
 	// TODO: Validate the params before sending

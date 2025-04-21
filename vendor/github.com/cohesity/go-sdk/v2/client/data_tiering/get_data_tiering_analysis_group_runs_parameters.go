@@ -74,6 +74,12 @@ type GetDataTieringAnalysisGroupRunsParams struct {
 	*/
 	RunIds []string
 
+	/* TruncateResponse.
+
+	   If set, magneto will truncate the response if it exceeds max size limit governed by magneto_http_rpc_response_size_limit_bytes
+	*/
+	TruncateResponse *bool
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -149,6 +155,17 @@ func (o *GetDataTieringAnalysisGroupRunsParams) SetRunIds(runIds []string) {
 	o.RunIds = runIds
 }
 
+// WithTruncateResponse adds the truncateResponse to the get data tiering analysis group runs params
+func (o *GetDataTieringAnalysisGroupRunsParams) WithTruncateResponse(truncateResponse *bool) *GetDataTieringAnalysisGroupRunsParams {
+	o.SetTruncateResponse(truncateResponse)
+	return o
+}
+
+// SetTruncateResponse adds the truncateResponse to the get data tiering analysis group runs params
+func (o *GetDataTieringAnalysisGroupRunsParams) SetTruncateResponse(truncateResponse *bool) {
+	o.TruncateResponse = truncateResponse
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetDataTieringAnalysisGroupRunsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -170,6 +187,23 @@ func (o *GetDataTieringAnalysisGroupRunsParams) WriteToRequest(r runtime.ClientR
 		// query array param runIds
 		if err := r.SetQueryParam("runIds", joinedRunIds...); err != nil {
 			return err
+		}
+	}
+
+	if o.TruncateResponse != nil {
+
+		// query param truncateResponse
+		var qrTruncateResponse bool
+
+		if o.TruncateResponse != nil {
+			qrTruncateResponse = *o.TruncateResponse
+		}
+		qTruncateResponse := swag.FormatBool(qrTruncateResponse)
+		if qTruncateResponse != "" {
+
+			if err := r.SetQueryParam("truncateResponse", qTruncateResponse); err != nil {
+				return err
+			}
 		}
 	}
 

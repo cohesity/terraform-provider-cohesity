@@ -44,11 +44,11 @@ type CommonRecoveryResponseParams struct {
 	ProgressTaskID *string `json:"progressTaskId,omitempty"`
 
 	// Specifies the type of snapshot environment for which the Recovery was performed.
-	// Enum: ["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]
 	SnapshotEnvironment string `json:"snapshotEnvironment,omitempty"`
 
 	// Specifies the type of recover action.
-	// Enum: ["RecoverVMs","RecoverFiles","InstantVolumeMount","RecoverVmDisks","RecoverVApps","RecoverVAppTemplates","UptierSnapshot","RecoverRDS","RecoverAurora","RecoverS3Buckets","RecoverRDSPostgres","RecoverAzureSQL","RecoverApps","CloneApps","RecoverNasVolume","RecoverPhysicalVolumes","RecoverSystem","RecoverExchangeDbs","CloneAppView","RecoverSanVolumes","RecoverSanGroup","RecoverMailbox","RecoverOneDrive","RecoverSharePoint","RecoverPublicFolders","RecoverMsGroup","RecoverMsTeam","ConvertToPst","DownloadChats","RecoverMailboxCSM","RecoverOneDriveCSM","RecoverSharePointCSM","RecoverNamespaces","RecoverObjects","RecoverSfdcObjects","RecoverSfdcOrg","RecoverSfdcRecords","DownloadFilesAndFolders","CloneVMs","CloneView","CloneRefreshApp","CloneVMsToView","ConvertAndDeployVMs","DeployVMs"]
+	// Enum: ["RecoverVMs","RecoverFiles","InstantVolumeMount","RecoverVmDisks","RecoverVApps","RecoverVAppTemplates","UptierSnapshot","RecoverRDS","RecoverAurora","RecoverS3Buckets","RecoverRDSPostgres","RecoverAwsDynamoDB","RecoverAzureSQL","RecoverAzureEntraID","RecoverApps","CloneApps","RecoverNasVolume","RecoverPhysicalVolumes","RecoverSystem","RecoverExchangeDbs","CloneAppView","RecoverSanVolumes","RecoverSanGroup","RecoverMailbox","RecoverOneDrive","RecoverSharePoint","RecoverPublicFolders","RecoverMsGroup","RecoverMsTeam","ConvertToPst","DownloadChats","RecoverMailboxCSM","RecoverOneDriveCSM","RecoverSharePointCSM","RecoverNamespaces","DownloadFilesAndFolders","RecoverObjects","RecoverSfdcObjects","RecoverSfdcOrg","RecoverSfdcRecords","RecoverMongodbClusters","CloneVMs","CloneView","CloneRefreshApp","CloneVMsToView","ConvertAndDeployVMs","DeployVMs"]
 	RecoveryAction string `json:"recoveryAction,omitempty"`
 
 	// Specifies the list of tenants that have permissions for this recovery.
@@ -70,6 +70,12 @@ type CommonRecoveryResponseParams struct {
 	// Specifies messages about the recovery.
 	Messages []string `json:"messages"`
 
+	// Specifies warning messages about the recovery.
+	WarningMessages []string `json:"warningMessages"`
+
+	// Specifies error messages about the recovery.
+	ErrorMessages []string `json:"errorMessages"`
+
 	// Specifies whether the current recovery operation has created child recoveries. This is currently used in SQL recovery where multiple child recoveries can be tracked under a common/parent recovery.
 	IsParentRecovery *bool `json:"isParentRecovery,omitempty"`
 
@@ -82,6 +88,17 @@ type CommonRecoveryResponseParams struct {
 
 	// Specifies whether the current recovery operation is a multi-stage restore operation. This is currently used by VMware recoveres for the migration/hot-standby use case.
 	IsMultiStageRestore *bool `json:"isMultiStageRestore,omitempty"`
+
+	// The child tasks used as part of the restore.
+	ChildTasks []*ChildTaskParams `json:"childTasks"`
+
+	// Specifies the total number of objects which were requested to be restored.
+	// Read Only: true
+	NumGranularObjectsToRestore *int64 `json:"numGranularObjectsToRestore,omitempty"`
+
+	// Specifies the total number of objects that were successfully restored. The remaining objects were either skipped or had some error in restore operation.
+	// Read Only: true
+	NumGranularObjectsRestoredSuccessfully *int64 `json:"numGranularObjectsRestoredSuccessfully,omitempty"`
 }
 
 // Validate validates this common recovery response params
@@ -121,6 +138,10 @@ func (m *CommonRecoveryResponseParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRetrieveArchiveTasks(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateChildTasks(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -218,7 +239,7 @@ var commonRecoveryResponseParamsTypeSnapshotEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -326,6 +347,12 @@ const (
 
 	// CommonRecoveryResponseParamsSnapshotEnvironmentKSfdc captures enum value "kSfdc"
 	CommonRecoveryResponseParamsSnapshotEnvironmentKSfdc string = "kSfdc"
+
+	// CommonRecoveryResponseParamsSnapshotEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonRecoveryResponseParamsSnapshotEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonRecoveryResponseParamsSnapshotEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonRecoveryResponseParamsSnapshotEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -353,7 +380,7 @@ var commonRecoveryResponseParamsTypeRecoveryActionPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["RecoverVMs","RecoverFiles","InstantVolumeMount","RecoverVmDisks","RecoverVApps","RecoverVAppTemplates","UptierSnapshot","RecoverRDS","RecoverAurora","RecoverS3Buckets","RecoverRDSPostgres","RecoverAzureSQL","RecoverApps","CloneApps","RecoverNasVolume","RecoverPhysicalVolumes","RecoverSystem","RecoverExchangeDbs","CloneAppView","RecoverSanVolumes","RecoverSanGroup","RecoverMailbox","RecoverOneDrive","RecoverSharePoint","RecoverPublicFolders","RecoverMsGroup","RecoverMsTeam","ConvertToPst","DownloadChats","RecoverMailboxCSM","RecoverOneDriveCSM","RecoverSharePointCSM","RecoverNamespaces","RecoverObjects","RecoverSfdcObjects","RecoverSfdcOrg","RecoverSfdcRecords","DownloadFilesAndFolders","CloneVMs","CloneView","CloneRefreshApp","CloneVMsToView","ConvertAndDeployVMs","DeployVMs"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["RecoverVMs","RecoverFiles","InstantVolumeMount","RecoverVmDisks","RecoverVApps","RecoverVAppTemplates","UptierSnapshot","RecoverRDS","RecoverAurora","RecoverS3Buckets","RecoverRDSPostgres","RecoverAwsDynamoDB","RecoverAzureSQL","RecoverAzureEntraID","RecoverApps","CloneApps","RecoverNasVolume","RecoverPhysicalVolumes","RecoverSystem","RecoverExchangeDbs","CloneAppView","RecoverSanVolumes","RecoverSanGroup","RecoverMailbox","RecoverOneDrive","RecoverSharePoint","RecoverPublicFolders","RecoverMsGroup","RecoverMsTeam","ConvertToPst","DownloadChats","RecoverMailboxCSM","RecoverOneDriveCSM","RecoverSharePointCSM","RecoverNamespaces","DownloadFilesAndFolders","RecoverObjects","RecoverSfdcObjects","RecoverSfdcOrg","RecoverSfdcRecords","RecoverMongodbClusters","CloneVMs","CloneView","CloneRefreshApp","CloneVMsToView","ConvertAndDeployVMs","DeployVMs"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -396,8 +423,14 @@ const (
 	// CommonRecoveryResponseParamsRecoveryActionRecoverRDSPostgres captures enum value "RecoverRDSPostgres"
 	CommonRecoveryResponseParamsRecoveryActionRecoverRDSPostgres string = "RecoverRDSPostgres"
 
+	// CommonRecoveryResponseParamsRecoveryActionRecoverAwsDynamoDB captures enum value "RecoverAwsDynamoDB"
+	CommonRecoveryResponseParamsRecoveryActionRecoverAwsDynamoDB string = "RecoverAwsDynamoDB"
+
 	// CommonRecoveryResponseParamsRecoveryActionRecoverAzureSQL captures enum value "RecoverAzureSQL"
 	CommonRecoveryResponseParamsRecoveryActionRecoverAzureSQL string = "RecoverAzureSQL"
+
+	// CommonRecoveryResponseParamsRecoveryActionRecoverAzureEntraID captures enum value "RecoverAzureEntraID"
+	CommonRecoveryResponseParamsRecoveryActionRecoverAzureEntraID string = "RecoverAzureEntraID"
 
 	// CommonRecoveryResponseParamsRecoveryActionRecoverApps captures enum value "RecoverApps"
 	CommonRecoveryResponseParamsRecoveryActionRecoverApps string = "RecoverApps"
@@ -462,6 +495,9 @@ const (
 	// CommonRecoveryResponseParamsRecoveryActionRecoverNamespaces captures enum value "RecoverNamespaces"
 	CommonRecoveryResponseParamsRecoveryActionRecoverNamespaces string = "RecoverNamespaces"
 
+	// CommonRecoveryResponseParamsRecoveryActionDownloadFilesAndFolders captures enum value "DownloadFilesAndFolders"
+	CommonRecoveryResponseParamsRecoveryActionDownloadFilesAndFolders string = "DownloadFilesAndFolders"
+
 	// CommonRecoveryResponseParamsRecoveryActionRecoverObjects captures enum value "RecoverObjects"
 	CommonRecoveryResponseParamsRecoveryActionRecoverObjects string = "RecoverObjects"
 
@@ -474,8 +510,8 @@ const (
 	// CommonRecoveryResponseParamsRecoveryActionRecoverSfdcRecords captures enum value "RecoverSfdcRecords"
 	CommonRecoveryResponseParamsRecoveryActionRecoverSfdcRecords string = "RecoverSfdcRecords"
 
-	// CommonRecoveryResponseParamsRecoveryActionDownloadFilesAndFolders captures enum value "DownloadFilesAndFolders"
-	CommonRecoveryResponseParamsRecoveryActionDownloadFilesAndFolders string = "DownloadFilesAndFolders"
+	// CommonRecoveryResponseParamsRecoveryActionRecoverMongodbClusters captures enum value "RecoverMongodbClusters"
+	CommonRecoveryResponseParamsRecoveryActionRecoverMongodbClusters string = "RecoverMongodbClusters"
 
 	// CommonRecoveryResponseParamsRecoveryActionCloneVMs captures enum value "CloneVMs"
 	CommonRecoveryResponseParamsRecoveryActionCloneVMs string = "CloneVMs"
@@ -648,6 +684,32 @@ func (m *CommonRecoveryResponseParams) validateRetrieveArchiveTasks(formats strf
 	return nil
 }
 
+func (m *CommonRecoveryResponseParams) validateChildTasks(formats strfmt.Registry) error {
+	if swag.IsZero(m.ChildTasks) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.ChildTasks); i++ {
+		if swag.IsZero(m.ChildTasks[i]) { // not required
+			continue
+		}
+
+		if m.ChildTasks[i] != nil {
+			if err := m.ChildTasks[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("childTasks" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("childTasks" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 // ContextValidate validate this common recovery response params based on the context it is used
 func (m *CommonRecoveryResponseParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -661,6 +723,18 @@ func (m *CommonRecoveryResponseParams) ContextValidate(ctx context.Context, form
 	}
 
 	if err := m.contextValidateRetrieveArchiveTasks(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateChildTasks(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNumGranularObjectsToRestore(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNumGranularObjectsRestoredSuccessfully(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -736,6 +810,49 @@ func (m *CommonRecoveryResponseParams) contextValidateRetrieveArchiveTasks(ctx c
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *CommonRecoveryResponseParams) contextValidateChildTasks(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.ChildTasks); i++ {
+
+		if m.ChildTasks[i] != nil {
+
+			if swag.IsZero(m.ChildTasks[i]) { // not required
+				return nil
+			}
+
+			if err := m.ChildTasks[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("childTasks" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("childTasks" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *CommonRecoveryResponseParams) contextValidateNumGranularObjectsToRestore(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "numGranularObjectsToRestore", "body", m.NumGranularObjectsToRestore); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *CommonRecoveryResponseParams) contextValidateNumGranularObjectsRestoredSuccessfully(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "numGranularObjectsRestoredSuccessfully", "body", m.NumGranularObjectsRestoredSuccessfully); err != nil {
+		return err
 	}
 
 	return nil

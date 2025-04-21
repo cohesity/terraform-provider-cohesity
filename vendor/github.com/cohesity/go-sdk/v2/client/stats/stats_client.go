@@ -62,6 +62,8 @@ type ClientService interface {
 
 	GetTimeSeriesStats(params *GetTimeSeriesStatsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetTimeSeriesStatsOK, error)
 
+	GetTopViewsStats(params *GetTopViewsStatsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetTopViewsStatsOK, error)
+
 	GetViewClientStats(params *GetViewClientStatsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetViewClientStatsOK, error)
 
 	GetViewsStats(params *GetViewsStatsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetViewsStatsOK, error)
@@ -232,6 +234,46 @@ func (a *Client) GetTimeSeriesStats(params *GetTimeSeriesStatsParams, authInfo r
 }
 
 /*
+GetTopViewsStats gets stats for the top views which are the views with largest value of stats value in last hours for a given combination of metric protocol and last hours params the API uses suitable defaults if any of the parameters are not specified
+
+**Privileges:** ```STORAGE_VIEW``` <br><br>Get stats for the top views, which are the views with largest value of 'stats.valueInLastHours' for a given combination of 'metric', 'protocol' & 'lastHours' params. The API uses suitable defaults if any of the parameters are not specified.
+*/
+func (a *Client) GetTopViewsStats(params *GetTopViewsStatsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetTopViewsStatsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetTopViewsStatsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetTopViewsStats",
+		Method:             "GET",
+		PathPattern:        "/stats/top-views",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetTopViewsStatsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetTopViewsStatsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetTopViewsStatsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 GetViewClientStats gets stats of view clients
 
 **Privileges:** ```STORAGE_VIEW``` <br><br>Get Stats of View Clients.
@@ -272,9 +314,9 @@ func (a *Client) GetViewClientStats(params *GetViewClientStatsParams, authInfo r
 }
 
 /*
-GetViewsStats gets views stats
+GetViewsStats gets stats for the top views which are the views with largest value of stats value in last hours for a given combination of metric protocol and last hours params the API uses suitable defaults if any of the parameters are not specified
 
-**Privileges:** ```STORAGE_VIEW``` <br><br>Get Views Stats.
+**Privileges:** ```STORAGE_VIEW``` <br><br>This api will be deprecated. Use the API '/stats/top-views' instead.
 */
 func (a *Client) GetViewsStats(params *GetViewsStatsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetViewsStatsOK, error) {
 	// TODO: Validate the params before sending

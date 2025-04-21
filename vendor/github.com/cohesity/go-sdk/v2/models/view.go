@@ -82,11 +82,6 @@ type View struct {
 	// Read Only: true
 	BasicMountPath *string `json:"basicMountPath,omitempty"`
 
-	// This field is currently deprecated. Please use NFS MountPaths
-	// which would be an array of strings.
-	// Read Only: true
-	NfsMountPath *string `json:"nfsMountPath,omitempty"`
-
 	// Array of NFS Paths.
 	// Specifies the path for mounting this View as an NFS share. If
 	// Kerberos Provider has multiple hostaliases, each host alias has
@@ -162,8 +157,6 @@ func (m *View) UnmarshalJSON(raw []byte) error {
 
 		BasicMountPath *string `json:"basicMountPath,omitempty"`
 
-		NfsMountPath *string `json:"nfsMountPath,omitempty"`
-
 		NfsMountPaths []string `json:"nfsMountPaths"`
 
 		SmbMountPaths []string `json:"smbMountPaths"`
@@ -207,8 +200,6 @@ func (m *View) UnmarshalJSON(raw []byte) error {
 	m.CreateTimeMsecs = dataAO0.CreateTimeMsecs
 
 	m.BasicMountPath = dataAO0.BasicMountPath
-
-	m.NfsMountPath = dataAO0.NfsMountPath
 
 	m.NfsMountPaths = dataAO0.NfsMountPaths
 
@@ -265,8 +256,6 @@ func (m View) MarshalJSON() ([]byte, error) {
 
 		BasicMountPath *string `json:"basicMountPath,omitempty"`
 
-		NfsMountPath *string `json:"nfsMountPath,omitempty"`
-
 		NfsMountPaths []string `json:"nfsMountPaths"`
 
 		SmbMountPaths []string `json:"smbMountPaths"`
@@ -307,8 +296,6 @@ func (m View) MarshalJSON() ([]byte, error) {
 	dataAO0.CreateTimeMsecs = m.CreateTimeMsecs
 
 	dataAO0.BasicMountPath = m.BasicMountPath
-
-	dataAO0.NfsMountPath = m.NfsMountPath
 
 	dataAO0.NfsMountPaths = m.NfsMountPaths
 
@@ -593,10 +580,6 @@ func (m *View) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateNfsMountPath(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateNfsMountPaths(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -714,15 +697,6 @@ func (m *View) contextValidateCreateTimeMsecs(ctx context.Context, formats strfm
 func (m *View) contextValidateBasicMountPath(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "basicMountPath", "body", m.BasicMountPath); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *View) contextValidateNfsMountPath(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "nfsMountPath", "body", m.NfsMountPath); err != nil {
 		return err
 	}
 

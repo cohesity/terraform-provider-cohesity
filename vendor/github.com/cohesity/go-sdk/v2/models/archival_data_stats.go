@@ -42,6 +42,15 @@ type ArchivalDataStats struct {
 
 	// Specifies the total number of file and directory entities that are backed up in this run. Only applicable to file based backups.
 	BackupFileCount *int64 `json:"backupFileCount,omitempty"`
+
+	// Specifies total number of granular objects protected in this backup.
+	NumProtectedGranularObjects *int64 `json:"numProtectedGranularObjects,omitempty"`
+
+	// Number of granular objects added/deleted/modified since the last backup.
+	NumChangedGranularObjects *int64 `json:"numChangedGranularObjects,omitempty"`
+
+	// Specifies number of changed granular objects which were backed up succesfully.
+	NumSuccessfulBackedGranularObjects *int64 `json:"numSuccessfulBackedGranularObjects,omitempty"`
 }
 
 // Validate validates this archival data stats

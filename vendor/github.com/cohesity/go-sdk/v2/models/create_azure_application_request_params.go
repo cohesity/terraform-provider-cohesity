@@ -23,13 +23,23 @@ import (
 // swagger:model CreateAzureApplicationRequestParams
 type CreateAzureApplicationRequestParams struct {
 
-	// Specifies the access token for Azure PowerShell Application access.
+	// Specifies the Azure Active Directory tenant ID or domain name.
+	AzureTenantID *string `json:"azureTenantId,omitempty"`
+
+	// The usecases for which the application is to be created.
+	// Min Items: 1
+	// Unique: true
+	UseCases []string `json:"useCases"`
+
+	// Specifies the access token for Azure Application access.
 	// Required: true
 	AccessToken *string `json:"accessToken"`
 
 	// Specifies the username to access Microsoft365 source.
-	// Required: true
-	Username *string `json:"username"`
+	Username *string `json:"username,omitempty"`
+
+	// Specifies whether only secret key for app should be updated during edit call.
+	UpdateAppKeyOnly *bool `json:"updateAppKeyOnly,omitempty"`
 
 	// Specifies the region where Office 365 Exchange environment is.
 	// Enum: ["Default","China","Germany","UsDoD","UsGccHigh"]
@@ -47,11 +57,11 @@ type CreateAzureApplicationRequestParams struct {
 func (m *CreateAzureApplicationRequestParams) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateAccessToken(formats); err != nil {
+	if err := m.validateUseCases(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateUsername(formats); err != nil {
+	if err := m.validateAccessToken(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -73,18 +83,55 @@ func (m *CreateAzureApplicationRequestParams) Validate(formats strfmt.Registry) 
 	return nil
 }
 
-func (m *CreateAzureApplicationRequestParams) validateAccessToken(formats strfmt.Registry) error {
+var createAzureApplicationRequestParamsUseCasesItemsEnum []interface{}
 
-	if err := validate.Required("accessToken", "body", m.AccessToken); err != nil {
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kVirtualMachine","kSQL","kEntraID","kFileShare"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		createAzureApplicationRequestParamsUseCasesItemsEnum = append(createAzureApplicationRequestParamsUseCasesItemsEnum, v)
+	}
+}
+
+func (m *CreateAzureApplicationRequestParams) validateUseCasesItemsEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, createAzureApplicationRequestParamsUseCasesItemsEnum, true); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (m *CreateAzureApplicationRequestParams) validateUseCases(formats strfmt.Registry) error {
+	if swag.IsZero(m.UseCases) { // not required
+		return nil
+	}
+
+	iUseCasesSize := int64(len(m.UseCases))
+
+	if err := validate.MinItems("useCases", "body", iUseCasesSize, 1); err != nil {
+		return err
+	}
+
+	if err := validate.UniqueItems("useCases", "body", m.UseCases); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.UseCases); i++ {
+
+		// value enum
+		if err := m.validateUseCasesItemsEnum("useCases"+"."+strconv.Itoa(i), "body", m.UseCases[i]); err != nil {
+			return err
+		}
+
 	}
 
 	return nil
 }
 
-func (m *CreateAzureApplicationRequestParams) validateUsername(formats strfmt.Registry) error {
+func (m *CreateAzureApplicationRequestParams) validateAccessToken(formats strfmt.Registry) error {
 
-	if err := validate.Required("username", "body", m.Username); err != nil {
+	if err := validate.Required("accessToken", "body", m.AccessToken); err != nil {
 		return err
 	}
 

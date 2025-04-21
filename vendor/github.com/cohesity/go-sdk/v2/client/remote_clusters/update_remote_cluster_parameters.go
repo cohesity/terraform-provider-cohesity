@@ -68,7 +68,7 @@ type UpdateRemoteClusterParams struct {
 
 	   Specifies the request to update Remote Cluster config.
 	*/
-	Body *models.UpdateRemoteClusterParams
+	Body *models.RemoteCluster
 
 	/* ClusterID.
 
@@ -132,13 +132,13 @@ func (o *UpdateRemoteClusterParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the update remote cluster params
-func (o *UpdateRemoteClusterParams) WithBody(body *models.UpdateRemoteClusterParams) *UpdateRemoteClusterParams {
+func (o *UpdateRemoteClusterParams) WithBody(body *models.RemoteCluster) *UpdateRemoteClusterParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the update remote cluster params
-func (o *UpdateRemoteClusterParams) SetBody(body *models.UpdateRemoteClusterParams) {
+func (o *UpdateRemoteClusterParams) SetBody(body *models.RemoteCluster) {
 	o.Body = body
 }
 

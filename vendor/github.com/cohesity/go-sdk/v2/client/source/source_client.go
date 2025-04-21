@@ -58,13 +58,21 @@ type ClientService interface {
 
 	CreateOrUpdateAzureApplications(params *CreateOrUpdateAzureApplicationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateOrUpdateAzureApplicationsCreated, error)
 
+	DeleteApplicationServersRegistration(params *DeleteApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationServersRegistrationNoContent, error)
+
+	DeleteAzureApplications(params *DeleteAzureApplicationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteAzureApplicationsNoContent, error)
+
 	DeleteM365SelfServiceConfig(params *DeleteM365SelfServiceConfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteM365SelfServiceConfigNoContent, error)
 
 	DeleteProtectionSourceRegistration(params *DeleteProtectionSourceRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProtectionSourceRegistrationNoContent, error)
 
+	EnableMBSBillingProfile(params *EnableMBSBillingProfileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EnableMBSBillingProfileOK, error)
+
 	GenerateM365DeviceAccessToken(params *GenerateM365DeviceAccessTokenParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GenerateM365DeviceAccessTokenCreated, error)
 
 	GenerateM365DeviceCode(params *GenerateM365DeviceCodeParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GenerateM365DeviceCodeCreated, error)
+
+	GetM365BackupController(params *GetM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetM365BackupControllerOK, error)
 
 	GetMicrosoft365SelfServiceConfig(params *GetMicrosoft365SelfServiceConfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetMicrosoft365SelfServiceConfigOK, error)
 
@@ -78,15 +86,25 @@ type ClientService interface {
 
 	GetVdcDetails(params *GetVdcDetailsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetVdcDetailsOK, error)
 
+	ListApplicationServers(params *ListApplicationServersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListApplicationServersOK, error)
+
 	PatchProtectionSourceRegistration(params *PatchProtectionSourceRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchProtectionSourceRegistrationOK, error)
 
 	ProtectionSourceByID(params *ProtectionSourceByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ProtectionSourceByIDOK, error)
 
 	RefreshProtectionSourceByID(params *RefreshProtectionSourceByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RefreshProtectionSourceByIDNoContent, error)
 
+	RegisterM365BackupController(params *RegisterM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RegisterM365BackupControllerCreated, error)
+
 	RegisterProtectionSource(params *RegisterProtectionSourceParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RegisterProtectionSourceCreated, error)
 
 	TestConnectionProtectionSource(params *TestConnectionProtectionSourceParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TestConnectionProtectionSourceOK, error)
+
+	UnregisterM365BackupController(params *UnregisterM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnregisterM365BackupControllerNoContent, error)
+
+	UpdateApplicationServersRegistration(params *UpdateApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationServersRegistrationOK, error)
+
+	UpdateM365BackupController(params *UpdateM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateM365BackupControllerOK, error)
 
 	UpdateM365SelfServiceConfig(params *UpdateM365SelfServiceConfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateM365SelfServiceConfigOK, *UpdateM365SelfServiceConfigCreated, error)
 
@@ -176,6 +194,86 @@ func (a *Client) CreateOrUpdateAzureApplications(params *CreateOrUpdateAzureAppl
 }
 
 /*
+DeleteApplicationServersRegistration deletes an application server registration
+
+**Privileges:** ```PROTECTION_SOURCE_MODIFY``` <br><br>Delete an application server registration.
+*/
+func (a *Client) DeleteApplicationServersRegistration(params *DeleteApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationServersRegistrationNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDeleteApplicationServersRegistrationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "DeleteApplicationServersRegistration",
+		Method:             "DELETE",
+		PathPattern:        "/data-protect/sources/application-servers/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DeleteApplicationServersRegistrationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DeleteApplicationServersRegistrationNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DeleteApplicationServersRegistrationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+DeleteAzureApplications deletes azure applications
+
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Deletes Azure Applications
+*/
+func (a *Client) DeleteAzureApplications(params *DeleteAzureApplicationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteAzureApplicationsNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDeleteAzureApplicationsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "DeleteAzureApplications",
+		Method:             "DELETE",
+		PathPattern:        "/data-protect/sources/microsoft365/azure-applications",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DeleteAzureApplicationsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DeleteAzureApplicationsNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DeleteAzureApplicationsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 DeleteM365SelfServiceConfig deletes the self service configuration for a microsoft365 source
 
 **Privileges:** ```PROTECTION_MODIFY``` <br><br>Delete the configuration for Self-Service for a Microsoft365 source. This includes deletion of both Mailbox & OneDrive workload configuration.
@@ -256,6 +354,46 @@ func (a *Client) DeleteProtectionSourceRegistration(params *DeleteProtectionSour
 }
 
 /*
+EnableMBSBillingProfile enables billing profile for the m b s service for the tenant
+
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Enables the M365 Backup Storage(MBS) service for the tenant.
+*/
+func (a *Client) EnableMBSBillingProfile(params *EnableMBSBillingProfileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EnableMBSBillingProfileOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewEnableMBSBillingProfileParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "EnableMBSBillingProfile",
+		Method:             "POST",
+		PathPattern:        "/data-protect/sources/microsoft365/backup-controllers/billing",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &EnableMBSBillingProfileReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*EnableMBSBillingProfileOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*EnableMBSBillingProfileDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 GenerateM365DeviceAccessToken generates access token for microsoft365 device authorization grant flow
 
 **Privileges:** ```PROTECTION_MODIFY``` <br><br>Generates the access token if the device code has been granted authorization as part of device login flow.
@@ -332,6 +470,46 @@ func (a *Client) GenerateM365DeviceCode(params *GenerateM365DeviceCodeParams, au
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GenerateM365DeviceCodeDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetM365BackupController fetches the microsoft 365 registered backup controller by the cohesity app for the owner tenant
+
+**Privileges:** ```PROTECTION_VIEW``` <br><br>Fetches the registered Backup Controller by the Cohesity App for the tenant id within the JWT specified within the header.
+*/
+func (a *Client) GetM365BackupController(params *GetM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetM365BackupControllerOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetM365BackupControllerParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetM365BackupController",
+		Method:             "GET",
+		PathPattern:        "/data-protect/sources/microsoft365/backup-controllers",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetM365BackupControllerReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetM365BackupControllerOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetM365BackupControllerDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -576,6 +754,46 @@ func (a *Client) GetVdcDetails(params *GetVdcDetailsParams, authInfo runtime.Cli
 }
 
 /*
+ListApplicationServers thes application servers in a protection source tree
+
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Returns the registered Application Servers and their Object subtrees. Given the root node id of a Protection Source tree, returns the list of Application Servers registered under that tree based on the filters.
+*/
+func (a *Client) ListApplicationServers(params *ListApplicationServersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListApplicationServersOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListApplicationServersParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListApplicationServers",
+		Method:             "GET",
+		PathPattern:        "/data-protect/sources/application-servers",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListApplicationServersReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListApplicationServersOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListApplicationServersDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 PatchProtectionSourceRegistration performs partial update on protection source registration currently this API is supported only for cassandra
 
 **Privileges:** ```PROTECTION_SOURCE_MODIFY``` <br><br>Patches a Protection Source.
@@ -696,6 +914,46 @@ func (a *Client) RefreshProtectionSourceByID(params *RefreshProtectionSourceByID
 }
 
 /*
+RegisterM365BackupController registers the cohesity app to be the microsoft 365 backup controller
+
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Registers the Cohesity App to be the Microsoft365 Backup Controller
+*/
+func (a *Client) RegisterM365BackupController(params *RegisterM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RegisterM365BackupControllerCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewRegisterM365BackupControllerParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "RegisterM365BackupController",
+		Method:             "POST",
+		PathPattern:        "/data-protect/sources/microsoft365/backup-controllers",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &RegisterM365BackupControllerReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*RegisterM365BackupControllerCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*RegisterM365BackupControllerDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 RegisterProtectionSource registers a protection source
 
 **Privileges:** ```PROTECTION_SOURCE_MODIFY``` <br><br>Register a Protection Source.
@@ -772,6 +1030,126 @@ func (a *Client) TestConnectionProtectionSource(params *TestConnectionProtection
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*TestConnectionProtectionSourceDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UnregisterM365BackupController unregisters the cohesity app as the microsoft 365 backup controller
+
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Unregisters the Cohesity App as the Microsoft 365 Backup Controller
+*/
+func (a *Client) UnregisterM365BackupController(params *UnregisterM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnregisterM365BackupControllerNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUnregisterM365BackupControllerParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UnregisterM365BackupController",
+		Method:             "DELETE",
+		PathPattern:        "/data-protect/sources/microsoft365/backup-controllers/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UnregisterM365BackupControllerReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UnregisterM365BackupControllerNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UnregisterM365BackupControllerDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateApplicationServersRegistration registers or update owner entity with applications
+
+**Privileges:** ```PROTECTION_SOURCE_MODIFY``` <br><br>Register or update applications on an owner entity
+*/
+func (a *Client) UpdateApplicationServersRegistration(params *UpdateApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationServersRegistrationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateApplicationServersRegistrationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdateApplicationServersRegistration",
+		Method:             "PUT",
+		PathPattern:        "/data-protect/sources/application-servers/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateApplicationServersRegistrationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateApplicationServersRegistrationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateApplicationServersRegistrationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateM365BackupController updates the status of the registered m365 backup controller
+
+**Privileges:** ```PROTECTION_MODIFY``` <br><br>Updates the Backup Controller status of the registered M365 Backup Controller
+*/
+func (a *Client) UpdateM365BackupController(params *UpdateM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateM365BackupControllerOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateM365BackupControllerParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdateM365BackupController",
+		Method:             "PATCH",
+		PathPattern:        "/data-protect/sources/microsoft365/backup-controllers/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateM365BackupControllerReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateM365BackupControllerOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateM365BackupControllerDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

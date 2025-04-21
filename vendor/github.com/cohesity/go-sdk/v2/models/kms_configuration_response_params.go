@@ -24,7 +24,7 @@ type KmsConfigurationResponseParams struct {
 	Name *string `json:"name,omitempty"`
 
 	// Type of KMS. 'InternalKms' indicates the internal cluster KMS. 'AwsKms' indicates AWS KMS. 'KmipKms' indicates any KMIP compliant KMS.
-	// Enum: ["InternalKms","AwsKms","KmipKms"]
+	// Enum: ["InternalKms","AwsKms","KmipKms","IbmKms"]
 	Type *string `json:"type,omitempty"`
 
 	// Specifies the usage type of the kms config. 'kArchival' indicates this is used for regular archival. 'kRpaasArchival' indicates this is used for RPaaS only.
@@ -33,6 +33,9 @@ type KmsConfigurationResponseParams struct {
 
 	// AWS KMS configuration.
 	AwsKmsParams *AwsKmsConfigurationResponse `json:"awsKmsParams,omitempty"`
+
+	// IBM KMS configuration.
+	IbmKmsParams *IbmKmsConfigurationResponse `json:"ibmKmsParams,omitempty"`
 
 	// KMIP compliant KMS configuration.
 	KmipKmsParams *KmipKmsConfigurationResponse `json:"kmipKmsParams,omitempty"`
@@ -64,6 +67,10 @@ func (m *KmsConfigurationResponseParams) Validate(formats strfmt.Registry) error
 		res = append(res, err)
 	}
 
+	if err := m.validateIbmKmsParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateKmipKmsParams(formats); err != nil {
 		res = append(res, err)
 	}
@@ -82,7 +89,7 @@ var kmsConfigurationResponseParamsTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["InternalKms","AwsKms","KmipKms"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["InternalKms","AwsKms","KmipKms","IbmKms"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -100,6 +107,9 @@ const (
 
 	// KmsConfigurationResponseParamsTypeKmipKms captures enum value "KmipKms"
 	KmsConfigurationResponseParamsTypeKmipKms string = "KmipKms"
+
+	// KmsConfigurationResponseParamsTypeIbmKms captures enum value "IbmKms"
+	KmsConfigurationResponseParamsTypeIbmKms string = "IbmKms"
 )
 
 // prop value enum
@@ -184,6 +194,25 @@ func (m *KmsConfigurationResponseParams) validateAwsKmsParams(formats strfmt.Reg
 	return nil
 }
 
+func (m *KmsConfigurationResponseParams) validateIbmKmsParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.IbmKmsParams) { // not required
+		return nil
+	}
+
+	if m.IbmKmsParams != nil {
+		if err := m.IbmKmsParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ibmKmsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ibmKmsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *KmsConfigurationResponseParams) validateKmipKmsParams(formats strfmt.Registry) error {
 	if swag.IsZero(m.KmipKmsParams) { // not required
 		return nil
@@ -253,6 +282,10 @@ func (m *KmsConfigurationResponseParams) ContextValidate(ctx context.Context, fo
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateIbmKmsParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateKmipKmsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -276,6 +309,27 @@ func (m *KmsConfigurationResponseParams) contextValidateAwsKmsParams(ctx context
 				return ve.ValidateName("awsKmsParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("awsKmsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *KmsConfigurationResponseParams) contextValidateIbmKmsParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.IbmKmsParams != nil {
+
+		if swag.IsZero(m.IbmKmsParams) { // not required
+			return nil
+		}
+
+		if err := m.IbmKmsParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ibmKmsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ibmKmsParams")
 			}
 			return err
 		}

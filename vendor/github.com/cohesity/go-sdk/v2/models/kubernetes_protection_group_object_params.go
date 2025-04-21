@@ -38,6 +38,15 @@ type KubernetesProtectionGroupObjectParams struct {
 
 	// Specifies the quiescing rules are which specified by the user for doing backup.
 	QuiesceGroups []*QuiesceGroup `json:"quiesceGroups"`
+
+	// Specifies the resources to include during backup
+	IncludedResources []string `json:"includedResources"`
+
+	// Specifies the resources to exclude during backup
+	ExcludedResources []string `json:"excludedResources"`
+
+	// Specifies whether to backup pvc and related resources only
+	BackupOnlyPvc *bool `json:"backupOnlyPvc,omitempty"`
 }
 
 // Validate validates this kubernetes protection group object params

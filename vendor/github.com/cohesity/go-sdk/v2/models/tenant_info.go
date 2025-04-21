@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -52,6 +53,16 @@ type TenantInfo struct {
 
 	// Flag to indicate if tenant is managed on helios
 	IsManagedOnHelios *bool `json:"isManagedOnHelios,omitempty"`
+
+	// external vendor metadata
+	ExternalVendorMetadata *ExternalVendorTenantMetadata `json:"externalVendorMetadata,omitempty"`
+
+	// Specifies info about the active deactivation of this tenant, if any.
+	// Enum: ["None","Success","Failure","InProgress"]
+	ActiveDeactivation *string `json:"activeDeactivation,omitempty"`
+
+	// Specifies a history of deactivations for this tenant. Only the latest 5 deactivations are preserved.
+	FinishedDeactivations []*string `json:"finishedDeactivations"`
 }
 
 // Validate validates this tenant info
@@ -63,6 +74,18 @@ func (m *TenantInfo) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateNetwork(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExternalVendorMetadata(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateActiveDeactivation(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFinishedDeactivations(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -139,6 +162,112 @@ func (m *TenantInfo) validateNetwork(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *TenantInfo) validateExternalVendorMetadata(formats strfmt.Registry) error {
+	if swag.IsZero(m.ExternalVendorMetadata) { // not required
+		return nil
+	}
+
+	if m.ExternalVendorMetadata != nil {
+		if err := m.ExternalVendorMetadata.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("externalVendorMetadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("externalVendorMetadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+var tenantInfoTypeActiveDeactivationPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["None","Success","Failure","InProgress"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		tenantInfoTypeActiveDeactivationPropEnum = append(tenantInfoTypeActiveDeactivationPropEnum, v)
+	}
+}
+
+const (
+
+	// TenantInfoActiveDeactivationNone captures enum value "None"
+	TenantInfoActiveDeactivationNone string = "None"
+
+	// TenantInfoActiveDeactivationSuccess captures enum value "Success"
+	TenantInfoActiveDeactivationSuccess string = "Success"
+
+	// TenantInfoActiveDeactivationFailure captures enum value "Failure"
+	TenantInfoActiveDeactivationFailure string = "Failure"
+
+	// TenantInfoActiveDeactivationInProgress captures enum value "InProgress"
+	TenantInfoActiveDeactivationInProgress string = "InProgress"
+)
+
+// prop value enum
+func (m *TenantInfo) validateActiveDeactivationEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, tenantInfoTypeActiveDeactivationPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *TenantInfo) validateActiveDeactivation(formats strfmt.Registry) error {
+	if swag.IsZero(m.ActiveDeactivation) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateActiveDeactivationEnum("activeDeactivation", "body", *m.ActiveDeactivation); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var tenantInfoFinishedDeactivationsItemsEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["None","Success","Failure","InProgress"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		tenantInfoFinishedDeactivationsItemsEnum = append(tenantInfoFinishedDeactivationsItemsEnum, v)
+	}
+}
+
+func (m *TenantInfo) validateFinishedDeactivationsItemsEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, tenantInfoFinishedDeactivationsItemsEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *TenantInfo) validateFinishedDeactivations(formats strfmt.Registry) error {
+	if swag.IsZero(m.FinishedDeactivations) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.FinishedDeactivations); i++ {
+		if swag.IsZero(m.FinishedDeactivations[i]) { // not required
+			continue
+		}
+
+		// value enum
+		if err := m.validateFinishedDeactivationsItemsEnum("finishedDeactivations"+"."+strconv.Itoa(i), "body", *m.FinishedDeactivations[i]); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
 // ContextValidate validate this tenant info based on the context it is used
 func (m *TenantInfo) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -156,6 +285,10 @@ func (m *TenantInfo) ContextValidate(ctx context.Context, formats strfmt.Registr
 	}
 
 	if err := m.contextValidateDeletedAtTimeMsecs(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateExternalVendorMetadata(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -208,6 +341,27 @@ func (m *TenantInfo) contextValidateDeletedAtTimeMsecs(ctx context.Context, form
 
 	if err := validate.ReadOnly(ctx, "deletedAtTimeMsecs", "body", m.DeletedAtTimeMsecs); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *TenantInfo) contextValidateExternalVendorMetadata(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ExternalVendorMetadata != nil {
+
+		if swag.IsZero(m.ExternalVendorMetadata) { // not required
+			return nil
+		}
+
+		if err := m.ExternalVendorMetadata.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("externalVendorMetadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("externalVendorMetadata")
+			}
+			return err
+		}
 	}
 
 	return nil

@@ -22,7 +22,7 @@ type KmsConfigurationCreateParams struct {
 
 	// Type of KMS. 'InternalKms' indicates the internal cluster KMS. 'AwsKms' indicates AWS KMS. 'KmipKms' indicates any KMIP compliant KMS.
 	// Required: true
-	// Enum: ["InternalKms","AwsKms","KmipKms"]
+	// Enum: ["InternalKms","AwsKms","KmipKms","IbmKms"]
 	Type *string `json:"type"`
 
 	// Specifies the usage type of the kms config. 'kArchival' indicates this is used for regular archival. 'kRpaasArchival' indicates this is used for RPaaS only.
@@ -32,6 +32,9 @@ type KmsConfigurationCreateParams struct {
 	// Specifies the ownership context of the kms config. 'Local' indicates this is used for regular archival. 'FortKnox' indicates this is used for FortKnox only.
 	// Enum: ["Local","FortKnox"]
 	OwnershipContext *string `json:"ownershipContext,omitempty"`
+
+	// IBM KMS configuration.
+	IbmKmsParams *IbmKmsConfiguration `json:"ibmKmsParams,omitempty"`
 
 	// AWS KMS configuration.
 	AwsKmsParams *AwsKmsConfiguration `json:"awsKmsParams,omitempty"`
@@ -49,6 +52,8 @@ func (m *KmsConfigurationCreateParams) UnmarshalJSON(raw []byte) error {
 
 		OwnershipContext *string `json:"ownershipContext,omitempty"`
 
+		IbmKmsParams *IbmKmsConfiguration `json:"ibmKmsParams,omitempty"`
+
 		AwsKmsParams *AwsKmsConfiguration `json:"awsKmsParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO0); err != nil {
@@ -60,6 +65,8 @@ func (m *KmsConfigurationCreateParams) UnmarshalJSON(raw []byte) error {
 	m.UsageType = dataAO0.UsageType
 
 	m.OwnershipContext = dataAO0.OwnershipContext
+
+	m.IbmKmsParams = dataAO0.IbmKmsParams
 
 	m.AwsKmsParams = dataAO0.AwsKmsParams
 
@@ -84,6 +91,8 @@ func (m KmsConfigurationCreateParams) MarshalJSON() ([]byte, error) {
 
 		OwnershipContext *string `json:"ownershipContext,omitempty"`
 
+		IbmKmsParams *IbmKmsConfiguration `json:"ibmKmsParams,omitempty"`
+
 		AwsKmsParams *AwsKmsConfiguration `json:"awsKmsParams,omitempty"`
 	}
 
@@ -92,6 +101,8 @@ func (m KmsConfigurationCreateParams) MarshalJSON() ([]byte, error) {
 	dataAO0.UsageType = m.UsageType
 
 	dataAO0.OwnershipContext = m.OwnershipContext
+
+	dataAO0.IbmKmsParams = m.IbmKmsParams
 
 	dataAO0.AwsKmsParams = m.AwsKmsParams
 
@@ -125,6 +136,10 @@ func (m *KmsConfigurationCreateParams) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateIbmKmsParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateAwsKmsParams(formats); err != nil {
 		res = append(res, err)
 	}
@@ -144,7 +159,7 @@ var kmsConfigurationCreateParamsTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["InternalKms","AwsKms","KmipKms"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["InternalKms","AwsKms","KmipKms","IbmKms"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -242,6 +257,26 @@ func (m *KmsConfigurationCreateParams) validateOwnershipContext(formats strfmt.R
 	return nil
 }
 
+func (m *KmsConfigurationCreateParams) validateIbmKmsParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.IbmKmsParams) { // not required
+		return nil
+	}
+
+	if m.IbmKmsParams != nil {
+		if err := m.IbmKmsParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ibmKmsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ibmKmsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *KmsConfigurationCreateParams) validateAwsKmsParams(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.AwsKmsParams) { // not required
@@ -266,6 +301,10 @@ func (m *KmsConfigurationCreateParams) validateAwsKmsParams(formats strfmt.Regis
 func (m *KmsConfigurationCreateParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateIbmKmsParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateAwsKmsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -278,6 +317,27 @@ func (m *KmsConfigurationCreateParams) ContextValidate(ctx context.Context, form
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *KmsConfigurationCreateParams) contextValidateIbmKmsParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.IbmKmsParams != nil {
+
+		if swag.IsZero(m.IbmKmsParams) { // not required
+			return nil
+		}
+
+		if err := m.IbmKmsParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ibmKmsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ibmKmsParams")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

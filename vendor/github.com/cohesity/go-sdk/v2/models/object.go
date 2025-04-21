@@ -42,11 +42,17 @@ type Object struct {
 	// Specifies the parameters for Isilon object.
 	IsilonParams *IsilonObjectParams `json:"isilonParams,omitempty"`
 
+	// Specifies the parameters for MongoDB object.
+	MongoDBParams *MongoDBObjectParams `json:"mongoDBParams,omitempty"`
+
 	// Specifies the parameters for Msssql object.
 	MssqlParams *MssqlObjectEntityParams `json:"mssqlParams,omitempty"`
 
 	// Specifies the parameters for NetApp object.
 	NetappParams *NetappObjectParams `json:"netappParams,omitempty"`
+
+	// Specifies the parameters for O365 object.
+	O365Params *O365ObjectEntityParams `json:"o365Params,omitempty"`
 
 	// Specifies the parameters for Oracle object.
 	OracleParams *OracleObjectEntityParams `json:"oracleParams,omitempty"`
@@ -89,9 +95,13 @@ func (m *Object) UnmarshalJSON(raw []byte) error {
 
 		IsilonParams *IsilonObjectParams `json:"isilonParams,omitempty"`
 
+		MongoDBParams *MongoDBObjectParams `json:"mongoDBParams,omitempty"`
+
 		MssqlParams *MssqlObjectEntityParams `json:"mssqlParams,omitempty"`
 
 		NetappParams *NetappObjectParams `json:"netappParams,omitempty"`
+
+		O365Params *O365ObjectEntityParams `json:"o365Params,omitempty"`
 
 		OracleParams *OracleObjectEntityParams `json:"oracleParams,omitempty"`
 
@@ -121,9 +131,13 @@ func (m *Object) UnmarshalJSON(raw []byte) error {
 
 	m.IsilonParams = dataAO1.IsilonParams
 
+	m.MongoDBParams = dataAO1.MongoDBParams
+
 	m.MssqlParams = dataAO1.MssqlParams
 
 	m.NetappParams = dataAO1.NetappParams
+
+	m.O365Params = dataAO1.O365Params
 
 	m.OracleParams = dataAO1.OracleParams
 
@@ -162,9 +176,13 @@ func (m Object) MarshalJSON() ([]byte, error) {
 
 		IsilonParams *IsilonObjectParams `json:"isilonParams,omitempty"`
 
+		MongoDBParams *MongoDBObjectParams `json:"mongoDBParams,omitempty"`
+
 		MssqlParams *MssqlObjectEntityParams `json:"mssqlParams,omitempty"`
 
 		NetappParams *NetappObjectParams `json:"netappParams,omitempty"`
+
+		O365Params *O365ObjectEntityParams `json:"o365Params,omitempty"`
 
 		OracleParams *OracleObjectEntityParams `json:"oracleParams,omitempty"`
 
@@ -191,9 +209,13 @@ func (m Object) MarshalJSON() ([]byte, error) {
 
 	dataAO1.IsilonParams = m.IsilonParams
 
+	dataAO1.MongoDBParams = m.MongoDBParams
+
 	dataAO1.MssqlParams = m.MssqlParams
 
 	dataAO1.NetappParams = m.NetappParams
+
+	dataAO1.O365Params = m.O365Params
 
 	dataAO1.OracleParams = m.OracleParams
 
@@ -250,11 +272,19 @@ func (m *Object) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateMongoDBParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateMssqlParams(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateNetappParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateO365Params(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -424,6 +454,26 @@ func (m *Object) validateIsilonParams(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Object) validateMongoDBParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.MongoDBParams) { // not required
+		return nil
+	}
+
+	if m.MongoDBParams != nil {
+		if err := m.MongoDBParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongoDBParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongoDBParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *Object) validateMssqlParams(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.MssqlParams) { // not required
@@ -456,6 +506,26 @@ func (m *Object) validateNetappParams(formats strfmt.Registry) error {
 				return ve.ValidateName("netappParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("netappParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Object) validateO365Params(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.O365Params) { // not required
+		return nil
+	}
+
+	if m.O365Params != nil {
+		if err := m.O365Params.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("o365Params")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("o365Params")
 			}
 			return err
 		}
@@ -601,11 +671,19 @@ func (m *Object) ContextValidate(ctx context.Context, formats strfmt.Registry) e
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateMongoDBParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateMssqlParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.contextValidateNetappParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateO365Params(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -782,6 +860,27 @@ func (m *Object) contextValidateIsilonParams(ctx context.Context, formats strfmt
 	return nil
 }
 
+func (m *Object) contextValidateMongoDBParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MongoDBParams != nil {
+
+		if swag.IsZero(m.MongoDBParams) { // not required
+			return nil
+		}
+
+		if err := m.MongoDBParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongoDBParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongoDBParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *Object) contextValidateMssqlParams(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.MssqlParams != nil {
@@ -816,6 +915,27 @@ func (m *Object) contextValidateNetappParams(ctx context.Context, formats strfmt
 				return ve.ValidateName("netappParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("netappParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Object) contextValidateO365Params(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.O365Params != nil {
+
+		if swag.IsZero(m.O365Params) { // not required
+			return nil
+		}
+
+		if err := m.O365Params.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("o365Params")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("o365Params")
 			}
 			return err
 		}

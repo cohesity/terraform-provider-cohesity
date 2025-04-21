@@ -35,8 +35,11 @@ type ObjectIdentifier struct {
 	SourceName *string `json:"sourceName,omitempty"`
 
 	// Specifies the environment of the object.
-	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
+
+	// Specifies the string based Id for an object and also provides the history of ids assigned to the object
+	EntityID *ObjectStringIdentifier `json:"entityId,omitempty"`
 }
 
 // Validate validates this object identifier
@@ -44,6 +47,10 @@ func (m *ObjectIdentifier) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateEnvironment(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateEntityID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,7 +64,7 @@ var objectIdentifierTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -171,6 +178,15 @@ const (
 
 	// ObjectIdentifierEnvironmentKSfdc captures enum value "kSfdc"
 	ObjectIdentifierEnvironmentKSfdc string = "kSfdc"
+
+	// ObjectIdentifierEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ObjectIdentifierEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ObjectIdentifierEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	ObjectIdentifierEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// ObjectIdentifierEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ObjectIdentifierEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -194,8 +210,57 @@ func (m *ObjectIdentifier) validateEnvironment(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this object identifier based on context it is used
+func (m *ObjectIdentifier) validateEntityID(formats strfmt.Registry) error {
+	if swag.IsZero(m.EntityID) { // not required
+		return nil
+	}
+
+	if m.EntityID != nil {
+		if err := m.EntityID.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("entityId")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("entityId")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ContextValidate validate this object identifier based on the context it is used
 func (m *ObjectIdentifier) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateEntityID(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *ObjectIdentifier) contextValidateEntityID(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.EntityID != nil {
+
+		if swag.IsZero(m.EntityID) { // not required
+			return nil
+		}
+
+		if err := m.EntityID.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("entityId")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("entityId")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

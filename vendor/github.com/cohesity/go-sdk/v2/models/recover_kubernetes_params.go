@@ -28,7 +28,7 @@ type RecoverKubernetesParams struct {
 
 	// Specifies the type of recover action to be performed.
 	// Required: true
-	// Enum: ["RecoverNamespaces","RecoverFiles"]
+	// Enum: ["RecoverNamespaces","RecoverFiles","DownloadFilesAndFolders"]
 	RecoveryAction *string `json:"recoveryAction"`
 
 	// Specifies the parameters to download files and folders.
@@ -101,7 +101,7 @@ var recoverKubernetesParamsTypeRecoveryActionPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["RecoverNamespaces","RecoverFiles"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["RecoverNamespaces","RecoverFiles","DownloadFilesAndFolders"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -116,6 +116,9 @@ const (
 
 	// RecoverKubernetesParamsRecoveryActionRecoverFiles captures enum value "RecoverFiles"
 	RecoverKubernetesParamsRecoveryActionRecoverFiles string = "RecoverFiles"
+
+	// RecoverKubernetesParamsRecoveryActionDownloadFilesAndFolders captures enum value "DownloadFilesAndFolders"
+	RecoverKubernetesParamsRecoveryActionDownloadFilesAndFolders string = "DownloadFilesAndFolders"
 )
 
 // prop value enum

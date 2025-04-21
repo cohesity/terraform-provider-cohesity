@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -29,6 +30,10 @@ type HadoopConnectionParams struct {
 	// Required: true
 	ConfigurationDirectory *string `json:"configurationDirectory"`
 
+	// HDFS Connection Type.
+	// Enum: ["DFS","WEBHDFS","HTTPFSLB","HTTPFS"]
+	HdfsConnectionType *string `json:"hdfsConnectionType,omitempty"`
+
 	// ssh password credentials
 	SSHPasswordCredentials *HadoopConnectionParamsSSHPasswordCredentials `json:"sshPasswordCredentials,omitempty"`
 
@@ -45,6 +50,10 @@ func (m *HadoopConnectionParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateConfigurationDirectory(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateHdfsConnectionType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -74,6 +83,54 @@ func (m *HadoopConnectionParams) validateHost(formats strfmt.Registry) error {
 func (m *HadoopConnectionParams) validateConfigurationDirectory(formats strfmt.Registry) error {
 
 	if err := validate.Required("configurationDirectory", "body", m.ConfigurationDirectory); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var hadoopConnectionParamsTypeHdfsConnectionTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["DFS","WEBHDFS","HTTPFSLB","HTTPFS"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		hadoopConnectionParamsTypeHdfsConnectionTypePropEnum = append(hadoopConnectionParamsTypeHdfsConnectionTypePropEnum, v)
+	}
+}
+
+const (
+
+	// HadoopConnectionParamsHdfsConnectionTypeDFS captures enum value "DFS"
+	HadoopConnectionParamsHdfsConnectionTypeDFS string = "DFS"
+
+	// HadoopConnectionParamsHdfsConnectionTypeWEBHDFS captures enum value "WEBHDFS"
+	HadoopConnectionParamsHdfsConnectionTypeWEBHDFS string = "WEBHDFS"
+
+	// HadoopConnectionParamsHdfsConnectionTypeHTTPFSLB captures enum value "HTTPFSLB"
+	HadoopConnectionParamsHdfsConnectionTypeHTTPFSLB string = "HTTPFSLB"
+
+	// HadoopConnectionParamsHdfsConnectionTypeHTTPFS captures enum value "HTTPFS"
+	HadoopConnectionParamsHdfsConnectionTypeHTTPFS string = "HTTPFS"
+)
+
+// prop value enum
+func (m *HadoopConnectionParams) validateHdfsConnectionTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, hadoopConnectionParamsTypeHdfsConnectionTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *HadoopConnectionParams) validateHdfsConnectionType(formats strfmt.Registry) error {
+	if swag.IsZero(m.HdfsConnectionType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateHdfsConnectionTypeEnum("hdfsConnectionType", "body", *m.HdfsConnectionType); err != nil {
 		return err
 	}
 

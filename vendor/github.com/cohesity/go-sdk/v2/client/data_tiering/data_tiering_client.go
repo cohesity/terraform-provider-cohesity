@@ -70,6 +70,8 @@ type ClientService interface {
 
 	DeleteDataTieringTask(params *DeleteDataTieringTaskParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteDataTieringTaskNoContent, error)
 
+	DownloadTieringReports(params *DownloadTieringReportsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DownloadTieringReportsOK, error)
+
 	GetCapacityTrendAnalysis(params *GetCapacityTrendAnalysisParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetCapacityTrendAnalysisOK, error)
 
 	GetDataTieringAnalysisGroupByID(params *GetDataTieringAnalysisGroupByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetDataTieringAnalysisGroupByIDOK, error)
@@ -418,6 +420,46 @@ func (a *Client) DeleteDataTieringTask(params *DeleteDataTieringTaskParams, auth
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*DeleteDataTieringTaskDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+DownloadTieringReports downloads tiering reports
+
+**Privileges:** ```PROTECTION_VIEW``` <br><br>Specifies the API to download the tiering run report.
+*/
+func (a *Client) DownloadTieringReports(params *DownloadTieringReportsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DownloadTieringReportsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDownloadTieringReportsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "DownloadTieringReports",
+		Method:             "GET",
+		PathPattern:        "/data-tiering/tasks/{id}/runs/{runId}/download-report",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DownloadTieringReportsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DownloadTieringReportsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DownloadTieringReportsDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

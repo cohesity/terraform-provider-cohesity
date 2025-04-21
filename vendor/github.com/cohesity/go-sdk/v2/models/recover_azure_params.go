@@ -28,8 +28,11 @@ type RecoverAzureParams struct {
 
 	// Specifies the type of recover action to be performed.
 	// Required: true
-	// Enum: ["RecoverVMs","RecoverFiles","RecoverAzureSQL"]
+	// Enum: ["RecoverVMs","RecoverFiles","RecoverAzureSQL","RecoverAzureEntraID"]
 	RecoveryAction *string `json:"recoveryAction"`
+
+	// Specifies the parameters to recover Azure Entra ID workloads.
+	AzureEntraIDParams *RecoverAzureEntraIDParams `json:"azureEntraIdParams,omitempty"`
 
 	// Specifies the parameters to recover Azure SQL workloads.
 	AzureSQLParams *RecoverAzureSQLParams `json:"azureSqlParams,omitempty"`
@@ -53,6 +56,10 @@ func (m *RecoverAzureParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRecoveryAction(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAzureEntraIDParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -108,7 +115,7 @@ var recoverAzureParamsTypeRecoveryActionPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["RecoverVMs","RecoverFiles","RecoverAzureSQL"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["RecoverVMs","RecoverFiles","RecoverAzureSQL","RecoverAzureEntraID"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -126,6 +133,9 @@ const (
 
 	// RecoverAzureParamsRecoveryActionRecoverAzureSQL captures enum value "RecoverAzureSQL"
 	RecoverAzureParamsRecoveryActionRecoverAzureSQL string = "RecoverAzureSQL"
+
+	// RecoverAzureParamsRecoveryActionRecoverAzureEntraID captures enum value "RecoverAzureEntraID"
+	RecoverAzureParamsRecoveryActionRecoverAzureEntraID string = "RecoverAzureEntraID"
 )
 
 // prop value enum
@@ -145,6 +155,25 @@ func (m *RecoverAzureParams) validateRecoveryAction(formats strfmt.Registry) err
 	// value enum
 	if err := m.validateRecoveryActionEnum("recoveryAction", "body", *m.RecoveryAction); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *RecoverAzureParams) validateAzureEntraIDParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.AzureEntraIDParams) { // not required
+		return nil
+	}
+
+	if m.AzureEntraIDParams != nil {
+		if err := m.AzureEntraIDParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureEntraIdParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureEntraIdParams")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -234,6 +263,10 @@ func (m *RecoverAzureParams) ContextValidate(ctx context.Context, formats strfmt
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateAzureEntraIDParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateAzureSQLParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -276,6 +309,27 @@ func (m *RecoverAzureParams) contextValidateObjects(ctx context.Context, formats
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *RecoverAzureParams) contextValidateAzureEntraIDParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.AzureEntraIDParams != nil {
+
+		if swag.IsZero(m.AzureEntraIDParams) { // not required
+			return nil
+		}
+
+		if err := m.AzureEntraIDParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureEntraIdParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureEntraIdParams")
+			}
+			return err
+		}
 	}
 
 	return nil

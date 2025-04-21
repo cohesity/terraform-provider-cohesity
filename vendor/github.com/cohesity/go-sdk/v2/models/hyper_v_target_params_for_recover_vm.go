@@ -32,11 +32,14 @@ type HyperVTargetParamsForRecoverVM struct {
 	// Specifies whether to recover excluded disk while performing recovery of a VM by creating empty disks for them. Default value is false.
 	RecoverExcludedDisk *bool `json:"recoverExcludedDisk,omitempty"`
 
-	// Specifies if the HyperV recovery is using the SMB service to perform the restore. On-prem, this is the case by default. However, as of today, DMaaS does not support SMB, and HyperV VM VM restores will employ an alternative restore method in this case.
+	// Specifies if the HyperV recovery is using the SMB service to perform the restore. It is false for copy-recovery if nothing is specified. For instant-recovery it is true by default. Since DMaaS does not support SMB, only stream copy recovery is supported.
 	UseSmbService *bool `json:"useSmbService,omitempty"`
 
 	// Specifies whether to preserve uuids of recovered VMs. Default is false.
 	PreserveUuids *bool `json:"preserveUuids,omitempty"`
+
+	// Specifies whether to overwrite existing VMs while performing recovery of a VM. Default value is false.
+	OverwriteExistingVms *bool `json:"overwriteExistingVms,omitempty"`
 
 	// Specifies the recovery target configuration if recovery has to be done to a different location which is different from original source or to original Source with different configuration. If not specified, then the recovery of the vms will be performed to original location with all configuration parameters retained.
 	RecoveryTargetConfig *HyperVVMRecoveryTargetConfig `json:"recoveryTargetConfig,omitempty"`

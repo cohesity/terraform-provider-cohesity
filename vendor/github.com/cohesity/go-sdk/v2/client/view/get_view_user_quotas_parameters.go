@@ -68,19 +68,57 @@ type GetViewUserQuotasParams struct {
 	*/
 	Cookie *string
 
+	/* ExcludeUsersWithinAlertThreshold.
+
+	   This field can be set only when includeUsage is set to true. By default, all the users with logical usage > 0 will be returned in the result. If this field is set to true, only the list of users who has exceeded the alert threshold will be returned.
+	*/
+	ExcludeUsersWithinAlertThreshold *bool
+
+	/* IncludeUsage.
+
+	   If set to true, the logical usage info is included only for users with quota overrides. By default, it is set to false
+	*/
+	IncludeUsage *bool
+
+	/* IncludeUserWithQuotaOverridesOnly.
+
+	   If set to true, the result will only contain user with user quota override enabled. By default, this field is set to false, and it's only in effect when 'SummaryOnly' is set to false.
+	*/
+	IncludeUserWithQuotaOverridesOnly *bool
+
 	/* MaxCount.
 
-	   Specifies a limit on the number of quotas returned. If maxCount is not set, response will have a maximum of 100 results.
+	   Specifies a limit on the number of quotas returned. If maxCount is not set, response will have a maximum of 100 results. This parameter will be ignored if 'topQuotas' is set.
 
 	   Format: int64
 	*/
 	MaxCount *int64
+
+	/* OutputFormat.
+
+	   OutputFormat is the Output format for the output. If it is not specified, default is json.
+	*/
+	OutputFormat *string
 
 	/* Sid.
 
 	   Specifies the user identifier of a SMB user. If a valid unix-id to SID mappings are available (i.e., when mixed mode is enabled) the server will perform the necessary id mapping and return the correct usage irrespective of whether the unix id / SID is provided.
 	*/
 	Sid *string
+
+	/* SummaryOnly.
+
+	   Specifies a flag to just return a summary. If set to true, it returns the summary of users for a view. By default, it is set to false.
+	*/
+	SummaryOnly *bool
+
+	/* TopQuotas.
+
+	   TopQuotas is the quotas sorted by quota usage in descending order. This parameter defines number of results to be returned. No pagination cookie is returned if this parameter is set.
+
+	   Format: int64
+	*/
+	TopQuotas *int64
 
 	/* UnixUID.
 
@@ -162,6 +200,39 @@ func (o *GetViewUserQuotasParams) SetCookie(cookie *string) {
 	o.Cookie = cookie
 }
 
+// WithExcludeUsersWithinAlertThreshold adds the excludeUsersWithinAlertThreshold to the get view user quotas params
+func (o *GetViewUserQuotasParams) WithExcludeUsersWithinAlertThreshold(excludeUsersWithinAlertThreshold *bool) *GetViewUserQuotasParams {
+	o.SetExcludeUsersWithinAlertThreshold(excludeUsersWithinAlertThreshold)
+	return o
+}
+
+// SetExcludeUsersWithinAlertThreshold adds the excludeUsersWithinAlertThreshold to the get view user quotas params
+func (o *GetViewUserQuotasParams) SetExcludeUsersWithinAlertThreshold(excludeUsersWithinAlertThreshold *bool) {
+	o.ExcludeUsersWithinAlertThreshold = excludeUsersWithinAlertThreshold
+}
+
+// WithIncludeUsage adds the includeUsage to the get view user quotas params
+func (o *GetViewUserQuotasParams) WithIncludeUsage(includeUsage *bool) *GetViewUserQuotasParams {
+	o.SetIncludeUsage(includeUsage)
+	return o
+}
+
+// SetIncludeUsage adds the includeUsage to the get view user quotas params
+func (o *GetViewUserQuotasParams) SetIncludeUsage(includeUsage *bool) {
+	o.IncludeUsage = includeUsage
+}
+
+// WithIncludeUserWithQuotaOverridesOnly adds the includeUserWithQuotaOverridesOnly to the get view user quotas params
+func (o *GetViewUserQuotasParams) WithIncludeUserWithQuotaOverridesOnly(includeUserWithQuotaOverridesOnly *bool) *GetViewUserQuotasParams {
+	o.SetIncludeUserWithQuotaOverridesOnly(includeUserWithQuotaOverridesOnly)
+	return o
+}
+
+// SetIncludeUserWithQuotaOverridesOnly adds the includeUserWithQuotaOverridesOnly to the get view user quotas params
+func (o *GetViewUserQuotasParams) SetIncludeUserWithQuotaOverridesOnly(includeUserWithQuotaOverridesOnly *bool) {
+	o.IncludeUserWithQuotaOverridesOnly = includeUserWithQuotaOverridesOnly
+}
+
 // WithMaxCount adds the maxCount to the get view user quotas params
 func (o *GetViewUserQuotasParams) WithMaxCount(maxCount *int64) *GetViewUserQuotasParams {
 	o.SetMaxCount(maxCount)
@@ -173,6 +244,17 @@ func (o *GetViewUserQuotasParams) SetMaxCount(maxCount *int64) {
 	o.MaxCount = maxCount
 }
 
+// WithOutputFormat adds the outputFormat to the get view user quotas params
+func (o *GetViewUserQuotasParams) WithOutputFormat(outputFormat *string) *GetViewUserQuotasParams {
+	o.SetOutputFormat(outputFormat)
+	return o
+}
+
+// SetOutputFormat adds the outputFormat to the get view user quotas params
+func (o *GetViewUserQuotasParams) SetOutputFormat(outputFormat *string) {
+	o.OutputFormat = outputFormat
+}
+
 // WithSid adds the sid to the get view user quotas params
 func (o *GetViewUserQuotasParams) WithSid(sid *string) *GetViewUserQuotasParams {
 	o.SetSid(sid)
@@ -182,6 +264,28 @@ func (o *GetViewUserQuotasParams) WithSid(sid *string) *GetViewUserQuotasParams 
 // SetSid adds the sid to the get view user quotas params
 func (o *GetViewUserQuotasParams) SetSid(sid *string) {
 	o.Sid = sid
+}
+
+// WithSummaryOnly adds the summaryOnly to the get view user quotas params
+func (o *GetViewUserQuotasParams) WithSummaryOnly(summaryOnly *bool) *GetViewUserQuotasParams {
+	o.SetSummaryOnly(summaryOnly)
+	return o
+}
+
+// SetSummaryOnly adds the summaryOnly to the get view user quotas params
+func (o *GetViewUserQuotasParams) SetSummaryOnly(summaryOnly *bool) {
+	o.SummaryOnly = summaryOnly
+}
+
+// WithTopQuotas adds the topQuotas to the get view user quotas params
+func (o *GetViewUserQuotasParams) WithTopQuotas(topQuotas *int64) *GetViewUserQuotasParams {
+	o.SetTopQuotas(topQuotas)
+	return o
+}
+
+// SetTopQuotas adds the topQuotas to the get view user quotas params
+func (o *GetViewUserQuotasParams) SetTopQuotas(topQuotas *int64) {
+	o.TopQuotas = topQuotas
 }
 
 // WithUnixUID adds the unixUID to the get view user quotas params
@@ -231,6 +335,57 @@ func (o *GetViewUserQuotasParams) WriteToRequest(r runtime.ClientRequest, reg st
 		}
 	}
 
+	if o.ExcludeUsersWithinAlertThreshold != nil {
+
+		// query param excludeUsersWithinAlertThreshold
+		var qrExcludeUsersWithinAlertThreshold bool
+
+		if o.ExcludeUsersWithinAlertThreshold != nil {
+			qrExcludeUsersWithinAlertThreshold = *o.ExcludeUsersWithinAlertThreshold
+		}
+		qExcludeUsersWithinAlertThreshold := swag.FormatBool(qrExcludeUsersWithinAlertThreshold)
+		if qExcludeUsersWithinAlertThreshold != "" {
+
+			if err := r.SetQueryParam("excludeUsersWithinAlertThreshold", qExcludeUsersWithinAlertThreshold); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeUsage != nil {
+
+		// query param includeUsage
+		var qrIncludeUsage bool
+
+		if o.IncludeUsage != nil {
+			qrIncludeUsage = *o.IncludeUsage
+		}
+		qIncludeUsage := swag.FormatBool(qrIncludeUsage)
+		if qIncludeUsage != "" {
+
+			if err := r.SetQueryParam("includeUsage", qIncludeUsage); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeUserWithQuotaOverridesOnly != nil {
+
+		// query param includeUserWithQuotaOverridesOnly
+		var qrIncludeUserWithQuotaOverridesOnly bool
+
+		if o.IncludeUserWithQuotaOverridesOnly != nil {
+			qrIncludeUserWithQuotaOverridesOnly = *o.IncludeUserWithQuotaOverridesOnly
+		}
+		qIncludeUserWithQuotaOverridesOnly := swag.FormatBool(qrIncludeUserWithQuotaOverridesOnly)
+		if qIncludeUserWithQuotaOverridesOnly != "" {
+
+			if err := r.SetQueryParam("includeUserWithQuotaOverridesOnly", qIncludeUserWithQuotaOverridesOnly); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.MaxCount != nil {
 
 		// query param maxCount
@@ -248,6 +403,23 @@ func (o *GetViewUserQuotasParams) WriteToRequest(r runtime.ClientRequest, reg st
 		}
 	}
 
+	if o.OutputFormat != nil {
+
+		// query param outputFormat
+		var qrOutputFormat string
+
+		if o.OutputFormat != nil {
+			qrOutputFormat = *o.OutputFormat
+		}
+		qOutputFormat := qrOutputFormat
+		if qOutputFormat != "" {
+
+			if err := r.SetQueryParam("outputFormat", qOutputFormat); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Sid != nil {
 
 		// query param sid
@@ -260,6 +432,40 @@ func (o *GetViewUserQuotasParams) WriteToRequest(r runtime.ClientRequest, reg st
 		if qSid != "" {
 
 			if err := r.SetQueryParam("sid", qSid); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SummaryOnly != nil {
+
+		// query param summaryOnly
+		var qrSummaryOnly bool
+
+		if o.SummaryOnly != nil {
+			qrSummaryOnly = *o.SummaryOnly
+		}
+		qSummaryOnly := swag.FormatBool(qrSummaryOnly)
+		if qSummaryOnly != "" {
+
+			if err := r.SetQueryParam("summaryOnly", qSummaryOnly); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.TopQuotas != nil {
+
+		// query param topQuotas
+		var qrTopQuotas int64
+
+		if o.TopQuotas != nil {
+			qrTopQuotas = *o.TopQuotas
+		}
+		qTopQuotas := swag.FormatInt64(qrTopQuotas)
+		if qTopQuotas != "" {
+
+			if err := r.SetQueryParam("topQuotas", qTopQuotas); err != nil {
 				return err
 			}
 		}

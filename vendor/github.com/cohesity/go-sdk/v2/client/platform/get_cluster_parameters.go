@@ -14,6 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetClusterParams creates a new GetClusterParams object,
@@ -60,6 +61,55 @@ GetClusterParams contains all the parameters to send to the API endpoint
 	Typically these are written to a http.Request.
 */
 type GetClusterParams struct {
+
+	/* FetchEncryptionInfo.
+
+	   If 'true', return encryption information about the Cohesity Cluster.
+	*/
+	FetchEncryptionInfo *bool
+
+	/* FetchLicenseInfo.
+
+	   If 'true', return licensing information about the Cohesity Cluster.
+	*/
+	FetchLicenseInfo *bool
+
+	/* FetchMetadataInfo.
+
+	   If 'true', return metadata information about the Cohesity Cluster.
+	*/
+	FetchMetadataInfo *bool
+
+	/* FetchPatchInfo.
+
+	   If 'true', return patch information about the Cohesity Cluster.
+	*/
+	FetchPatchInfo *bool
+
+	/* FetchStats.
+
+	   If 'true', also get statistics about the Cohesity Cluster.
+	*/
+	FetchStats *bool
+
+	/* FetchTimeSeriesSchema.
+
+	   Specifies whether to get time series schema info of the cluster
+	*/
+	FetchTimeSeriesSchema *bool
+
+	/* FetchUpgradeInfo.
+
+	   If 'true', return upgrade information about the Cohesity Cluster.
+	*/
+	FetchUpgradeInfo *bool
+
+	/* IncludeMinimumNodesInfo.
+
+	   Specifies whether to include info about minimum failure domains
+	*/
+	IncludeMinimumNodesInfo *bool
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -113,6 +163,94 @@ func (o *GetClusterParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithFetchEncryptionInfo adds the fetchEncryptionInfo to the get cluster params
+func (o *GetClusterParams) WithFetchEncryptionInfo(fetchEncryptionInfo *bool) *GetClusterParams {
+	o.SetFetchEncryptionInfo(fetchEncryptionInfo)
+	return o
+}
+
+// SetFetchEncryptionInfo adds the fetchEncryptionInfo to the get cluster params
+func (o *GetClusterParams) SetFetchEncryptionInfo(fetchEncryptionInfo *bool) {
+	o.FetchEncryptionInfo = fetchEncryptionInfo
+}
+
+// WithFetchLicenseInfo adds the fetchLicenseInfo to the get cluster params
+func (o *GetClusterParams) WithFetchLicenseInfo(fetchLicenseInfo *bool) *GetClusterParams {
+	o.SetFetchLicenseInfo(fetchLicenseInfo)
+	return o
+}
+
+// SetFetchLicenseInfo adds the fetchLicenseInfo to the get cluster params
+func (o *GetClusterParams) SetFetchLicenseInfo(fetchLicenseInfo *bool) {
+	o.FetchLicenseInfo = fetchLicenseInfo
+}
+
+// WithFetchMetadataInfo adds the fetchMetadataInfo to the get cluster params
+func (o *GetClusterParams) WithFetchMetadataInfo(fetchMetadataInfo *bool) *GetClusterParams {
+	o.SetFetchMetadataInfo(fetchMetadataInfo)
+	return o
+}
+
+// SetFetchMetadataInfo adds the fetchMetadataInfo to the get cluster params
+func (o *GetClusterParams) SetFetchMetadataInfo(fetchMetadataInfo *bool) {
+	o.FetchMetadataInfo = fetchMetadataInfo
+}
+
+// WithFetchPatchInfo adds the fetchPatchInfo to the get cluster params
+func (o *GetClusterParams) WithFetchPatchInfo(fetchPatchInfo *bool) *GetClusterParams {
+	o.SetFetchPatchInfo(fetchPatchInfo)
+	return o
+}
+
+// SetFetchPatchInfo adds the fetchPatchInfo to the get cluster params
+func (o *GetClusterParams) SetFetchPatchInfo(fetchPatchInfo *bool) {
+	o.FetchPatchInfo = fetchPatchInfo
+}
+
+// WithFetchStats adds the fetchStats to the get cluster params
+func (o *GetClusterParams) WithFetchStats(fetchStats *bool) *GetClusterParams {
+	o.SetFetchStats(fetchStats)
+	return o
+}
+
+// SetFetchStats adds the fetchStats to the get cluster params
+func (o *GetClusterParams) SetFetchStats(fetchStats *bool) {
+	o.FetchStats = fetchStats
+}
+
+// WithFetchTimeSeriesSchema adds the fetchTimeSeriesSchema to the get cluster params
+func (o *GetClusterParams) WithFetchTimeSeriesSchema(fetchTimeSeriesSchema *bool) *GetClusterParams {
+	o.SetFetchTimeSeriesSchema(fetchTimeSeriesSchema)
+	return o
+}
+
+// SetFetchTimeSeriesSchema adds the fetchTimeSeriesSchema to the get cluster params
+func (o *GetClusterParams) SetFetchTimeSeriesSchema(fetchTimeSeriesSchema *bool) {
+	o.FetchTimeSeriesSchema = fetchTimeSeriesSchema
+}
+
+// WithFetchUpgradeInfo adds the fetchUpgradeInfo to the get cluster params
+func (o *GetClusterParams) WithFetchUpgradeInfo(fetchUpgradeInfo *bool) *GetClusterParams {
+	o.SetFetchUpgradeInfo(fetchUpgradeInfo)
+	return o
+}
+
+// SetFetchUpgradeInfo adds the fetchUpgradeInfo to the get cluster params
+func (o *GetClusterParams) SetFetchUpgradeInfo(fetchUpgradeInfo *bool) {
+	o.FetchUpgradeInfo = fetchUpgradeInfo
+}
+
+// WithIncludeMinimumNodesInfo adds the includeMinimumNodesInfo to the get cluster params
+func (o *GetClusterParams) WithIncludeMinimumNodesInfo(includeMinimumNodesInfo *bool) *GetClusterParams {
+	o.SetIncludeMinimumNodesInfo(includeMinimumNodesInfo)
+	return o
+}
+
+// SetIncludeMinimumNodesInfo adds the includeMinimumNodesInfo to the get cluster params
+func (o *GetClusterParams) SetIncludeMinimumNodesInfo(includeMinimumNodesInfo *bool) {
+	o.IncludeMinimumNodesInfo = includeMinimumNodesInfo
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetClusterParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -120,6 +258,142 @@ func (o *GetClusterParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Re
 		return err
 	}
 	var res []error
+
+	if o.FetchEncryptionInfo != nil {
+
+		// query param fetchEncryptionInfo
+		var qrFetchEncryptionInfo bool
+
+		if o.FetchEncryptionInfo != nil {
+			qrFetchEncryptionInfo = *o.FetchEncryptionInfo
+		}
+		qFetchEncryptionInfo := swag.FormatBool(qrFetchEncryptionInfo)
+		if qFetchEncryptionInfo != "" {
+
+			if err := r.SetQueryParam("fetchEncryptionInfo", qFetchEncryptionInfo); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.FetchLicenseInfo != nil {
+
+		// query param fetchLicenseInfo
+		var qrFetchLicenseInfo bool
+
+		if o.FetchLicenseInfo != nil {
+			qrFetchLicenseInfo = *o.FetchLicenseInfo
+		}
+		qFetchLicenseInfo := swag.FormatBool(qrFetchLicenseInfo)
+		if qFetchLicenseInfo != "" {
+
+			if err := r.SetQueryParam("fetchLicenseInfo", qFetchLicenseInfo); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.FetchMetadataInfo != nil {
+
+		// query param fetchMetadataInfo
+		var qrFetchMetadataInfo bool
+
+		if o.FetchMetadataInfo != nil {
+			qrFetchMetadataInfo = *o.FetchMetadataInfo
+		}
+		qFetchMetadataInfo := swag.FormatBool(qrFetchMetadataInfo)
+		if qFetchMetadataInfo != "" {
+
+			if err := r.SetQueryParam("fetchMetadataInfo", qFetchMetadataInfo); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.FetchPatchInfo != nil {
+
+		// query param fetchPatchInfo
+		var qrFetchPatchInfo bool
+
+		if o.FetchPatchInfo != nil {
+			qrFetchPatchInfo = *o.FetchPatchInfo
+		}
+		qFetchPatchInfo := swag.FormatBool(qrFetchPatchInfo)
+		if qFetchPatchInfo != "" {
+
+			if err := r.SetQueryParam("fetchPatchInfo", qFetchPatchInfo); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.FetchStats != nil {
+
+		// query param fetchStats
+		var qrFetchStats bool
+
+		if o.FetchStats != nil {
+			qrFetchStats = *o.FetchStats
+		}
+		qFetchStats := swag.FormatBool(qrFetchStats)
+		if qFetchStats != "" {
+
+			if err := r.SetQueryParam("fetchStats", qFetchStats); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.FetchTimeSeriesSchema != nil {
+
+		// query param fetchTimeSeriesSchema
+		var qrFetchTimeSeriesSchema bool
+
+		if o.FetchTimeSeriesSchema != nil {
+			qrFetchTimeSeriesSchema = *o.FetchTimeSeriesSchema
+		}
+		qFetchTimeSeriesSchema := swag.FormatBool(qrFetchTimeSeriesSchema)
+		if qFetchTimeSeriesSchema != "" {
+
+			if err := r.SetQueryParam("fetchTimeSeriesSchema", qFetchTimeSeriesSchema); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.FetchUpgradeInfo != nil {
+
+		// query param fetchUpgradeInfo
+		var qrFetchUpgradeInfo bool
+
+		if o.FetchUpgradeInfo != nil {
+			qrFetchUpgradeInfo = *o.FetchUpgradeInfo
+		}
+		qFetchUpgradeInfo := swag.FormatBool(qrFetchUpgradeInfo)
+		if qFetchUpgradeInfo != "" {
+
+			if err := r.SetQueryParam("fetchUpgradeInfo", qFetchUpgradeInfo); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeMinimumNodesInfo != nil {
+
+		// query param includeMinimumNodesInfo
+		var qrIncludeMinimumNodesInfo bool
+
+		if o.IncludeMinimumNodesInfo != nil {
+			qrIncludeMinimumNodesInfo = *o.IncludeMinimumNodesInfo
+		}
+		qIncludeMinimumNodesInfo := swag.FormatBool(qrIncludeMinimumNodesInfo)
+		if qIncludeMinimumNodesInfo != "" {
+
+			if err := r.SetQueryParam("includeMinimumNodesInfo", qIncludeMinimumNodesInfo); err != nil {
+				return err
+			}
+		}
+	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

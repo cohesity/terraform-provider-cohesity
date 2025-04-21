@@ -120,6 +120,12 @@ type ProtectionGroup struct {
 
 	// Specifies the parameters which are specific to SFDC Adapter related Protection Groups.
 	SfdcParams *SfdcProtectionGroupParams `json:"sfdcParams,omitempty"`
+
+	// Specifies the parameters which are specific to Experimental Adapter related Protection Groups.
+	ExperimentalAdapterParams *ExperimentalAdapterProtectionGroupParams `json:"experimentalAdapterParams,omitempty"`
+
+	// Specifies the parameters which are specific to MongoDB Physical related Protection Groups.
+	MongodbOpsParams *MongoDBOpsManagerProtectionGroupParams `json:"mongodbOpsParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -200,6 +206,10 @@ func (m *ProtectionGroup) UnmarshalJSON(raw []byte) error {
 		SapHanaParams *SapHanaProtectionGroupParams `json:"sapHanaParams,omitempty"`
 
 		SfdcParams *SfdcProtectionGroupParams `json:"sfdcParams,omitempty"`
+
+		ExperimentalAdapterParams *ExperimentalAdapterProtectionGroupParams `json:"experimentalAdapterParams,omitempty"`
+
+		MongodbOpsParams *MongoDBOpsManagerProtectionGroupParams `json:"mongodbOpsParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -272,6 +282,10 @@ func (m *ProtectionGroup) UnmarshalJSON(raw []byte) error {
 	m.SapHanaParams = dataAO1.SapHanaParams
 
 	m.SfdcParams = dataAO1.SfdcParams
+
+	m.ExperimentalAdapterParams = dataAO1.ExperimentalAdapterParams
+
+	m.MongodbOpsParams = dataAO1.MongodbOpsParams
 
 	return nil
 }
@@ -353,6 +367,10 @@ func (m ProtectionGroup) MarshalJSON() ([]byte, error) {
 		SapHanaParams *SapHanaProtectionGroupParams `json:"sapHanaParams,omitempty"`
 
 		SfdcParams *SfdcProtectionGroupParams `json:"sfdcParams,omitempty"`
+
+		ExperimentalAdapterParams *ExperimentalAdapterProtectionGroupParams `json:"experimentalAdapterParams,omitempty"`
+
+		MongodbOpsParams *MongoDBOpsManagerProtectionGroupParams `json:"mongodbOpsParams,omitempty"`
 	}
 
 	dataAO1.VmwareParams = m.VmwareParams
@@ -422,6 +440,10 @@ func (m ProtectionGroup) MarshalJSON() ([]byte, error) {
 	dataAO1.SapHanaParams = m.SapHanaParams
 
 	dataAO1.SfdcParams = m.SfdcParams
+
+	dataAO1.ExperimentalAdapterParams = m.ExperimentalAdapterParams
+
+	dataAO1.MongodbOpsParams = m.MongodbOpsParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -573,6 +595,14 @@ func (m *ProtectionGroup) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateSfdcParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExperimentalAdapterParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMongodbOpsParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1262,6 +1292,46 @@ func (m *ProtectionGroup) validateSfdcParams(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ProtectionGroup) validateExperimentalAdapterParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+		return nil
+	}
+
+	if m.ExperimentalAdapterParams != nil {
+		if err := m.ExperimentalAdapterParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ProtectionGroup) validateMongodbOpsParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.MongodbOpsParams) { // not required
+		return nil
+	}
+
+	if m.MongodbOpsParams != nil {
+		if err := m.MongodbOpsParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this protection group based on the context it is used
 func (m *ProtectionGroup) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -1404,6 +1474,14 @@ func (m *ProtectionGroup) ContextValidate(ctx context.Context, formats strfmt.Re
 	}
 
 	if err := m.contextValidateSfdcParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateExperimentalAdapterParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMongodbOpsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -2119,6 +2197,48 @@ func (m *ProtectionGroup) contextValidateSfdcParams(ctx context.Context, formats
 				return ve.ValidateName("sfdcParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("sfdcParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ProtectionGroup) contextValidateExperimentalAdapterParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ExperimentalAdapterParams != nil {
+
+		if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+			return nil
+		}
+
+		if err := m.ExperimentalAdapterParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ProtectionGroup) contextValidateMongodbOpsParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MongodbOpsParams != nil {
+
+		if swag.IsZero(m.MongodbOpsParams) { // not required
+			return nil
+		}
+
+		if err := m.MongodbOpsParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
 			}
 			return err
 		}

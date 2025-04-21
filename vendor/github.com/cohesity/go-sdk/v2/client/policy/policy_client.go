@@ -58,6 +58,8 @@ type ClientService interface {
 
 	DeleteProtectionPolicy(params *DeleteProtectionPolicyParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProtectionPolicyNoContent, error)
 
+	GetPolicySummary(params *GetPolicySummaryParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetPolicySummaryOK, error)
+
 	GetPolicyTemplateByID(params *GetPolicyTemplateByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetPolicyTemplateByIDOK, error)
 
 	GetPolicyTemplates(params *GetPolicyTemplatesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetPolicyTemplatesOK, error)
@@ -148,6 +150,46 @@ func (a *Client) DeleteProtectionPolicy(params *DeleteProtectionPolicyParams, au
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*DeleteProtectionPolicyDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetPolicySummary gets the protection policy summary
+
+**Privileges:** ```PROTECTION_POLICY_VIEW``` <br><br>Fetch the summary for a given protection policy.
+*/
+func (a *Client) GetPolicySummary(params *GetPolicySummaryParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetPolicySummaryOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetPolicySummaryParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetPolicySummary",
+		Method:             "GET",
+		PathPattern:        "/data-protect/policies/{id}/summary",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetPolicySummaryReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetPolicySummaryOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetPolicySummaryDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

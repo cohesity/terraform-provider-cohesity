@@ -67,8 +67,14 @@ type EnvSpecificObjectProtectionRequestParams struct {
 	// Specifies the parameters which are specific to SAP HANA related Object Backup.
 	SapHanaParams *SapHanaObjectProtectionRequestParams `json:"sapHanaParams,omitempty"`
 
+	// Specifies the parameters which are specific to Kubernetes related Object Backup.
+	KubernetesParams *KubernetesObjectProtectionRequestParams `json:"kubernetesParams,omitempty"`
+
 	// Specifies the parameters which are specific to Azure related Object Backup.
 	AzureParams *AzureObjectProtectionRequestParams `json:"azureParams,omitempty"`
+
+	// Specifies the parameters which are specific to Experimental Adapter related Object Backup.
+	ExperimentalAdapterParams *ExperimentalAdapterObjectProtectionRequestParams `json:"experimentalAdapterParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -114,7 +120,11 @@ func (m *EnvSpecificObjectProtectionRequestParams) UnmarshalJSON(raw []byte) err
 
 		SapHanaParams *SapHanaObjectProtectionRequestParams `json:"sapHanaParams,omitempty"`
 
+		KubernetesParams *KubernetesObjectProtectionRequestParams `json:"kubernetesParams,omitempty"`
+
 		AzureParams *AzureObjectProtectionRequestParams `json:"azureParams,omitempty"`
+
+		ExperimentalAdapterParams *ExperimentalAdapterObjectProtectionRequestParams `json:"experimentalAdapterParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -152,7 +162,11 @@ func (m *EnvSpecificObjectProtectionRequestParams) UnmarshalJSON(raw []byte) err
 
 	m.SapHanaParams = dataAO1.SapHanaParams
 
+	m.KubernetesParams = dataAO1.KubernetesParams
+
 	m.AzureParams = dataAO1.AzureParams
+
+	m.ExperimentalAdapterParams = dataAO1.ExperimentalAdapterParams
 
 	return nil
 }
@@ -199,7 +213,11 @@ func (m EnvSpecificObjectProtectionRequestParams) MarshalJSON() ([]byte, error) 
 
 		SapHanaParams *SapHanaObjectProtectionRequestParams `json:"sapHanaParams,omitempty"`
 
+		KubernetesParams *KubernetesObjectProtectionRequestParams `json:"kubernetesParams,omitempty"`
+
 		AzureParams *AzureObjectProtectionRequestParams `json:"azureParams,omitempty"`
+
+		ExperimentalAdapterParams *ExperimentalAdapterObjectProtectionRequestParams `json:"experimentalAdapterParams,omitempty"`
 	}
 
 	dataAO1.VmwareParams = m.VmwareParams
@@ -234,7 +252,11 @@ func (m EnvSpecificObjectProtectionRequestParams) MarshalJSON() ([]byte, error) 
 
 	dataAO1.SapHanaParams = m.SapHanaParams
 
+	dataAO1.KubernetesParams = m.KubernetesParams
+
 	dataAO1.AzureParams = m.AzureParams
+
+	dataAO1.ExperimentalAdapterParams = m.ExperimentalAdapterParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -317,7 +339,15 @@ func (m *EnvSpecificObjectProtectionRequestParams) Validate(formats strfmt.Regis
 		res = append(res, err)
 	}
 
+	if err := m.validateKubernetesParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateAzureParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExperimentalAdapterParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -647,6 +677,26 @@ func (m *EnvSpecificObjectProtectionRequestParams) validateSapHanaParams(formats
 	return nil
 }
 
+func (m *EnvSpecificObjectProtectionRequestParams) validateKubernetesParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.KubernetesParams) { // not required
+		return nil
+	}
+
+	if m.KubernetesParams != nil {
+		if err := m.KubernetesParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *EnvSpecificObjectProtectionRequestParams) validateAzureParams(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.AzureParams) { // not required
@@ -659,6 +709,26 @@ func (m *EnvSpecificObjectProtectionRequestParams) validateAzureParams(formats s
 				return ve.ValidateName("azureParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azureParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *EnvSpecificObjectProtectionRequestParams) validateExperimentalAdapterParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+		return nil
+	}
+
+	if m.ExperimentalAdapterParams != nil {
+		if err := m.ExperimentalAdapterParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
 			}
 			return err
 		}
@@ -740,7 +810,15 @@ func (m *EnvSpecificObjectProtectionRequestParams) ContextValidate(ctx context.C
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateAzureParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateExperimentalAdapterParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1086,6 +1164,27 @@ func (m *EnvSpecificObjectProtectionRequestParams) contextValidateSapHanaParams(
 	return nil
 }
 
+func (m *EnvSpecificObjectProtectionRequestParams) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.KubernetesParams != nil {
+
+		if swag.IsZero(m.KubernetesParams) { // not required
+			return nil
+		}
+
+		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *EnvSpecificObjectProtectionRequestParams) contextValidateAzureParams(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.AzureParams != nil {
@@ -1099,6 +1198,27 @@ func (m *EnvSpecificObjectProtectionRequestParams) contextValidateAzureParams(ct
 				return ve.ValidateName("azureParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azureParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *EnvSpecificObjectProtectionRequestParams) contextValidateExperimentalAdapterParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ExperimentalAdapterParams != nil {
+
+		if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+			return nil
+		}
+
+		if err := m.ExperimentalAdapterParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
 			}
 			return err
 		}

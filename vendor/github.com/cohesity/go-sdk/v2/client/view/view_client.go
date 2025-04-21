@@ -106,6 +106,8 @@ type ClientService interface {
 
 	LockFile(params *LockFileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*LockFileCreated, error)
 
+	MigrateS3Views(params *MigrateS3ViewsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*MigrateS3ViewsMultiStatus, error)
+
 	OverwriteView(params *OverwriteViewParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*OverwriteViewNoContent, error)
 
 	ReadViewTemplateByID(params *ReadViewTemplateByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ReadViewTemplateByIDOK, error)
@@ -1170,6 +1172,46 @@ func (a *Client) LockFile(params *LockFileParams, authInfo runtime.ClientAuthInf
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*LockFileDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+MigrateS3Views migrates s3 views
+
+**Privileges:** ```STORAGE_MODIFY``` <br><br>Migrate S3 Views from S3 1.0 to 2.0.
+*/
+func (a *Client) MigrateS3Views(params *MigrateS3ViewsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*MigrateS3ViewsMultiStatus, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewMigrateS3ViewsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "MigrateS3Views",
+		Method:             "POST",
+		PathPattern:        "/file-services/migrate-s3-views",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &MigrateS3ViewsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*MigrateS3ViewsMultiStatus)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*MigrateS3ViewsDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

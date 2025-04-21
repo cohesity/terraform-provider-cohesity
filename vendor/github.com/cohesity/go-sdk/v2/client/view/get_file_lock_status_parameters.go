@@ -72,7 +72,7 @@ type GetFileLockStatusParams struct {
 
 	/* Path.
 
-	   Specifies the request file path in a view.
+	   Specifies the file path relative to root of the view.
 	*/
 	Path string
 

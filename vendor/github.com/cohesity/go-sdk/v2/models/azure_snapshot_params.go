@@ -21,7 +21,7 @@ import (
 type AzureSnapshotParams struct {
 
 	// Specifies the protection type of Azure snapshots.
-	// Enum: ["kAgent","kNative","kSnapshotManager","kAzureSQL"]
+	// Enum: ["kAgent","kNative","kSnapshotManager","kAzureSQL","kAzureEntraID"]
 	ProtectionType *string `json:"protectionType,omitempty"`
 }
 
@@ -43,7 +43,7 @@ var azureSnapshotParamsTypeProtectionTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kAzureSQL"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kAzureSQL","kAzureEntraID"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -64,6 +64,9 @@ const (
 
 	// AzureSnapshotParamsProtectionTypeKAzureSQL captures enum value "kAzureSQL"
 	AzureSnapshotParamsProtectionTypeKAzureSQL string = "kAzureSQL"
+
+	// AzureSnapshotParamsProtectionTypeKAzureEntraID captures enum value "kAzureEntraID"
+	AzureSnapshotParamsProtectionTypeKAzureEntraID string = "kAzureEntraID"
 )
 
 // prop value enum

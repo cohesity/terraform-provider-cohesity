@@ -28,7 +28,7 @@ type CommonRecoveryRequestParams struct {
 
 	// Specifies the type of environment of snapshots for which the Recovery has to be performed.
 	// Required: true
-	// Enum: ["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]
 	SnapshotEnvironment *string `json:"snapshotEnvironment"`
 }
 
@@ -63,7 +63,7 @@ var commonRecoveryRequestParamsTypeSnapshotEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kGCP","kKVM","kAcropolis","kAWS","kPhysical","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kSAPHANA","kHBase","kUDA","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -171,6 +171,12 @@ const (
 
 	// CommonRecoveryRequestParamsSnapshotEnvironmentKSfdc captures enum value "kSfdc"
 	CommonRecoveryRequestParamsSnapshotEnvironmentKSfdc string = "kSfdc"
+
+	// CommonRecoveryRequestParamsSnapshotEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonRecoveryRequestParamsSnapshotEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonRecoveryRequestParamsSnapshotEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonRecoveryRequestParamsSnapshotEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

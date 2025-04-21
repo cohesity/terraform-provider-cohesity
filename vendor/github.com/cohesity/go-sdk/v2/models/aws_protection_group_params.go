@@ -24,7 +24,7 @@ type AwsProtectionGroupParams struct {
 
 	// Specifies the AWS Protection Group type.
 	// Required: true
-	// Enum: ["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres"]
+	// Enum: ["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAwsDynamoDB"]
 	ProtectionType *string `json:"protectionType"`
 
 	// Specifies the parameters which are specific to AWS related Protection Groups using cohesity protection-service installed on EC2 instance.
@@ -95,7 +95,7 @@ var awsProtectionGroupParamsTypeProtectionTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAwsDynamoDB"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -131,6 +131,9 @@ const (
 
 	// AwsProtectionGroupParamsProtectionTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
 	AwsProtectionGroupParamsProtectionTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
+
+	// AwsProtectionGroupParamsProtectionTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	AwsProtectionGroupParamsProtectionTypeKAwsDynamoDB string = "kAwsDynamoDB"
 )
 
 // prop value enum

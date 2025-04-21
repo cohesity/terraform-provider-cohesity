@@ -73,7 +73,7 @@ type ProtectionGroupInfo struct {
 	// 'Kubernetes' indicates a Kubernetes Protection Source environment.
 	// 'Elastifile' indicates Elastifile Protection Source environment.
 	// 'AD' indicates Active Directory Protection Source environment.
-	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Type *string `json:"type,omitempty"`
 
 	// Specifies information about the last run for this Protection Group.
@@ -102,7 +102,7 @@ var protectionGroupInfoTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -184,11 +184,17 @@ const (
 	// ProtectionGroupInfoTypeKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	ProtectionGroupInfoTypeKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// ProtectionGroupInfoTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ProtectionGroupInfoTypeKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// ProtectionGroupInfoTypeKAzureNative captures enum value "kAzureNative"
 	ProtectionGroupInfoTypeKAzureNative string = "kAzureNative"
 
 	// ProtectionGroupInfoTypeKAzureSQL captures enum value "kAzureSQL"
 	ProtectionGroupInfoTypeKAzureSQL string = "kAzureSQL"
+
+	// ProtectionGroupInfoTypeKAzureEntraID captures enum value "kAzureEntraID"
+	ProtectionGroupInfoTypeKAzureEntraID string = "kAzureEntraID"
 
 	// ProtectionGroupInfoTypeKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	ProtectionGroupInfoTypeKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -279,6 +285,12 @@ const (
 
 	// ProtectionGroupInfoTypeKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	ProtectionGroupInfoTypeKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// ProtectionGroupInfoTypeKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ProtectionGroupInfoTypeKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ProtectionGroupInfoTypeKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ProtectionGroupInfoTypeKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

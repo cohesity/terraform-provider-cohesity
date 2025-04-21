@@ -45,6 +45,9 @@ type NodeInfo struct {
 	// Node serial number programmed by cohesity software.
 	CohesityNodeSerial string `json:"cohesityNodeSerial,omitempty"`
 
+	// Specifies whether the node is reachable or not
+	IsNodeReachable bool `json:"isNodeReachable,omitempty"`
+
 	// Node serial number programmed by manufacturer.
 	NodeSerial string `json:"nodeSerial,omitempty"`
 

@@ -68,7 +68,7 @@ type ValidateRemoteClusterParams struct {
 
 	   Specifies the request to validate Remote Cluster.
 	*/
-	Body *models.ValidateRemoteClusterConnectionParam
+	Body *models.ValidateRemoteClusterConnectionParams
 
 	/* IncludeMetadata.
 
@@ -130,13 +130,13 @@ func (o *ValidateRemoteClusterParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the validate remote cluster params
-func (o *ValidateRemoteClusterParams) WithBody(body *models.ValidateRemoteClusterConnectionParam) *ValidateRemoteClusterParams {
+func (o *ValidateRemoteClusterParams) WithBody(body *models.ValidateRemoteClusterConnectionParams) *ValidateRemoteClusterParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the validate remote cluster params
-func (o *ValidateRemoteClusterParams) SetBody(body *models.ValidateRemoteClusterConnectionParam) {
+func (o *ValidateRemoteClusterParams) SetBody(body *models.ValidateRemoteClusterConnectionParams) {
 	o.Body = body
 }
 

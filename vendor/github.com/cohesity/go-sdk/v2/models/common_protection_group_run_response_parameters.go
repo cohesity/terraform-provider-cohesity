@@ -7,11 +7,13 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // CommonProtectionGroupRunResponseParameters Common Protection Group run response parameters.
@@ -45,6 +47,9 @@ type CommonProtectionGroupRunResponseParameters struct {
 	// Specifies if snapshots for this run has been deleted.
 	IsLocalSnapshotsDeleted *bool `json:"isLocalSnapshotsDeleted,omitempty"`
 
+	// Specifies if snapshots metadata for this run has been deleted.
+	IsMetadataDeleted *bool `json:"isMetadataDeleted,omitempty"`
+
 	// Snapahot, replication, archival results for each object.
 	Objects []*ObjectRunResult `json:"objects"`
 
@@ -76,6 +81,7 @@ type CommonProtectionGroupRunResponseParameters struct {
 	HasLocalSnapshot *bool `json:"hasLocalSnapshot,omitempty"`
 
 	// Specifies the environment of the Protection Group.
+	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 
 	// The tag of externally triggered backup job.
@@ -115,6 +121,10 @@ func (m *CommonProtectionGroupRunResponseParameters) Validate(formats strfmt.Reg
 	}
 
 	if err := m.validatePermissions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateEnvironment(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -285,6 +295,222 @@ func (m *CommonProtectionGroupRunResponseParameters) validatePermissions(formats
 			}
 		}
 
+	}
+
+	return nil
+}
+
+var commonProtectionGroupRunResponseParametersTypeEnvironmentPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		commonProtectionGroupRunResponseParametersTypeEnvironmentPropEnum = append(commonProtectionGroupRunResponseParametersTypeEnvironmentPropEnum, v)
+	}
+}
+
+const (
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKVMware captures enum value "kVMware"
+	CommonProtectionGroupRunResponseParametersEnvironmentKVMware string = "kVMware"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKHyperV captures enum value "kHyperV"
+	CommonProtectionGroupRunResponseParametersEnvironmentKHyperV string = "kHyperV"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKVCD captures enum value "kVCD"
+	CommonProtectionGroupRunResponseParametersEnvironmentKVCD string = "kVCD"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKSQL captures enum value "kSQL"
+	CommonProtectionGroupRunResponseParametersEnvironmentKSQL string = "kSQL"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKView captures enum value "kView"
+	CommonProtectionGroupRunResponseParametersEnvironmentKView string = "kView"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKRemoteAdapter captures enum value "kRemoteAdapter"
+	CommonProtectionGroupRunResponseParametersEnvironmentKRemoteAdapter string = "kRemoteAdapter"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKPhysical captures enum value "kPhysical"
+	CommonProtectionGroupRunResponseParametersEnvironmentKPhysical string = "kPhysical"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKPure captures enum value "kPure"
+	CommonProtectionGroupRunResponseParametersEnvironmentKPure string = "kPure"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKIbmFlashSystem captures enum value "kIbmFlashSystem"
+	CommonProtectionGroupRunResponseParametersEnvironmentKIbmFlashSystem string = "kIbmFlashSystem"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAzure captures enum value "kAzure"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAzure string = "kAzure"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKNetapp captures enum value "kNetapp"
+	CommonProtectionGroupRunResponseParametersEnvironmentKNetapp string = "kNetapp"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKGenericNas captures enum value "kGenericNas"
+	CommonProtectionGroupRunResponseParametersEnvironmentKGenericNas string = "kGenericNas"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAcropolis captures enum value "kAcropolis"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAcropolis string = "kAcropolis"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKIsilon captures enum value "kIsilon"
+	CommonProtectionGroupRunResponseParametersEnvironmentKIsilon string = "kIsilon"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKKVM captures enum value "kKVM"
+	CommonProtectionGroupRunResponseParametersEnvironmentKKVM string = "kKVM"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAWS captures enum value "kAWS"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAWS string = "kAWS"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAWSNative captures enum value "kAWSNative"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAWSNative string = "kAWSNative"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAwsS3 captures enum value "kAwsS3"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAwsS3 string = "kAwsS3"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAWSSnapshotManager captures enum value "kAWSSnapshotManager"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAWSSnapshotManager string = "kAWSSnapshotManager"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKRDSSnapshotManager captures enum value "kRDSSnapshotManager"
+	CommonProtectionGroupRunResponseParametersEnvironmentKRDSSnapshotManager string = "kRDSSnapshotManager"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAuroraSnapshotManager captures enum value "kAuroraSnapshotManager"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAuroraSnapshotManager string = "kAuroraSnapshotManager"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAwsRDSPostgresBackup captures enum value "kAwsRDSPostgresBackup"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAwsRDSPostgresBackup string = "kAwsRDSPostgresBackup"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAwsRDSPostgres string = "kAwsRDSPostgres"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAzureNative captures enum value "kAzureNative"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAzureNative string = "kAzureNative"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAzureSQL captures enum value "kAzureSQL"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKExchange captures enum value "kExchange"
+	CommonProtectionGroupRunResponseParametersEnvironmentKExchange string = "kExchange"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKOracle captures enum value "kOracle"
+	CommonProtectionGroupRunResponseParametersEnvironmentKOracle string = "kOracle"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKGCP captures enum value "kGCP"
+	CommonProtectionGroupRunResponseParametersEnvironmentKGCP string = "kGCP"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKFlashBlade captures enum value "kFlashBlade"
+	CommonProtectionGroupRunResponseParametersEnvironmentKFlashBlade string = "kFlashBlade"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365 captures enum value "kO365"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365 string = "kO365"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKHyperFlex captures enum value "kHyperFlex"
+	CommonProtectionGroupRunResponseParametersEnvironmentKHyperFlex string = "kHyperFlex"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKAD captures enum value "kAD"
+	CommonProtectionGroupRunResponseParametersEnvironmentKAD string = "kAD"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKGPFS captures enum value "kGPFS"
+	CommonProtectionGroupRunResponseParametersEnvironmentKGPFS string = "kGPFS"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKKubernetes captures enum value "kKubernetes"
+	CommonProtectionGroupRunResponseParametersEnvironmentKKubernetes string = "kKubernetes"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKNimble captures enum value "kNimble"
+	CommonProtectionGroupRunResponseParametersEnvironmentKNimble string = "kNimble"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKElastifile captures enum value "kElastifile"
+	CommonProtectionGroupRunResponseParametersEnvironmentKElastifile string = "kElastifile"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKCassandra captures enum value "kCassandra"
+	CommonProtectionGroupRunResponseParametersEnvironmentKCassandra string = "kCassandra"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKMongoDB captures enum value "kMongoDB"
+	CommonProtectionGroupRunResponseParametersEnvironmentKMongoDB string = "kMongoDB"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKCouchbase captures enum value "kCouchbase"
+	CommonProtectionGroupRunResponseParametersEnvironmentKCouchbase string = "kCouchbase"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKHdfs captures enum value "kHdfs"
+	CommonProtectionGroupRunResponseParametersEnvironmentKHdfs string = "kHdfs"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKHive captures enum value "kHive"
+	CommonProtectionGroupRunResponseParametersEnvironmentKHive string = "kHive"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKHBase captures enum value "kHBase"
+	CommonProtectionGroupRunResponseParametersEnvironmentKHBase string = "kHBase"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKUDA captures enum value "kUDA"
+	CommonProtectionGroupRunResponseParametersEnvironmentKUDA string = "kUDA"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKSAPHANA captures enum value "kSAPHANA"
+	CommonProtectionGroupRunResponseParametersEnvironmentKSAPHANA string = "kSAPHANA"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365Sharepoint captures enum value "kO365Sharepoint"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365Sharepoint string = "kO365Sharepoint"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365PublicFolders captures enum value "kO365PublicFolders"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365PublicFolders string = "kO365PublicFolders"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365Teams captures enum value "kO365Teams"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365Teams string = "kO365Teams"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365Group captures enum value "kO365Group"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365Group string = "kO365Group"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365Exchange captures enum value "kO365Exchange"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365Exchange string = "kO365Exchange"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365OneDrive captures enum value "kO365OneDrive"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365OneDrive string = "kO365OneDrive"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKSfdc captures enum value "kSfdc"
+	CommonProtectionGroupRunResponseParametersEnvironmentKSfdc string = "kSfdc"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365ExchangeCSM captures enum value "kO365ExchangeCSM"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365ExchangeCSM string = "kO365ExchangeCSM"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365OneDriveCSM captures enum value "kO365OneDriveCSM"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365OneDriveCSM string = "kO365OneDriveCSM"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
+	CommonProtectionGroupRunResponseParametersEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonProtectionGroupRunResponseParametersEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonProtectionGroupRunResponseParametersEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonProtectionGroupRunResponseParametersEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
+)
+
+// prop value enum
+func (m *CommonProtectionGroupRunResponseParameters) validateEnvironmentEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, commonProtectionGroupRunResponseParametersTypeEnvironmentPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CommonProtectionGroupRunResponseParameters) validateEnvironment(formats strfmt.Registry) error {
+	if swag.IsZero(m.Environment) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateEnvironmentEnum("environment", "body", *m.Environment); err != nil {
+		return err
 	}
 
 	return nil

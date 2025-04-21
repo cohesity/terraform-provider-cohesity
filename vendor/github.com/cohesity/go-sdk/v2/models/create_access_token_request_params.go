@@ -11,7 +11,6 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
 // CreateAccessTokenRequestParams Specifies the Cohesity credentials required for creating an access token.
@@ -20,26 +19,29 @@ import (
 type CreateAccessTokenRequestParams struct {
 
 	// Specifies the login name of the Cohesity user.
-	// Required: true
-	Username *string `json:"username"`
+	Username *string `json:"username,omitempty"`
 
 	// Specifies the password of the Cohesity user account.
-	// Required: true
-	Password *string `json:"password"`
+	Password *string `json:"password,omitempty"`
 
 	// Specifies the domain the user is logging in to. For a local user the domain is LOCAL. For LDAP/AD user, the domain will map to a LDAP connection string. A user is uniquely identified by a combination of username and domain. LOCAL is the default domain.
 	Domain *string `json:"domain,omitempty"`
+
+	// Specifies the certificate for logging in the cert base auth cluster.
+	Certificate *string `json:"certificate,omitempty"`
+
+	// Specifies the matching private key of the above certificate.
+	PrivateKey *string `json:"privateKey,omitempty"`
+
+	// Specifies the multi-factor authentication params.
+	MfaParams *MfaParams `json:"mfaParams,omitempty"`
 }
 
 // Validate validates this create access token request params
 func (m *CreateAccessTokenRequestParams) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateUsername(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePassword(formats); err != nil {
+	if err := m.validateMfaParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -49,26 +51,57 @@ func (m *CreateAccessTokenRequestParams) Validate(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *CreateAccessTokenRequestParams) validateUsername(formats strfmt.Registry) error {
+func (m *CreateAccessTokenRequestParams) validateMfaParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.MfaParams) { // not required
+		return nil
+	}
 
-	if err := validate.Required("username", "body", m.Username); err != nil {
-		return err
+	if m.MfaParams != nil {
+		if err := m.MfaParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mfaParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mfaParams")
+			}
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (m *CreateAccessTokenRequestParams) validatePassword(formats strfmt.Registry) error {
-
-	if err := validate.Required("password", "body", m.Password); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ContextValidate validates this create access token request params based on context it is used
+// ContextValidate validate this create access token request params based on the context it is used
 func (m *CreateAccessTokenRequestParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateMfaParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *CreateAccessTokenRequestParams) contextValidateMfaParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MfaParams != nil {
+
+		if swag.IsZero(m.MfaParams) { // not required
+			return nil
+		}
+
+		if err := m.MfaParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mfaParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mfaParams")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

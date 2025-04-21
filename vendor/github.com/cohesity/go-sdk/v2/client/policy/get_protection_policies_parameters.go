@@ -118,6 +118,12 @@ type GetProtectionPoliciesParams struct {
 	*/
 	Types []string
 
+	/* VaultIds.
+
+	   Filter by a list of Vault ids. Policies archiving to any of the specified vaults will be returned.
+	*/
+	VaultIds []int64
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -281,6 +287,17 @@ func (o *GetProtectionPoliciesParams) SetTypes(types []string) {
 	o.Types = types
 }
 
+// WithVaultIds adds the vaultIds to the get protection policies params
+func (o *GetProtectionPoliciesParams) WithVaultIds(vaultIds []int64) *GetProtectionPoliciesParams {
+	o.SetVaultIds(vaultIds)
+	return o
+}
+
+// SetVaultIds adds the vaultIds to the get protection policies params
+func (o *GetProtectionPoliciesParams) SetVaultIds(vaultIds []int64) {
+	o.VaultIds = vaultIds
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetProtectionPoliciesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -409,6 +426,17 @@ func (o *GetProtectionPoliciesParams) WriteToRequest(r runtime.ClientRequest, re
 		}
 	}
 
+	if o.VaultIds != nil {
+
+		// binding items for vaultIds
+		joinedVaultIds := o.bindParamVaultIds(reg)
+
+		// query array param vaultIds
+		if err := r.SetQueryParam("vaultIds", joinedVaultIds...); err != nil {
+			return err
+		}
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -481,4 +509,21 @@ func (o *GetProtectionPoliciesParams) bindParamTypes(formats strfmt.Registry) []
 	typesIS := swag.JoinByFormat(typesIC, "")
 
 	return typesIS
+}
+
+// bindParamGetProtectionPolicies binds the parameter vaultIds
+func (o *GetProtectionPoliciesParams) bindParamVaultIds(formats strfmt.Registry) []string {
+	vaultIdsIR := o.VaultIds
+
+	var vaultIdsIC []string
+	for _, vaultIdsIIR := range vaultIdsIR { // explode []int64
+
+		vaultIdsIIV := swag.FormatInt64(vaultIdsIIR) // int64 as string
+		vaultIdsIC = append(vaultIdsIC, vaultIdsIIV)
+	}
+
+	// items.CollectionFormat: ""
+	vaultIdsIS := swag.JoinByFormat(vaultIdsIC, "")
+
+	return vaultIdsIS
 }

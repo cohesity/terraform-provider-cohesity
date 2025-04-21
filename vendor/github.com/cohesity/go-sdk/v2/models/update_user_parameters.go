@@ -19,6 +19,9 @@ import (
 type UpdateUserParameters struct {
 	CommonUpdatableUserParams
 
+	// Specifies the username.
+	Username *string `json:"username,omitempty"`
+
 	// Specifies the LOCAL user properties. This field is required when updating LOCAL Cohesity User params.
 	LocalUserParams *LocalUserUpdateParams `json:"localUserParams,omitempty"`
 }
@@ -34,11 +37,15 @@ func (m *UpdateUserParameters) UnmarshalJSON(raw []byte) error {
 
 	// AO1
 	var dataAO1 struct {
+		Username *string `json:"username,omitempty"`
+
 		LocalUserParams *LocalUserUpdateParams `json:"localUserParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
 	}
+
+	m.Username = dataAO1.Username
 
 	m.LocalUserParams = dataAO1.LocalUserParams
 
@@ -55,8 +62,12 @@ func (m UpdateUserParameters) MarshalJSON() ([]byte, error) {
 	}
 	_parts = append(_parts, aO0)
 	var dataAO1 struct {
+		Username *string `json:"username,omitempty"`
+
 		LocalUserParams *LocalUserUpdateParams `json:"localUserParams,omitempty"`
 	}
+
+	dataAO1.Username = m.Username
 
 	dataAO1.LocalUserParams = m.LocalUserParams
 

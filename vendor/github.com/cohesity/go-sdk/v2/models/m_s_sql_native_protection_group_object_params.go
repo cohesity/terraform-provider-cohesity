@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -31,6 +32,7 @@ type MSSQLNativeProtectionGroupObjectParams struct {
 
 	// Specifies the type of source being protected.
 	// Read Only: true
+	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	SourceType *string `json:"sourceType,omitempty"`
 }
 
@@ -39,6 +41,10 @@ func (m *MSSQLNativeProtectionGroupObjectParams) Validate(formats strfmt.Registr
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSourceType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -51,6 +57,222 @@ func (m *MSSQLNativeProtectionGroupObjectParams) Validate(formats strfmt.Registr
 func (m *MSSQLNativeProtectionGroupObjectParams) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var mSSqlNativeProtectionGroupObjectParamsTypeSourceTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		mSSqlNativeProtectionGroupObjectParamsTypeSourceTypePropEnum = append(mSSqlNativeProtectionGroupObjectParamsTypeSourceTypePropEnum, v)
+	}
+}
+
+const (
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKVMware captures enum value "kVMware"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKVMware string = "kVMware"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKHyperV captures enum value "kHyperV"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKHyperV string = "kHyperV"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKVCD captures enum value "kVCD"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKVCD string = "kVCD"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKSQL captures enum value "kSQL"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKSQL string = "kSQL"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKView captures enum value "kView"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKView string = "kView"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKRemoteAdapter captures enum value "kRemoteAdapter"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKRemoteAdapter string = "kRemoteAdapter"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKPhysical captures enum value "kPhysical"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKPhysical string = "kPhysical"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKPure captures enum value "kPure"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKPure string = "kPure"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKIbmFlashSystem captures enum value "kIbmFlashSystem"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKIbmFlashSystem string = "kIbmFlashSystem"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzure captures enum value "kAzure"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzure string = "kAzure"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKNetapp captures enum value "kNetapp"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKNetapp string = "kNetapp"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKGenericNas captures enum value "kGenericNas"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKGenericNas string = "kGenericNas"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAcropolis captures enum value "kAcropolis"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAcropolis string = "kAcropolis"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKIsilon captures enum value "kIsilon"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKIsilon string = "kIsilon"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKKVM captures enum value "kKVM"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKKVM string = "kKVM"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAWS captures enum value "kAWS"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAWS string = "kAWS"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAWSNative captures enum value "kAWSNative"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAWSNative string = "kAWSNative"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsS3 captures enum value "kAwsS3"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsS3 string = "kAwsS3"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAWSSnapshotManager captures enum value "kAWSSnapshotManager"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAWSSnapshotManager string = "kAWSSnapshotManager"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKRDSSnapshotManager captures enum value "kRDSSnapshotManager"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKRDSSnapshotManager string = "kRDSSnapshotManager"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAuroraSnapshotManager captures enum value "kAuroraSnapshotManager"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAuroraSnapshotManager string = "kAuroraSnapshotManager"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgresBackup captures enum value "kAwsRDSPostgresBackup"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgresBackup string = "kAwsRDSPostgresBackup"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsAuroraPostgres string = "kAwsAuroraPostgres"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAwsDynamoDB string = "kAwsDynamoDB"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureNative captures enum value "kAzureNative"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureNative string = "kAzureNative"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureSQL captures enum value "kAzureSQL"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureSQL string = "kAzureSQL"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureEntraID captures enum value "kAzureEntraID"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureEntraID string = "kAzureEntraID"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAzureSnapshotManager string = "kAzureSnapshotManager"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKExchange captures enum value "kExchange"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKExchange string = "kExchange"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKOracle captures enum value "kOracle"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKOracle string = "kOracle"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKGCP captures enum value "kGCP"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKGCP string = "kGCP"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKFlashBlade captures enum value "kFlashBlade"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKFlashBlade string = "kFlashBlade"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365 captures enum value "kO365"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365 string = "kO365"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKHyperFlex captures enum value "kHyperFlex"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKHyperFlex string = "kHyperFlex"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKAD captures enum value "kAD"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKAD string = "kAD"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKGPFS captures enum value "kGPFS"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKGPFS string = "kGPFS"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKKubernetes captures enum value "kKubernetes"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKKubernetes string = "kKubernetes"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKNimble captures enum value "kNimble"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKNimble string = "kNimble"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKElastifile captures enum value "kElastifile"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKElastifile string = "kElastifile"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKCassandra captures enum value "kCassandra"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKCassandra string = "kCassandra"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKMongoDB captures enum value "kMongoDB"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKMongoDB string = "kMongoDB"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKCouchbase captures enum value "kCouchbase"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKCouchbase string = "kCouchbase"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKHdfs captures enum value "kHdfs"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKHdfs string = "kHdfs"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKHive captures enum value "kHive"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKHive string = "kHive"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKHBase captures enum value "kHBase"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKHBase string = "kHBase"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKUDA captures enum value "kUDA"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKUDA string = "kUDA"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKSAPHANA captures enum value "kSAPHANA"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKSAPHANA string = "kSAPHANA"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Sharepoint captures enum value "kO365Sharepoint"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Sharepoint string = "kO365Sharepoint"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365PublicFolders captures enum value "kO365PublicFolders"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365PublicFolders string = "kO365PublicFolders"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Teams captures enum value "kO365Teams"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Teams string = "kO365Teams"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Group captures enum value "kO365Group"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Group string = "kO365Group"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Exchange captures enum value "kO365Exchange"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365Exchange string = "kO365Exchange"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365OneDrive captures enum value "kO365OneDrive"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365OneDrive string = "kO365OneDrive"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKSfdc captures enum value "kSfdc"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKSfdc string = "kSfdc"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365ExchangeCSM captures enum value "kO365ExchangeCSM"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365ExchangeCSM string = "kO365ExchangeCSM"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365OneDriveCSM captures enum value "kO365OneDriveCSM"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365OneDriveCSM string = "kO365OneDriveCSM"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365SharepointCSM captures enum value "kO365SharepointCSM"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// MSSQLNativeProtectionGroupObjectParamsSourceTypeKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	MSSQLNativeProtectionGroupObjectParamsSourceTypeKMongoDBPhysical string = "kMongoDBPhysical"
+)
+
+// prop value enum
+func (m *MSSQLNativeProtectionGroupObjectParams) validateSourceTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, mSSqlNativeProtectionGroupObjectParamsTypeSourceTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *MSSQLNativeProtectionGroupObjectParams) validateSourceType(formats strfmt.Registry) error {
+	if swag.IsZero(m.SourceType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateSourceTypeEnum("sourceType", "body", *m.SourceType); err != nil {
 		return err
 	}
 

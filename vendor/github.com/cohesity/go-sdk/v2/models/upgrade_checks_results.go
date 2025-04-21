@@ -23,10 +23,10 @@ import (
 // swagger:model UpgradeChecksResults
 type UpgradeChecksResults struct {
 
-	// Specifies test run instance of upgrade checks
+	// Specifies test run instance of upgrade checks.
 	TestRunInstanceID string `json:"testRunInstanceId,omitempty"`
 
-	// type of checks(preupgrade/postupgrade)
+	// Type of the check(preupgrade/postupgrade).
 	RequestType string `json:"requestType,omitempty"`
 
 	// Specifies unix epoch start time of checks(in seconds).
@@ -35,11 +35,14 @@ type UpgradeChecksResults struct {
 	// Specifies unix epoch finish time of checks(in seconds).
 	FinishTimeSecs *int64 `json:"finishTimeSecs,omitempty"`
 
-	// final result (running/pass/fail) of run
+	// Final result (running/pass/fail) of run.
 	// Enum: ["Running","Passed","Failed","NotAvailable"]
 	ResultStatus string `json:"resultStatus,omitempty"`
 
-	// The healthcheck result for node
+	// Error message if test results could not be fetched.
+	Error string `json:"error,omitempty"`
+
+	// The healthcheck result for node.
 	NodeResults []*UpgradeCheckNodeResult `json:"nodeResults,omitempty"`
 }
 

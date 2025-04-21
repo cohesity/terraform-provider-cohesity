@@ -22,7 +22,7 @@ type CommonArchivalExternalTargetParams struct {
 
 	// Specifies the Storage type of the External Target. Nas option in archival_target_storage_type will soon be deprecated. Please use NAS instead.
 	// Required: true
-	// Enum: ["Azure","Google","AWS","Oracle","Nas","NAS","QStarTape","S3Compatible"]
+	// Enum: ["Azure","Google","AWS","Oracle","Nas","NAS","QStarTape","S3Compatible","IBM"]
 	StorageType *string `json:"storageType"`
 
 	// encryption
@@ -31,6 +31,9 @@ type CommonArchivalExternalTargetParams struct {
 
 	// target bandwidth throttlings
 	TargetBandwidthThrottlings *TargetBandwidthThrottlings `json:"targetBandwidthThrottlings,omitempty"`
+
+	// cad config
+	CadConfig *CloudArchivalDirectConfig `json:"cadConfig,omitempty"`
 }
 
 // Validate validates this common archival external target params
@@ -49,6 +52,10 @@ func (m *CommonArchivalExternalTargetParams) Validate(formats strfmt.Registry) e
 		res = append(res, err)
 	}
 
+	if err := m.validateCadConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -59,7 +66,7 @@ var commonArchivalExternalTargetParamsTypeStorageTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Azure","Google","AWS","Oracle","Nas","NAS","QStarTape","S3Compatible"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Azure","Google","AWS","Oracle","Nas","NAS","QStarTape","S3Compatible","IBM"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -92,6 +99,9 @@ const (
 
 	// CommonArchivalExternalTargetParamsStorageTypeS3Compatible captures enum value "S3Compatible"
 	CommonArchivalExternalTargetParamsStorageTypeS3Compatible string = "S3Compatible"
+
+	// CommonArchivalExternalTargetParamsStorageTypeIBM captures enum value "IBM"
+	CommonArchivalExternalTargetParamsStorageTypeIBM string = "IBM"
 )
 
 // prop value enum
@@ -155,6 +165,25 @@ func (m *CommonArchivalExternalTargetParams) validateTargetBandwidthThrottlings(
 	return nil
 }
 
+func (m *CommonArchivalExternalTargetParams) validateCadConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.CadConfig) { // not required
+		return nil
+	}
+
+	if m.CadConfig != nil {
+		if err := m.CadConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("cadConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cadConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this common archival external target params based on the context it is used
 func (m *CommonArchivalExternalTargetParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -164,6 +193,10 @@ func (m *CommonArchivalExternalTargetParams) ContextValidate(ctx context.Context
 	}
 
 	if err := m.contextValidateTargetBandwidthThrottlings(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateCadConfig(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -203,6 +236,27 @@ func (m *CommonArchivalExternalTargetParams) contextValidateTargetBandwidthThrot
 				return ve.ValidateName("targetBandwidthThrottlings")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("targetBandwidthThrottlings")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CommonArchivalExternalTargetParams) contextValidateCadConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.CadConfig != nil {
+
+		if swag.IsZero(m.CadConfig) { // not required
+			return nil
+		}
+
+		if err := m.CadConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("cadConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cadConfig")
 			}
 			return err
 		}

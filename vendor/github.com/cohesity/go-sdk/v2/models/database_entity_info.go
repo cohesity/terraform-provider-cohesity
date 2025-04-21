@@ -29,6 +29,12 @@ type DatabaseEntityInfo struct {
 	// Specifies database type of oracle database.
 	// Enum: ["kSingleInstance","kRACDatabase"]
 	DbType *string `json:"dbType,omitempty"`
+
+	// Specifies version of oracle database.
+	Version *string `json:"version,omitempty"`
+
+	// Specifies the number of TDE encrypted tablespaces found in the database.
+	TdeEncryptedTsCount *int64 `json:"tdeEncryptedTsCount,omitempty"`
 }
 
 // Validate validates this database entity info

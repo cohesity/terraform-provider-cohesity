@@ -12,9 +12,9 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Office365AppCredentials Office365 azure application credentials.
+// Office365AppCredentials Azure application credentials.
 //
-// Specifies credentials for office365 azure registered applications, used for office 365 source registration.
+// Specifies credentials of azure registered applications, used for office 365/Azure source registration.
 //
 // swagger:model Office365AppCredentials
 type Office365AppCredentials struct {

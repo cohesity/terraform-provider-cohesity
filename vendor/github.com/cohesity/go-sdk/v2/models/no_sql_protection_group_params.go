@@ -51,9 +51,15 @@ type NoSQLProtectionGroupParams struct {
 	// Unique: true
 	IncludeObjectlist []string `json:"includeObjectlist"`
 
+	// If disabled - The includeObjectlist is merged with the existing sources_vec, preserving any existing elements while incorporating new ones.
+	OverwriteIncludeObjectlist *bool `json:"overwriteIncludeObjectlist,omitempty"`
+
 	// Specifies the list of fully qualified name of the entities to exclude for protection.
 	// Unique: true
 	ExcludeObjectlist []string `json:"excludeObjectlist"`
+
+	// If disabled - The excludeObjectlist is merged with the existing exclude_sources_vec, preserving any existing elements while incorporating new ones.
+	OverwriteExcludeObjectlist *bool `json:"overwriteExcludeObjectlist,omitempty"`
 
 	// Specifies the flag to automatically scale number of concurrent IO Streams that will be created to exchange data with the cluster.
 	AutoScaleConcurrency *bool `json:"autoScaleConcurrency,omitempty"`

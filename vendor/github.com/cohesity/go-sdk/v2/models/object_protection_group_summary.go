@@ -27,7 +27,7 @@ type ObjectProtectionGroupSummary struct {
 	ID *string `json:"id,omitempty"`
 
 	// Specifies the protection type of the job if any.
-	// Enum: ["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAzureSQL","kFile","kVolume"]
+	// Enum: ["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAwsDynamoDB","kAzureSQL","kAzureEntraID","kFile","kVolume"]
 	ProtectionEnvType *string `json:"protectionEnvType,omitempty"`
 
 	// Specifies the policy name for this group.
@@ -85,7 +85,7 @@ var objectProtectionGroupSummaryTypeProtectionEnvTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAzureSQL","kFile","kVolume"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAwsAuroraPostgres","kAwsRDSPostgres","kAwsDynamoDB","kAzureSQL","kAzureEntraID","kFile","kVolume"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -122,8 +122,14 @@ const (
 	// ObjectProtectionGroupSummaryProtectionEnvTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
 	ObjectProtectionGroupSummaryProtectionEnvTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
 
+	// ObjectProtectionGroupSummaryProtectionEnvTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ObjectProtectionGroupSummaryProtectionEnvTypeKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// ObjectProtectionGroupSummaryProtectionEnvTypeKAzureSQL captures enum value "kAzureSQL"
 	ObjectProtectionGroupSummaryProtectionEnvTypeKAzureSQL string = "kAzureSQL"
+
+	// ObjectProtectionGroupSummaryProtectionEnvTypeKAzureEntraID captures enum value "kAzureEntraID"
+	ObjectProtectionGroupSummaryProtectionEnvTypeKAzureEntraID string = "kAzureEntraID"
 
 	// ObjectProtectionGroupSummaryProtectionEnvTypeKFile captures enum value "kFile"
 	ObjectProtectionGroupSummaryProtectionEnvTypeKFile string = "kFile"

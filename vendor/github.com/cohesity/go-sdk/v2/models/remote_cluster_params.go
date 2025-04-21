@@ -70,6 +70,10 @@ type RemoteClusterParams struct {
 	// Specifies if TLS is enabled on the Remote Cluster.
 	TLSEnabled *bool `json:"tlsEnabled,omitempty"`
 
+	// Specifies the tenant Id of the Remote Cluster.
+	// Read Only: true
+	TenantID *string `json:"tenantId,omitempty"`
+
 	// Specifies the replication config for a Remote Cluster. Required when usedForReplication is set to true.
 	ReplicationParams *ReplicationParams `json:"replicationParams,omitempty"`
 }
@@ -263,6 +267,10 @@ func (m *RemoteClusterParams) ContextValidate(ctx context.Context, formats strfm
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateTenantID(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateReplicationParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -312,6 +320,15 @@ func (m *RemoteClusterParams) contextValidateClusterName(ctx context.Context, fo
 func (m *RemoteClusterParams) contextValidateIsAutoRegistered(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "isAutoRegistered", "body", m.IsAutoRegistered); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *RemoteClusterParams) contextValidateTenantID(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "tenantId", "body", m.TenantID); err != nil {
 		return err
 	}
 

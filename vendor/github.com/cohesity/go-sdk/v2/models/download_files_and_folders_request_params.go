@@ -36,7 +36,6 @@ type DownloadFilesAndFoldersRequestParams struct {
 	ParentRecoveryID *string `json:"parentRecoveryId,omitempty"`
 
 	// Specifies the list of files and folders to download. Only one of filesAndFolders or documents should be used.
-	// Min Items: 1
 	FilesAndFolders []*FilesAndFoldersObject `json:"filesAndFolders"`
 
 	// Specifies the list of documents to download using item ids. Only one of filesAndFolders or documents should be used. Currently only files are supported by documents.
@@ -126,12 +125,6 @@ func (m *DownloadFilesAndFoldersRequestParams) validateParentRecoveryID(formats 
 func (m *DownloadFilesAndFoldersRequestParams) validateFilesAndFolders(formats strfmt.Registry) error {
 	if swag.IsZero(m.FilesAndFolders) { // not required
 		return nil
-	}
-
-	iFilesAndFoldersSize := int64(len(m.FilesAndFolders))
-
-	if err := validate.MinItems("filesAndFolders", "body", iFilesAndFoldersSize, 1); err != nil {
-		return err
 	}
 
 	for i := 0; i < len(m.FilesAndFolders); i++ {

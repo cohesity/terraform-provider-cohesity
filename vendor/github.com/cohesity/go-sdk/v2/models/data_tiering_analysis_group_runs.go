@@ -17,28 +17,21 @@ import (
 // DataTieringAnalysisGroupRuns Specifies the runs of a data tiering analysis group.
 //
 // swagger:model DataTieringAnalysisGroupRuns
-type DataTieringAnalysisGroupRuns []*DataTieringAnalysisGroupRun
+type DataTieringAnalysisGroupRuns struct {
+
+	// Specifies the data tiering analysis group runs.
+	Runs []*DataTieringAnalysisGroupRun `json:"runs"`
+
+	// Indicates whether the result is truncated due to hitting maximum size limit
+	IsResponseTruncated *bool `json:"isResponseTruncated,omitempty"`
+}
 
 // Validate validates this data tiering analysis group runs
-func (m DataTieringAnalysisGroupRuns) Validate(formats strfmt.Registry) error {
+func (m *DataTieringAnalysisGroupRuns) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	for i := 0; i < len(m); i++ {
-		if swag.IsZero(m[i]) { // not required
-			continue
-		}
-
-		if m[i] != nil {
-			if err := m[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName(strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName(strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
+	if err := m.validateRuns(formats); err != nil {
+		res = append(res, err)
 	}
 
 	if len(res) > 0 {
@@ -47,23 +40,22 @@ func (m DataTieringAnalysisGroupRuns) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this data tiering analysis group runs based on the context it is used
-func (m DataTieringAnalysisGroupRuns) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
+func (m *DataTieringAnalysisGroupRuns) validateRuns(formats strfmt.Registry) error {
+	if swag.IsZero(m.Runs) { // not required
+		return nil
+	}
 
-	for i := 0; i < len(m); i++ {
+	for i := 0; i < len(m.Runs); i++ {
+		if swag.IsZero(m.Runs[i]) { // not required
+			continue
+		}
 
-		if m[i] != nil {
-
-			if swag.IsZero(m[i]) { // not required
-				return nil
-			}
-
-			if err := m[i].ContextValidate(ctx, formats); err != nil {
+		if m.Runs[i] != nil {
+			if err := m.Runs[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName(strconv.Itoa(i))
+					return ve.ValidateName("runs" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName(strconv.Itoa(i))
+					return ce.ValidateName("runs" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -71,8 +63,62 @@ func (m DataTieringAnalysisGroupRuns) ContextValidate(ctx context.Context, forma
 
 	}
 
+	return nil
+}
+
+// ContextValidate validate this data tiering analysis group runs based on the context it is used
+func (m *DataTieringAnalysisGroupRuns) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateRuns(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *DataTieringAnalysisGroupRuns) contextValidateRuns(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Runs); i++ {
+
+		if m.Runs[i] != nil {
+
+			if swag.IsZero(m.Runs[i]) { // not required
+				return nil
+			}
+
+			if err := m.Runs[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("runs" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("runs" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *DataTieringAnalysisGroupRuns) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *DataTieringAnalysisGroupRuns) UnmarshalBinary(b []byte) error {
+	var res DataTieringAnalysisGroupRuns
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
 	return nil
 }

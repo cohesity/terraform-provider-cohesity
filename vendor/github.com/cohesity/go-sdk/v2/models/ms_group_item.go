@@ -24,7 +24,7 @@ type MsGroupItem struct {
 	CommonIndexedObjectParams
 
 	// Specifies the M365 Group item type.
-	// Enum: ["Email","EmailFolder","SiteFile","SiteFolder"]
+	// Enum: ["Email","EmailFolder","SiteFile","SiteFolder","Calendar","Contact","Note","Task","CalendarFolder","ContactFolder","TaskFolder","SearchFolder"]
 	Type *string `json:"type,omitempty"`
 
 	// Specifies the indexed M365 Group mailbox item.
@@ -126,7 +126,7 @@ var msGroupItemTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Email","EmailFolder","SiteFile","SiteFolder"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Email","EmailFolder","SiteFile","SiteFolder","Calendar","Contact","Note","Task","CalendarFolder","ContactFolder","TaskFolder","SearchFolder"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

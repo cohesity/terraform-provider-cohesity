@@ -115,7 +115,8 @@ type GetViewsParams struct {
 
 	/* IncludeS3MigrationOnly.
 
-	   Specifies whether to return only views which have a s3 migration state or are eligible for migration.
+	     Specifies whether to return only views which have a
+	s3 migration state.
 	*/
 	IncludeS3MigrationOnly *bool
 
@@ -232,12 +233,33 @@ type GetViewsParams struct {
 	*/
 	ProtocolAccesses []string
 
+	/* QosPolicies.
+
+	   Specifies a filter for Views based on the qosPolicies. This param will be prioritized if qosPrincipalIds is also specified.
+	*/
+	QosPolicies []string
+
 	/* QosPrincipalIds.
 
-	     qosPrincipalIds contains ids of the QoS principal for which
-	views are to be returned.
+	   qosPrincipalIds contains ids of the QoS principal for which views are to be returned. This field is deprecated.
 	*/
 	QosPrincipalIds []int64
+
+	/* ReturnAllViews.
+
+	   Specifies if all the Views should be returned as part of the response.
+	*/
+	ReturnAllViews *bool
+
+	/* S3MigrationState.
+
+	     Filter the list of Views by S3 Migration Statuses.
+	Supported filter values are
+	[Enabled, UnderMigration, Paused, Completed, Eligible]."
+	If `s3MigrationState` is specified then
+	`includeS3MigrationOnly` param should also be set to true.
+	*/
+	S3MigrationState *string
 
 	/* SortByLogicalUsage.
 
@@ -627,6 +649,17 @@ func (o *GetViewsParams) SetProtocolAccesses(protocolAccesses []string) {
 	o.ProtocolAccesses = protocolAccesses
 }
 
+// WithQosPolicies adds the qosPolicies to the get views params
+func (o *GetViewsParams) WithQosPolicies(qosPolicies []string) *GetViewsParams {
+	o.SetQosPolicies(qosPolicies)
+	return o
+}
+
+// SetQosPolicies adds the qosPolicies to the get views params
+func (o *GetViewsParams) SetQosPolicies(qosPolicies []string) {
+	o.QosPolicies = qosPolicies
+}
+
 // WithQosPrincipalIds adds the qosPrincipalIds to the get views params
 func (o *GetViewsParams) WithQosPrincipalIds(qosPrincipalIds []int64) *GetViewsParams {
 	o.SetQosPrincipalIds(qosPrincipalIds)
@@ -636,6 +669,28 @@ func (o *GetViewsParams) WithQosPrincipalIds(qosPrincipalIds []int64) *GetViewsP
 // SetQosPrincipalIds adds the qosPrincipalIds to the get views params
 func (o *GetViewsParams) SetQosPrincipalIds(qosPrincipalIds []int64) {
 	o.QosPrincipalIds = qosPrincipalIds
+}
+
+// WithReturnAllViews adds the returnAllViews to the get views params
+func (o *GetViewsParams) WithReturnAllViews(returnAllViews *bool) *GetViewsParams {
+	o.SetReturnAllViews(returnAllViews)
+	return o
+}
+
+// SetReturnAllViews adds the returnAllViews to the get views params
+func (o *GetViewsParams) SetReturnAllViews(returnAllViews *bool) {
+	o.ReturnAllViews = returnAllViews
+}
+
+// WithS3MigrationState adds the s3MigrationState to the get views params
+func (o *GetViewsParams) WithS3MigrationState(s3MigrationState *string) *GetViewsParams {
+	o.SetS3MigrationState(s3MigrationState)
+	return o
+}
+
+// SetS3MigrationState adds the s3MigrationState to the get views params
+func (o *GetViewsParams) SetS3MigrationState(s3MigrationState *string) {
+	o.S3MigrationState = s3MigrationState
 }
 
 // WithSortByLogicalUsage adds the sortByLogicalUsage to the get views params
@@ -1127,6 +1182,17 @@ func (o *GetViewsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		}
 	}
 
+	if o.QosPolicies != nil {
+
+		// binding items for qosPolicies
+		joinedQosPolicies := o.bindParamQosPolicies(reg)
+
+		// query array param qosPolicies
+		if err := r.SetQueryParam("qosPolicies", joinedQosPolicies...); err != nil {
+			return err
+		}
+	}
+
 	if o.QosPrincipalIds != nil {
 
 		// binding items for qosPrincipalIds
@@ -1135,6 +1201,40 @@ func (o *GetViewsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		// query array param qosPrincipalIds
 		if err := r.SetQueryParam("qosPrincipalIds", joinedQosPrincipalIds...); err != nil {
 			return err
+		}
+	}
+
+	if o.ReturnAllViews != nil {
+
+		// query param returnAllViews
+		var qrReturnAllViews bool
+
+		if o.ReturnAllViews != nil {
+			qrReturnAllViews = *o.ReturnAllViews
+		}
+		qReturnAllViews := swag.FormatBool(qrReturnAllViews)
+		if qReturnAllViews != "" {
+
+			if err := r.SetQueryParam("returnAllViews", qReturnAllViews); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.S3MigrationState != nil {
+
+		// query param s3MigrationState
+		var qrS3MigrationState string
+
+		if o.S3MigrationState != nil {
+			qrS3MigrationState = *o.S3MigrationState
+		}
+		qS3MigrationState := qrS3MigrationState
+		if qS3MigrationState != "" {
+
+			if err := r.SetQueryParam("s3MigrationState", qS3MigrationState); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -1423,6 +1523,23 @@ func (o *GetViewsParams) bindParamProtocolAccesses(formats strfmt.Registry) []st
 	protocolAccessesIS := swag.JoinByFormat(protocolAccessesIC, "")
 
 	return protocolAccessesIS
+}
+
+// bindParamGetViews binds the parameter qosPolicies
+func (o *GetViewsParams) bindParamQosPolicies(formats strfmt.Registry) []string {
+	qosPoliciesIR := o.QosPolicies
+
+	var qosPoliciesIC []string
+	for _, qosPoliciesIIR := range qosPoliciesIR { // explode []string
+
+		qosPoliciesIIV := qosPoliciesIIR // string as string
+		qosPoliciesIC = append(qosPoliciesIC, qosPoliciesIIV)
+	}
+
+	// items.CollectionFormat: ""
+	qosPoliciesIS := swag.JoinByFormat(qosPoliciesIC, "")
+
+	return qosPoliciesIS
 }
 
 // bindParamGetViews binds the parameter qosPrincipalIds

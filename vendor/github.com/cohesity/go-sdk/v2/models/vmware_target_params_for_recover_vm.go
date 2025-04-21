@@ -54,6 +54,12 @@ type VmwareTargetParamsForRecoverVM struct {
 	// If this field is set to true and SAN transport recovery fails, then recovery will fallback to use NBDSSL transport. This field only applies if 'leverageSanTransport' is set to true.
 	EnableNBDSSLFallback *bool `json:"enableNBDSSLFallback,omitempty"`
 
+	// If this field is set to true, then the user excluded disks will be recovered as blank disks.
+	RecoverExcludedDisks *bool `json:"recoverExcludedDisks,omitempty"`
+
+	// If this field is set to true, then the independent disks which were excluded while backup will be recovered as blank disks.
+	RecoverIndependentDisks *bool `json:"recoverIndependentDisks,omitempty"`
+
 	// Specifies the recovery target configuration if recovery has to be done to a different location which is different from original source or to original Source with different configuration. If not specified, then the recovery of the vms will be performed to original location with all configuration parameters retained.
 	RecoveryTargetConfig *VmwareVMRecoveryTargetConfig `json:"recoveryTargetConfig,omitempty"`
 

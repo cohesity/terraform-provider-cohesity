@@ -24,7 +24,7 @@ type UpdateProtectionGroupsStateRequest struct {
 
 	// Specifies the action to be performed on all the specfied Protection Groups. 'kActivate' specifies that Protection Group should be activated. 'kDeactivate' sepcifies that Protection Group should be deactivated. 'kPause' specifies that Protection Group should be paused. 'kResume' specifies that Protection Group should be resumed.
 	// Required: true
-	// Enum: ["kPause","kResume"]
+	// Enum: ["kPause","kResume","kActivate","kDeactivate"]
 	Action *string `json:"action"`
 
 	// Specifies a list of Protection Group ids for which the state should change.
@@ -32,6 +32,16 @@ type UpdateProtectionGroupsStateRequest struct {
 	// Min Items: 1
 	// Unique: true
 	Ids []string `json:"ids"`
+
+	// Specifies the reason why the protection group was paused
+	// Enum: ["kTenantDeactivation"]
+	LastPauseReason *string `json:"lastPauseReason,omitempty"`
+
+	// Specifies the tenant id who has access to these protection groups.
+	TenantID *string `json:"tenantId,omitempty"`
+
+	// A note from the current user explaining the reason for pausing future runs, if applicable.
+	PausedNote *string `json:"pausedNote,omitempty"`
 }
 
 // Validate validates this update protection groups state request
@@ -46,6 +56,10 @@ func (m *UpdateProtectionGroupsStateRequest) Validate(formats strfmt.Registry) e
 		res = append(res, err)
 	}
 
+	if err := m.validateLastPauseReason(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -56,7 +70,7 @@ var updateProtectionGroupsStateRequestTypeActionPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kPause","kResume"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kPause","kResume","kActivate","kDeactivate"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -71,6 +85,12 @@ const (
 
 	// UpdateProtectionGroupsStateRequestActionKResume captures enum value "kResume"
 	UpdateProtectionGroupsStateRequestActionKResume string = "kResume"
+
+	// UpdateProtectionGroupsStateRequestActionKActivate captures enum value "kActivate"
+	UpdateProtectionGroupsStateRequestActionKActivate string = "kActivate"
+
+	// UpdateProtectionGroupsStateRequestActionKDeactivate captures enum value "kDeactivate"
+	UpdateProtectionGroupsStateRequestActionKDeactivate string = "kDeactivate"
 )
 
 // prop value enum
@@ -108,6 +128,45 @@ func (m *UpdateProtectionGroupsStateRequest) validateIds(formats strfmt.Registry
 	}
 
 	if err := validate.UniqueItems("ids", "body", m.Ids); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var updateProtectionGroupsStateRequestTypeLastPauseReasonPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kTenantDeactivation"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		updateProtectionGroupsStateRequestTypeLastPauseReasonPropEnum = append(updateProtectionGroupsStateRequestTypeLastPauseReasonPropEnum, v)
+	}
+}
+
+const (
+
+	// UpdateProtectionGroupsStateRequestLastPauseReasonKTenantDeactivation captures enum value "kTenantDeactivation"
+	UpdateProtectionGroupsStateRequestLastPauseReasonKTenantDeactivation string = "kTenantDeactivation"
+)
+
+// prop value enum
+func (m *UpdateProtectionGroupsStateRequest) validateLastPauseReasonEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, updateProtectionGroupsStateRequestTypeLastPauseReasonPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *UpdateProtectionGroupsStateRequest) validateLastPauseReason(formats strfmt.Registry) error {
+	if swag.IsZero(m.LastPauseReason) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateLastPauseReasonEnum("lastPauseReason", "body", *m.LastPauseReason); err != nil {
 		return err
 	}
 

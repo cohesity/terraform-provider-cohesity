@@ -22,6 +22,12 @@ type SupportUserConfig struct {
 
 	// Specifies if the password for the support user has been set.
 	PasswordSet *bool `json:"passwordSet,omitempty"`
+
+	// Specifies the sudo access end time stamp in milliseconds since unix epoch.
+	SudoAccessEndTimestampMsecs *int64 `json:"sudoAccessEndTimestampMsecs,omitempty"`
+
+	// Specifies whether the sudo access mode is enabled or not
+	SudoAccessMode *int64 `json:"sudoAccessMode,omitempty"`
 }
 
 // Validate validates this support user config

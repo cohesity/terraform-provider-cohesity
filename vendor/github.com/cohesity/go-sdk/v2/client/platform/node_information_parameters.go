@@ -62,6 +62,12 @@ NodeInformationParams contains all the parameters to send to the API endpoint
 */
 type NodeInformationParams struct {
 
+	/* OnlyCheckNodeReachability.
+
+	   Specifies to show only node reachability details
+	*/
+	OnlyCheckNodeReachability *bool
+
 	/* ShowServicesVersionInfo.
 
 	   Specifies whether to show version info of the services running on the node.
@@ -85,7 +91,18 @@ func (o *NodeInformationParams) WithDefaults() *NodeInformationParams {
 //
 // All values with no default are reset to their zero value.
 func (o *NodeInformationParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		onlyCheckNodeReachabilityDefault = bool(false)
+	)
+
+	val := NodeInformationParams{
+		OnlyCheckNodeReachability: &onlyCheckNodeReachabilityDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the node information params
@@ -121,6 +138,17 @@ func (o *NodeInformationParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithOnlyCheckNodeReachability adds the onlyCheckNodeReachability to the node information params
+func (o *NodeInformationParams) WithOnlyCheckNodeReachability(onlyCheckNodeReachability *bool) *NodeInformationParams {
+	o.SetOnlyCheckNodeReachability(onlyCheckNodeReachability)
+	return o
+}
+
+// SetOnlyCheckNodeReachability adds the onlyCheckNodeReachability to the node information params
+func (o *NodeInformationParams) SetOnlyCheckNodeReachability(onlyCheckNodeReachability *bool) {
+	o.OnlyCheckNodeReachability = onlyCheckNodeReachability
+}
+
 // WithShowServicesVersionInfo adds the showServicesVersionInfo to the node information params
 func (o *NodeInformationParams) WithShowServicesVersionInfo(showServicesVersionInfo *bool) *NodeInformationParams {
 	o.SetShowServicesVersionInfo(showServicesVersionInfo)
@@ -139,6 +167,23 @@ func (o *NodeInformationParams) WriteToRequest(r runtime.ClientRequest, reg strf
 		return err
 	}
 	var res []error
+
+	if o.OnlyCheckNodeReachability != nil {
+
+		// query param onlyCheckNodeReachability
+		var qrOnlyCheckNodeReachability bool
+
+		if o.OnlyCheckNodeReachability != nil {
+			qrOnlyCheckNodeReachability = *o.OnlyCheckNodeReachability
+		}
+		qOnlyCheckNodeReachability := swag.FormatBool(qrOnlyCheckNodeReachability)
+		if qOnlyCheckNodeReachability != "" {
+
+			if err := r.SetQueryParam("onlyCheckNodeReachability", qOnlyCheckNodeReachability); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.ShowServicesVersionInfo != nil {
 

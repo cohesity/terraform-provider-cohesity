@@ -22,6 +22,12 @@ type UserID struct {
 
 	// Specifies the unix Uid.
 	UnixUID *uint32 `json:"unixUid,omitempty"`
+
+	// Specifies the full name of the user
+	UserName *string `json:"userName,omitempty"`
+
+	// Specifies the domain name of the user, where the principal' account is maintained.
+	Domain *string `json:"domain,omitempty"`
 }
 
 // Validate validates this user Id

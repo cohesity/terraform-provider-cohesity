@@ -28,7 +28,7 @@ type TargetSchedule struct {
 	Unit *string `json:"unit"`
 
 	// Specifies a factor to multiply the unit by, to determine the copy schedule.
-	// For example if set to 2 and the unit is hourly, then Snapshots from the first eligible Job Run for every 2 hour period is copied.
+	// For example if set to 2 and the unit is hourly, then Snapshots from the first eligible group Run for every 2 hour period is copied.
 	// Minimum: 1
 	Frequency *int32 `json:"frequency,omitempty"`
 }

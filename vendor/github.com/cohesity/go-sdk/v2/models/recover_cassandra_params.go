@@ -63,6 +63,9 @@ type RecoverCassandraParams struct {
 
 	// Specifies whether the current recovery operation is a live table restore operation.
 	IsLiveTableRestore *bool `json:"isLiveTableRestore,omitempty"`
+
+	// Specifies Whether to run checks before the recovery. E.x if there is sufficient space in the destination cluster for the recovery to succeed.
+	RunPreChecks *bool `json:"runPreChecks,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -101,6 +104,8 @@ func (m *RecoverCassandraParams) UnmarshalJSON(raw []byte) error {
 		IsSystemKeyspaceRestore *bool `json:"isSystemKeyspaceRestore,omitempty"`
 
 		IsLiveTableRestore *bool `json:"isLiveTableRestore,omitempty"`
+
+		RunPreChecks *bool `json:"runPreChecks,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -131,6 +136,8 @@ func (m *RecoverCassandraParams) UnmarshalJSON(raw []byte) error {
 	m.IsSystemKeyspaceRestore = dataAO1.IsSystemKeyspaceRestore
 
 	m.IsLiveTableRestore = dataAO1.IsLiveTableRestore
+
+	m.RunPreChecks = dataAO1.RunPreChecks
 
 	return nil
 }
@@ -170,6 +177,8 @@ func (m RecoverCassandraParams) MarshalJSON() ([]byte, error) {
 		IsSystemKeyspaceRestore *bool `json:"isSystemKeyspaceRestore,omitempty"`
 
 		IsLiveTableRestore *bool `json:"isLiveTableRestore,omitempty"`
+
+		RunPreChecks *bool `json:"runPreChecks,omitempty"`
 	}
 
 	dataAO1.Snapshots = m.Snapshots
@@ -197,6 +206,8 @@ func (m RecoverCassandraParams) MarshalJSON() ([]byte, error) {
 	dataAO1.IsSystemKeyspaceRestore = m.IsSystemKeyspaceRestore
 
 	dataAO1.IsLiveTableRestore = m.IsLiveTableRestore
+
+	dataAO1.RunPreChecks = m.RunPreChecks
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {

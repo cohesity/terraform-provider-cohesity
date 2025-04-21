@@ -24,7 +24,7 @@ import (
 type FileFolderInfo struct {
 
 	// Specifies the environment of the object.
-	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 
 	// Specifies the parameters for Hdfs.
@@ -60,7 +60,7 @@ var fileFolderInfoTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -174,6 +174,15 @@ const (
 
 	// FileFolderInfoEnvironmentKSfdc captures enum value "kSfdc"
 	FileFolderInfoEnvironmentKSfdc string = "kSfdc"
+
+	// FileFolderInfoEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	FileFolderInfoEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// FileFolderInfoEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	FileFolderInfoEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// FileFolderInfoEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	FileFolderInfoEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

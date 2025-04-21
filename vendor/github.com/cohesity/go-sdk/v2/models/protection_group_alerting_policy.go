@@ -21,7 +21,7 @@ import (
 // swagger:model ProtectionGroupAlertingPolicy
 type ProtectionGroupAlertingPolicy struct {
 
-	// Specifies the run status for which the user would like to receive alerts.
+	// Specifies when to send out alerts. The possible values are kSuccess , kFailure, kSlaViolation and kWarning
 	// Required: true
 	// Min Items: 1
 	// Unique: true

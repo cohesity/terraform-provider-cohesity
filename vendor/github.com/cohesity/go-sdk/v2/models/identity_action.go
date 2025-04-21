@@ -22,7 +22,7 @@ type IdentityAction struct {
 
 	// Specifies the type of identity provider the action will be performed on.
 	// Required: true
-	// Enum: ["OpenIdConnect","OAuth2"]
+	// Enum: ["OpenIdConnect","OAuth2","IbmId"]
 	IdentityProviderType *string `json:"identityProviderType"`
 
 	// open Id connect params
@@ -58,7 +58,7 @@ var identityActionTypeIdentityProviderTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["OpenIdConnect","OAuth2"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["OpenIdConnect","OAuth2","IbmId"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -73,6 +73,9 @@ const (
 
 	// IdentityActionIdentityProviderTypeOAuth2 captures enum value "OAuth2"
 	IdentityActionIdentityProviderTypeOAuth2 string = "OAuth2"
+
+	// IdentityActionIdentityProviderTypeIbmID captures enum value "IbmId"
+	IdentityActionIdentityProviderTypeIbmID string = "IbmId"
 )
 
 // prop value enum

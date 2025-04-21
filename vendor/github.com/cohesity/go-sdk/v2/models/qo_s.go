@@ -22,17 +22,6 @@ import (
 // swagger:model QoS
 type QoS struct {
 
-	// Specifies the id of the QoS Policy used for the View. (Deprecated)
-	// This parameter is deprecated and shall not be supported in future releases.
-	// Use name instead.
-	PrincipalID *int64 `json:"principalId,omitempty"`
-
-	// Specifies the name of the QoS Policy. If not specified,
-	// the default is 'Backup Target Low'.
-	// (To be deprecated in future release, use name instead)
-	// Enum: ["Backup Target High","Backup Target Low","TestAndDev High","TestAndDev Low","Backup Target SSD","Backup Target Commvault","Journaled Sequential Dump","Backup Target Auto"]
-	PrincipalName *string `json:"principalName,omitempty"`
-
 	// Specifies the name of the QoS Policy. If not specified,
 	// the default is 'BackupTargetLow'.
 	//
@@ -88,10 +77,6 @@ type QoS struct {
 func (m *QoS) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validatePrincipalName(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateName(formats); err != nil {
 		res = append(res, err)
 	}
@@ -99,66 +84,6 @@ func (m *QoS) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-var qoSTypePrincipalNamePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["Backup Target High","Backup Target Low","TestAndDev High","TestAndDev Low","Backup Target SSD","Backup Target Commvault","Journaled Sequential Dump","Backup Target Auto"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		qoSTypePrincipalNamePropEnum = append(qoSTypePrincipalNamePropEnum, v)
-	}
-}
-
-const (
-
-	// QoSPrincipalNameBackupTargetHigh captures enum value "Backup Target High"
-	QoSPrincipalNameBackupTargetHigh string = "Backup Target High"
-
-	// QoSPrincipalNameBackupTargetLow captures enum value "Backup Target Low"
-	QoSPrincipalNameBackupTargetLow string = "Backup Target Low"
-
-	// QoSPrincipalNameTestAndDevHigh captures enum value "TestAndDev High"
-	QoSPrincipalNameTestAndDevHigh string = "TestAndDev High"
-
-	// QoSPrincipalNameTestAndDevLow captures enum value "TestAndDev Low"
-	QoSPrincipalNameTestAndDevLow string = "TestAndDev Low"
-
-	// QoSPrincipalNameBackupTargetSSD captures enum value "Backup Target SSD"
-	QoSPrincipalNameBackupTargetSSD string = "Backup Target SSD"
-
-	// QoSPrincipalNameBackupTargetCommvault captures enum value "Backup Target Commvault"
-	QoSPrincipalNameBackupTargetCommvault string = "Backup Target Commvault"
-
-	// QoSPrincipalNameJournaledSequentialDump captures enum value "Journaled Sequential Dump"
-	QoSPrincipalNameJournaledSequentialDump string = "Journaled Sequential Dump"
-
-	// QoSPrincipalNameBackupTargetAuto captures enum value "Backup Target Auto"
-	QoSPrincipalNameBackupTargetAuto string = "Backup Target Auto"
-)
-
-// prop value enum
-func (m *QoS) validatePrincipalNameEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, qoSTypePrincipalNamePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *QoS) validatePrincipalName(formats strfmt.Registry) error {
-	if swag.IsZero(m.PrincipalName) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validatePrincipalNameEnum("principalName", "body", *m.PrincipalName); err != nil {
-		return err
-	}
-
 	return nil
 }
 
