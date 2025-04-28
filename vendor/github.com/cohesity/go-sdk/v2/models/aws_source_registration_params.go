@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -30,6 +31,14 @@ type AwsSourceRegistrationParams struct {
 
 	// Specifies the s3 specific parameters for source registration.
 	S3Params *S3SpecificParams `json:"s3Params,omitempty"`
+
+	// The use cases for which the source is to be registered.
+	// Min Items: 1
+	// Unique: true
+	UseCases []string `json:"useCases"`
+
+	// Specifies the Dynamo DB specific parameters for source registration.
+	DynamoDBParams *DynamoDBSpecificParams `json:"dynamoDBParams,omitempty"`
 }
 
 // Validate validates this aws source registration params
@@ -45,6 +54,14 @@ func (m *AwsSourceRegistrationParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateS3Params(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUseCases(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDynamoDBParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -138,6 +155,71 @@ func (m *AwsSourceRegistrationParams) validateS3Params(formats strfmt.Registry) 
 	return nil
 }
 
+var awsSourceRegistrationParamsUseCasesItemsEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kEC2","kRDS","kPostgres","kDynamoDB","kS3"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		awsSourceRegistrationParamsUseCasesItemsEnum = append(awsSourceRegistrationParamsUseCasesItemsEnum, v)
+	}
+}
+
+func (m *AwsSourceRegistrationParams) validateUseCasesItemsEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, awsSourceRegistrationParamsUseCasesItemsEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *AwsSourceRegistrationParams) validateUseCases(formats strfmt.Registry) error {
+	if swag.IsZero(m.UseCases) { // not required
+		return nil
+	}
+
+	iUseCasesSize := int64(len(m.UseCases))
+
+	if err := validate.MinItems("useCases", "body", iUseCasesSize, 1); err != nil {
+		return err
+	}
+
+	if err := validate.UniqueItems("useCases", "body", m.UseCases); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.UseCases); i++ {
+
+		// value enum
+		if err := m.validateUseCasesItemsEnum("useCases"+"."+strconv.Itoa(i), "body", m.UseCases[i]); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+func (m *AwsSourceRegistrationParams) validateDynamoDBParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.DynamoDBParams) { // not required
+		return nil
+	}
+
+	if m.DynamoDBParams != nil {
+		if err := m.DynamoDBParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("dynamoDBParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("dynamoDBParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this aws source registration params based on the context it is used
 func (m *AwsSourceRegistrationParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -147,6 +229,10 @@ func (m *AwsSourceRegistrationParams) ContextValidate(ctx context.Context, forma
 	}
 
 	if err := m.contextValidateS3Params(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateDynamoDBParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -190,6 +276,27 @@ func (m *AwsSourceRegistrationParams) contextValidateS3Params(ctx context.Contex
 				return ve.ValidateName("s3Params")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("s3Params")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AwsSourceRegistrationParams) contextValidateDynamoDBParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DynamoDBParams != nil {
+
+		if swag.IsZero(m.DynamoDBParams) { // not required
+			return nil
+		}
+
+		if err := m.DynamoDBParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("dynamoDBParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("dynamoDBParams")
 			}
 			return err
 		}

@@ -7,10 +7,12 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // PublicFolderItem PublicFolderItem
@@ -22,6 +24,7 @@ type PublicFolderItem struct {
 	CommonIndexedObjectParams
 
 	// Specifies the Public folder item type.
+	// Enum: ["Calendar","Contact","Post","Folder","Task","Journal","Note"]
 	Type *string `json:"type,omitempty"`
 
 	// Specifies the id of the indexed item.
@@ -156,9 +159,47 @@ func (m *PublicFolderItem) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateType(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+var publicFolderItemTypeTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["Calendar","Contact","Post","Folder","Task","Journal","Note"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		publicFolderItemTypeTypePropEnum = append(publicFolderItemTypeTypePropEnum, v)
+	}
+}
+
+// property enum
+func (m *PublicFolderItem) validateTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, publicFolderItemTypeTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *PublicFolderItem) validateType(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Type) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateTypeEnum("type", "body", *m.Type); err != nil {
+		return err
+	}
+
 	return nil
 }
 

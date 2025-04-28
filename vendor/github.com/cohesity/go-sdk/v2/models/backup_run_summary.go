@@ -39,6 +39,9 @@ type BackupRunSummary struct {
 	// Enum: ["Accepted","Running","Canceled","Canceling","Failed","Missed","Succeeded","SucceededWithWarning","OnHold","Finalizing","Skipped","LegalHold","Paused"]
 	Status *string `json:"status,omitempty"`
 
+	// Specifies more information about pause operation.
+	PauseMetadata *PauseMetadata `json:"pauseMetadata,omitempty"`
+
 	// Message about the backup run.
 	Messages []string `json:"messages"`
 
@@ -95,6 +98,10 @@ func (m *BackupRunSummary) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateStatus(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePauseMetadata(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -245,6 +252,25 @@ func (m *BackupRunSummary) validateStatus(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *BackupRunSummary) validatePauseMetadata(formats strfmt.Registry) error {
+	if swag.IsZero(m.PauseMetadata) { // not required
+		return nil
+	}
+
+	if m.PauseMetadata != nil {
+		if err := m.PauseMetadata.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("pauseMetadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("pauseMetadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *BackupRunSummary) validateLocalSnapshotStats(formats strfmt.Registry) error {
 	if swag.IsZero(m.LocalSnapshotStats) { // not required
 		return nil
@@ -329,6 +355,10 @@ func (m *BackupRunSummary) validateDataLockConstraints(formats strfmt.Registry) 
 func (m *BackupRunSummary) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidatePauseMetadata(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateLocalSnapshotStats(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -340,6 +370,27 @@ func (m *BackupRunSummary) ContextValidate(ctx context.Context, formats strfmt.R
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *BackupRunSummary) contextValidatePauseMetadata(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.PauseMetadata != nil {
+
+		if swag.IsZero(m.PauseMetadata) { // not required
+			return nil
+		}
+
+		if err := m.PauseMetadata.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("pauseMetadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("pauseMetadata")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

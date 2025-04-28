@@ -35,6 +35,9 @@ type CommonGcpExternalTargetParams struct {
 
 	// Specifies the client private key of the external target.
 	ClientPrivateKey *string `json:"clientPrivateKey,omitempty"`
+
+	// Specifies region of the External Target.
+	Region *string `json:"region,omitempty"`
 }
 
 // Validate validates this common gcp external target params

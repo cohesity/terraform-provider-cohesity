@@ -36,6 +36,9 @@ type RunArchivalConfig struct {
 
 	// Specifies if Snapshots are copied from a fully successful Protection Group Run or a partially successful Protection Group Run. If false, Snapshots are copied the Protection Group Run, even if the Run was not fully successful i.e. Snapshots were not captured for all Objects in the Protection Group. If true, Snapshots are copied only when the run is fully successful.
 	CopyOnlyFullySuccessful *bool `json:"copyOnlyFullySuccessful,omitempty"`
+
+	// Specifies if the Run is on legal hold.
+	OnLegalHold *bool `json:"onLegalHold,omitempty"`
 }
 
 // Validate validates this run archival config

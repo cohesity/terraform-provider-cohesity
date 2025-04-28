@@ -23,87 +23,26 @@ import (
 // swagger:model Node
 type Node struct {
 
-	// CapacityByTier describes the capacity of each storage tier.
-	CapacityByTier []*CapacityByTier `json:"capacityByTier"`
-
-	// ChassisInfo describes the information for the chassis of the node.
-	ChassisInfo *ChassisInfo `json:"chassisInfo,omitempty"`
-
-	// ClusterPartitionId is the Id of the cluster partition to which the Node belongs.
-	ClusterPartitionID *int64 `json:"clusterPartitionId,omitempty"`
-
-	// ClusterPartitionName is the name of the cluster to which the Node belongs.
-	ClusterPartitionName *string `json:"clusterPartitionName,omitempty"`
-
-	// Cohesity Node Serial Number of the Node.
-	CohesityNodeSerial *string `json:"cohesityNodeSerial,omitempty"`
-
-	// DiskCountByTier describes the disk number of each storage tier.
-	DiskCountByTier []*CountByTier `json:"diskCountByTier"`
-
 	// Id is the Id of the Node.
 	ID *int64 `json:"id,omitempty"`
 
 	// Ip is the IP address of the Node.
 	IP *string `json:"ip,omitempty"`
 
-	// Whether node is app node.
-	IsAppNode *bool `json:"isAppNode,omitempty"`
+	// Cohesity Node Serial Number of the Node.
+	CohesityNodeSerial *string `json:"cohesityNodeSerial,omitempty"`
 
-	// IsMarkedForRemoval specifies whether the node has been marked for
-	// removal.
-	IsMarkedForRemoval *bool `json:"isMarkedForRemoval,omitempty"`
-
-	// MaxPhysicalCapacityBytes specifies the maximum physical capacity of the
-	// node in bytes.
-	MaxPhysicalCapacityBytes *int64 `json:"maxPhysicalCapacityBytes,omitempty"`
-
-	// HardwareInfo describes the hardware of the node.
-	NodeHardwareInfo *NodeHardwareInfo `json:"nodeHardwareInfo,omitempty"`
-
-	// NodeIncarnationId is the incarnation id  of this node. The incarnation
-	// id is changed every time the data is wiped from the node. Various
-	// services on a node is only run if incarnation id of the node matches the
-	// incarnation id of the cluster. Whenever a mismatch is detected, Nexus
-	// will stop all services and clean the data from the node. After clean
-	// operation is completed, Nexus will set the node incarnation id to
-	// cluster incarnation id and start the services.
-	NodeIncarnationID *int64 `json:"nodeIncarnationId,omitempty"`
-
-	// NodeSoftwareVersion is the current version of Cohesity software installed
-	// on a node.
-	NodeSoftwareVersion *string `json:"nodeSoftwareVersion,omitempty"`
+	// Slot number occupied by this node within the chassis.
+	SlotNumber *uint32 `json:"slotNumber,omitempty"`
 
 	// Node type: StorageNode, AllFlashNode, RoboNode, AppNode, etc.
 	NodeType *string `json:"nodeType,omitempty"`
 
-	// OfflineDiskCount is the number of offline disks in a node.
-	OfflineDiskCount *int64 `json:"offlineDiskCount,omitempty"`
+	// ClusterPartitionId is the Id of the cluster partition to which the Node belongs.
+	ClusterPartitionID *int64 `json:"clusterPartitionId,omitempty"`
 
-	// OfflineMountPathsOfDisks provides the corresponding mount paths for
-	// direct attached disks that are currently offline - access to these were
-	// detected to hang sometime in the past. After these disks have been fixed,
-	// their mount paths needs to be removed from the following list before
-	// these will be accessed again.
-	OfflineMountPathsOfDisks []string `json:"offlineMountPathsOfDisks"`
-
-	// Specifies the product model of the node.
-	ProductModel *string `json:"productModel,omitempty"`
-
-	// Specifies the hardware model of the node.
-	HardwareModel *string `json:"hardwareModel,omitempty"`
-
-	// Specifies the vendor model of the node
-	Vendor *string `json:"vendor,omitempty"`
-
-	// RemovalReason specifies the removal reason of the node.
-	// 'kAutoHealthCheck' means the entity health is bad.
-	// 'kUserGracefulRemoval' means user initiated a graceful removal.
-	// 'kUserAvoidAccess' means user initiated a mark offline.
-	// 'kUserGracefulNodeRemoval' mean users initiated graceful node removal.
-	// 'kUserRemoveDownNode' mean user initiated graceful removal of down node.
-	// 'kBridgeDataUnavailable' Bridge requested a graceful removal of a disk when it is not available.
-	RemovalReason []string `json:"removalReason"`
+	// ClusterPartitionName is the name of the cluster to which the Node belongs.
+	ClusterPartitionName *string `json:"clusterPartitionName,omitempty"`
 
 	// RemovalState specifies the removal state of the node.
 	// 'kDontRemove' means the state of object is functional and
@@ -114,17 +53,85 @@ type Node struct {
 	// Enum: ["DontRemove","MarkedForRemoval","OkToRemove"]
 	RemovalState *string `json:"removalState,omitempty"`
 
-	// Slot number occupied by this node within the chassis.
-	SlotNumber *uint32 `json:"slotNumber,omitempty"`
+	// RemovalReason specifies the removal reason of the node.
+	// 'kAutoHealthCheck' means the entity health is bad.
+	// 'kUserGracefulRemoval' means user initiated a graceful removal.
+	// 'kUserAvoidAccess' means user initiated a mark offline.
+	// 'kUserGracefulNodeRemoval' mean users initiated graceful node removal.
+	// 'kUserRemoveDownNode' mean user initiated graceful removal of down node.
+	// 'kBridgeDataUnavailable' Bridge requested a graceful removal of a disk when it is not available.
+	RemovalReason []string `json:"removalReason"`
 
-	// Specifies the hostname of the node.
-	HostName *string `json:"hostName,omitempty"`
+	// IsMarkedForRemoval specifies whether the node has been marked for
+	// removal.
+	IsMarkedForRemoval *bool `json:"isMarkedForRemoval,omitempty"`
+
+	// OfflineMountPathsOfDisks provides the corresponding mount paths for
+	// direct attached disks that are currently offline - access to these were
+	// detected to hang sometime in the past. After these disks have been fixed,
+	// their mount paths needs to be removed from the following list before
+	// these will be accessed again.
+	OfflineMountPathsOfDisks []string `json:"offlineMountPathsOfDisks"`
+
+	// NodeSoftwareVersion is the current version of Cohesity software installed
+	// on a node.
+	NodeSoftwareVersion *string `json:"nodeSoftwareVersion,omitempty"`
+
+	// NodeIncarnationId is the incarnation id  of this node. The incarnation
+	// id is changed every time the data is wiped from the node. Various
+	// services on a node is only run if incarnation id of the node matches the
+	// incarnation id of the cluster. Whenever a mismatch is detected, Nexus
+	// will stop all services and clean the data from the node. After clean
+	// operation is completed, Nexus will set the node incarnation id to
+	// cluster incarnation id and start the services.
+	NodeIncarnationID *int64 `json:"nodeIncarnationId,omitempty"`
+
+	// DiskCount is the number of disks in a node.
+	DiskCount int64 `json:"diskCount,omitempty"`
+
+	// OfflineDiskCount is the number of offline disks in a node.
+	OfflineDiskCount *int64 `json:"offlineDiskCount,omitempty"`
+
+	// DiskCountByTier describes the disk number of each storage tier.
+	DiskCountByTier []*CountByTier `json:"diskCountByTier"`
+
+	// MaxPhysicalCapacityBytes specifies the maximum physical capacity of the
+	// node in bytes.
+	MaxPhysicalCapacityBytes *int64 `json:"maxPhysicalCapacityBytes,omitempty"`
+
+	// ChassisInfo describes the information for the chassis of the node.
+	ChassisInfo *ChassisInfo `json:"chassisInfo,omitempty"`
+
+	// HardwareInfo describes the hardware of the node.
+	NodeHardwareInfo *NodeHardwareInfo `json:"nodeHardwareInfo,omitempty"`
+
+	// CapacityByTier describes the capacity of each storage tier.
+	CapacityByTier []*CapacityByTier `json:"capacityByTier"`
 
 	// Stats describes the node stats.
 	Stats *NodeStats `json:"stats,omitempty"`
 
 	// SystemDisk describes the node system disks.
 	SystemDisks []*NodeSystemDiskInfo `json:"systemDisks"`
+
+	// Whether node is app node.
+	IsAppNode *bool `json:"isAppNode,omitempty"`
+
+	// Specifies the product model of the node.
+	ProductModel *string `json:"productModel,omitempty"`
+
+	// PatchSoftwareVersion is the current version of patch applied
+	// on a node.
+	PatchSoftwareVersion *string `json:"patchSoftwareVersion,omitempty"`
+
+	// Specifies the hardware model of the node.
+	HardwareModel *string `json:"hardwareModel,omitempty"`
+
+	// Specifies the vendor model of the node
+	Vendor *string `json:"vendor,omitempty"`
+
+	// Specifies the hostname of the node.
+	HostName *string `json:"hostName,omitempty"`
 
 	// Specifies the services that are not ACKed after node is marked for removal.
 	ServicesNotAcked *string `json:"servicesNotAcked,omitempty"`
@@ -147,6 +154,9 @@ type Node struct {
 	// Specifies the Unix epoch timestamp (in seconds) when the Node was marked for removal.
 	RemovalTimestampSecs *int64 `json:"removalTimestampSecs,omitempty"`
 
+	// InMaintnenanceMode is used to mark a node in maintenance mode.
+	InMaintenanceMode *bool `json:"inMaintenanceMode,omitempty"`
+
 	// Specifies the last run time of the pre-checks execution in Unix epoch timestamp (in seconds).
 	PrecheckTimestampSecs *int64 `json:"precheckTimestampSecs,omitempty"`
 
@@ -158,19 +168,7 @@ type Node struct {
 func (m *Node) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateCapacityByTier(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateChassisInfo(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateDiskCountByTier(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateNodeHardwareInfo(formats); err != nil {
+	if err := m.validateRemovalState(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -178,7 +176,19 @@ func (m *Node) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateRemovalState(formats); err != nil {
+	if err := m.validateDiskCountByTier(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateChassisInfo(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNodeHardwareInfo(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCapacityByTier(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -201,132 +211,6 @@ func (m *Node) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *Node) validateCapacityByTier(formats strfmt.Registry) error {
-	if swag.IsZero(m.CapacityByTier) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.CapacityByTier); i++ {
-		if swag.IsZero(m.CapacityByTier[i]) { // not required
-			continue
-		}
-
-		if m.CapacityByTier[i] != nil {
-			if err := m.CapacityByTier[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *Node) validateChassisInfo(formats strfmt.Registry) error {
-	if swag.IsZero(m.ChassisInfo) { // not required
-		return nil
-	}
-
-	if m.ChassisInfo != nil {
-		if err := m.ChassisInfo.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("chassisInfo")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("chassisInfo")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *Node) validateDiskCountByTier(formats strfmt.Registry) error {
-	if swag.IsZero(m.DiskCountByTier) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.DiskCountByTier); i++ {
-		if swag.IsZero(m.DiskCountByTier[i]) { // not required
-			continue
-		}
-
-		if m.DiskCountByTier[i] != nil {
-			if err := m.DiskCountByTier[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *Node) validateNodeHardwareInfo(formats strfmt.Registry) error {
-	if swag.IsZero(m.NodeHardwareInfo) { // not required
-		return nil
-	}
-
-	if m.NodeHardwareInfo != nil {
-		if err := m.NodeHardwareInfo.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("nodeHardwareInfo")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("nodeHardwareInfo")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-var nodeRemovalReasonItemsEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["Unknown","AutoHealthCheck","UserGracefulRemoval","UserAvoidAccess","UserGracefulNodeRemoval","UserRemoveDownNode","BridgeDataUnavailable"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		nodeRemovalReasonItemsEnum = append(nodeRemovalReasonItemsEnum, v)
-	}
-}
-
-func (m *Node) validateRemovalReasonItemsEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, nodeRemovalReasonItemsEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Node) validateRemovalReason(formats strfmt.Registry) error {
-	if swag.IsZero(m.RemovalReason) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.RemovalReason); i++ {
-
-		// value enum
-		if err := m.validateRemovalReasonItemsEnum("removalReason"+"."+strconv.Itoa(i), "body", m.RemovalReason[i]); err != nil {
-			return err
-		}
-
-	}
-
 	return nil
 }
 
@@ -370,6 +254,132 @@ func (m *Node) validateRemovalState(formats strfmt.Registry) error {
 	// value enum
 	if err := m.validateRemovalStateEnum("removalState", "body", *m.RemovalState); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+var nodeRemovalReasonItemsEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["Unknown","AutoHealthCheck","UserGracefulRemoval","UserAvoidAccess","UserGracefulNodeRemoval","UserRemoveDownNode","BridgeDataUnavailable"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		nodeRemovalReasonItemsEnum = append(nodeRemovalReasonItemsEnum, v)
+	}
+}
+
+func (m *Node) validateRemovalReasonItemsEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, nodeRemovalReasonItemsEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Node) validateRemovalReason(formats strfmt.Registry) error {
+	if swag.IsZero(m.RemovalReason) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.RemovalReason); i++ {
+
+		// value enum
+		if err := m.validateRemovalReasonItemsEnum("removalReason"+"."+strconv.Itoa(i), "body", m.RemovalReason[i]); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Node) validateDiskCountByTier(formats strfmt.Registry) error {
+	if swag.IsZero(m.DiskCountByTier) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.DiskCountByTier); i++ {
+		if swag.IsZero(m.DiskCountByTier[i]) { // not required
+			continue
+		}
+
+		if m.DiskCountByTier[i] != nil {
+			if err := m.DiskCountByTier[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Node) validateChassisInfo(formats strfmt.Registry) error {
+	if swag.IsZero(m.ChassisInfo) { // not required
+		return nil
+	}
+
+	if m.ChassisInfo != nil {
+		if err := m.ChassisInfo.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("chassisInfo")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("chassisInfo")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Node) validateNodeHardwareInfo(formats strfmt.Registry) error {
+	if swag.IsZero(m.NodeHardwareInfo) { // not required
+		return nil
+	}
+
+	if m.NodeHardwareInfo != nil {
+		if err := m.NodeHardwareInfo.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("nodeHardwareInfo")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("nodeHardwareInfo")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Node) validateCapacityByTier(formats strfmt.Registry) error {
+	if swag.IsZero(m.CapacityByTier) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.CapacityByTier); i++ {
+		if swag.IsZero(m.CapacityByTier[i]) { // not required
+			continue
+		}
+
+		if m.CapacityByTier[i] != nil {
+			if err := m.CapacityByTier[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -476,7 +486,7 @@ func (m *Node) validateValidationChecks(formats strfmt.Registry) error {
 func (m *Node) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateCapacityByTier(ctx, formats); err != nil {
+	if err := m.contextValidateDiskCountByTier(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -484,11 +494,11 @@ func (m *Node) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateDiskCountByTier(ctx, formats); err != nil {
+	if err := m.contextValidateNodeHardwareInfo(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateNodeHardwareInfo(ctx, formats); err != nil {
+	if err := m.contextValidateCapacityByTier(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -514,21 +524,21 @@ func (m *Node) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 	return nil
 }
 
-func (m *Node) contextValidateCapacityByTier(ctx context.Context, formats strfmt.Registry) error {
+func (m *Node) contextValidateDiskCountByTier(ctx context.Context, formats strfmt.Registry) error {
 
-	for i := 0; i < len(m.CapacityByTier); i++ {
+	for i := 0; i < len(m.DiskCountByTier); i++ {
 
-		if m.CapacityByTier[i] != nil {
+		if m.DiskCountByTier[i] != nil {
 
-			if swag.IsZero(m.CapacityByTier[i]) { // not required
+			if swag.IsZero(m.DiskCountByTier[i]) { // not required
 				return nil
 			}
 
-			if err := m.CapacityByTier[i].ContextValidate(ctx, formats); err != nil {
+			if err := m.DiskCountByTier[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
+					return ve.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
+					return ce.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -560,31 +570,6 @@ func (m *Node) contextValidateChassisInfo(ctx context.Context, formats strfmt.Re
 	return nil
 }
 
-func (m *Node) contextValidateDiskCountByTier(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.DiskCountByTier); i++ {
-
-		if m.DiskCountByTier[i] != nil {
-
-			if swag.IsZero(m.DiskCountByTier[i]) { // not required
-				return nil
-			}
-
-			if err := m.DiskCountByTier[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
 func (m *Node) contextValidateNodeHardwareInfo(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.NodeHardwareInfo != nil {
@@ -601,6 +586,31 @@ func (m *Node) contextValidateNodeHardwareInfo(ctx context.Context, formats strf
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *Node) contextValidateCapacityByTier(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.CapacityByTier); i++ {
+
+		if m.CapacityByTier[i] != nil {
+
+			if swag.IsZero(m.CapacityByTier[i]) { // not required
+				return nil
+			}
+
+			if err := m.CapacityByTier[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("capacityByTier" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

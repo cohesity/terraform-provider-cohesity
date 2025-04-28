@@ -21,13 +21,14 @@ import (
 // swagger:model DiskIdentify
 type DiskIdentify struct {
 
-	// Specifies the node id of node that disk belongs to.
-	// Required: true
-	NodeID *int64 `json:"nodeId"`
+	// Specifies the disk id of the disk. This parameter is incompatible with 'nodeId' and 'serialNumber'.
+	DiskID *int64 `json:"diskId,omitempty"`
 
-	// Specifies serial number of disk.
-	// Required: true
-	SerialNumber *string `json:"serialNumber"`
+	// Specifies the node id of node that disk belongs to. This parameter is incompatible with 'diskId'. Must be used together with 'serialNumber'.
+	NodeID *int64 `json:"nodeId,omitempty"`
+
+	// Specifies serial number of disk. This parameter is incompatible with 'diskId'. Must be used together with 'nodeId'.
+	SerialNumber *string `json:"serialNumber,omitempty"`
 
 	// Turn on/off led light if it is set to true/false
 	// Required: true
@@ -38,14 +39,6 @@ type DiskIdentify struct {
 func (m *DiskIdentify) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateNodeID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSerialNumber(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateIdentify(formats); err != nil {
 		res = append(res, err)
 	}
@@ -53,24 +46,6 @@ func (m *DiskIdentify) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *DiskIdentify) validateNodeID(formats strfmt.Registry) error {
-
-	if err := validate.Required("nodeId", "body", m.NodeID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *DiskIdentify) validateSerialNumber(formats strfmt.Registry) error {
-
-	if err := validate.Required("serialNumber", "body", m.SerialNumber); err != nil {
-		return err
-	}
-
 	return nil
 }
 

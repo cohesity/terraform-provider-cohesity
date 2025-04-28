@@ -17,6 +17,9 @@ import (
 // swagger:model ConnectionConfig
 type ConnectionConfig struct {
 
+	// Specifies the id of the connection in string format.
+	DataSourceConnectionID *string `json:"dataSourceConnectionId,omitempty"`
+
 	// Specifies the id of the connection.
 	ConnectionID *int64 `json:"connectionId,omitempty"`
 

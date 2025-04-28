@@ -68,6 +68,24 @@ type ListTenantsParams struct {
 	*/
 	Ids []string
 
+	/* LivenessModes.
+
+	     Filter by liveness modes of the tenant.
+	This filter only applies is tenant metadata is added for external
+	vendor such as 'IBM'. In all other cases, the values provided for
+	this filter will be ignored.
+	*/
+	LivenessModes []string
+
+	/* OwnershipModes.
+
+	     Filter by ownership modes of the tenant.
+	This filter only applies is tenant metadata is added for external
+	vendor such as 'IBM'. In all other cases, the values provided for
+	this filter will be ignored.
+	*/
+	OwnershipModes []string
+
 	/* Statuses.
 
 	     Filter by current status of tenant.
@@ -139,6 +157,28 @@ func (o *ListTenantsParams) SetIds(ids []string) {
 	o.Ids = ids
 }
 
+// WithLivenessModes adds the livenessModes to the list tenants params
+func (o *ListTenantsParams) WithLivenessModes(livenessModes []string) *ListTenantsParams {
+	o.SetLivenessModes(livenessModes)
+	return o
+}
+
+// SetLivenessModes adds the livenessModes to the list tenants params
+func (o *ListTenantsParams) SetLivenessModes(livenessModes []string) {
+	o.LivenessModes = livenessModes
+}
+
+// WithOwnershipModes adds the ownershipModes to the list tenants params
+func (o *ListTenantsParams) WithOwnershipModes(ownershipModes []string) *ListTenantsParams {
+	o.SetOwnershipModes(ownershipModes)
+	return o
+}
+
+// SetOwnershipModes adds the ownershipModes to the list tenants params
+func (o *ListTenantsParams) SetOwnershipModes(ownershipModes []string) {
+	o.OwnershipModes = ownershipModes
+}
+
 // WithStatuses adds the statuses to the list tenants params
 func (o *ListTenantsParams) WithStatuses(statuses []string) *ListTenantsParams {
 	o.SetStatuses(statuses)
@@ -165,6 +205,28 @@ func (o *ListTenantsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 
 		// query array param ids
 		if err := r.SetQueryParam("ids", joinedIds...); err != nil {
+			return err
+		}
+	}
+
+	if o.LivenessModes != nil {
+
+		// binding items for livenessModes
+		joinedLivenessModes := o.bindParamLivenessModes(reg)
+
+		// query array param livenessModes
+		if err := r.SetQueryParam("livenessModes", joinedLivenessModes...); err != nil {
+			return err
+		}
+	}
+
+	if o.OwnershipModes != nil {
+
+		// binding items for ownershipModes
+		joinedOwnershipModes := o.bindParamOwnershipModes(reg)
+
+		// query array param ownershipModes
+		if err := r.SetQueryParam("ownershipModes", joinedOwnershipModes...); err != nil {
 			return err
 		}
 	}
@@ -201,6 +263,40 @@ func (o *ListTenantsParams) bindParamIds(formats strfmt.Registry) []string {
 	idsIS := swag.JoinByFormat(idsIC, "")
 
 	return idsIS
+}
+
+// bindParamListTenants binds the parameter livenessModes
+func (o *ListTenantsParams) bindParamLivenessModes(formats strfmt.Registry) []string {
+	livenessModesIR := o.LivenessModes
+
+	var livenessModesIC []string
+	for _, livenessModesIIR := range livenessModesIR { // explode []string
+
+		livenessModesIIV := livenessModesIIR // string as string
+		livenessModesIC = append(livenessModesIC, livenessModesIIV)
+	}
+
+	// items.CollectionFormat: ""
+	livenessModesIS := swag.JoinByFormat(livenessModesIC, "")
+
+	return livenessModesIS
+}
+
+// bindParamListTenants binds the parameter ownershipModes
+func (o *ListTenantsParams) bindParamOwnershipModes(formats strfmt.Registry) []string {
+	ownershipModesIR := o.OwnershipModes
+
+	var ownershipModesIC []string
+	for _, ownershipModesIIR := range ownershipModesIR { // explode []string
+
+		ownershipModesIIV := ownershipModesIIR // string as string
+		ownershipModesIC = append(ownershipModesIC, ownershipModesIIV)
+	}
+
+	// items.CollectionFormat: ""
+	ownershipModesIS := swag.JoinByFormat(ownershipModesIC, "")
+
+	return ownershipModesIS
 }
 
 // bindParamListTenants binds the parameter statuses

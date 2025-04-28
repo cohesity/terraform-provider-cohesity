@@ -27,6 +27,9 @@ type RunReplicationConfig struct {
 
 	// Specifies the Retention period of snapshot in days, months or years to retain copied Snapshots on the target.
 	Retention *Retention `json:"retention,omitempty"`
+
+	// Specifies if the Run is on legal hold.
+	OnLegalHold *bool `json:"onLegalHold,omitempty"`
 }
 
 // Validate validates this run replication config

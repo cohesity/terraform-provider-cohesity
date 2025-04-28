@@ -38,6 +38,9 @@ type AwsObjectProtectionUpdateRequestParams struct {
 
 	// Specifies the parameters which are specific to AWS RDS Postgres related Object protection.
 	RdsPostgresProtectionTypeParams *AwsRdsPostgresProtectionParams `json:"rdsPostgresProtectionTypeParams,omitempty"`
+
+	// Specifies the parameters which are specific to AWS Dynamo DB related Object protection.
+	DynamoDBProtectionTypeParams *AwsDynamoDBProtectionParams `json:"dynamoDBProtectionTypeParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -62,6 +65,8 @@ func (m *AwsObjectProtectionUpdateRequestParams) UnmarshalJSON(raw []byte) error
 		S3ProtectionTypeParams *AwsS3ProtectionParams `json:"s3ProtectionTypeParams,omitempty"`
 
 		RdsPostgresProtectionTypeParams *AwsRdsPostgresProtectionParams `json:"rdsPostgresProtectionTypeParams,omitempty"`
+
+		DynamoDBProtectionTypeParams *AwsDynamoDBProtectionParams `json:"dynamoDBProtectionTypeParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -78,6 +83,8 @@ func (m *AwsObjectProtectionUpdateRequestParams) UnmarshalJSON(raw []byte) error
 	m.S3ProtectionTypeParams = dataAO1.S3ProtectionTypeParams
 
 	m.RdsPostgresProtectionTypeParams = dataAO1.RdsPostgresProtectionTypeParams
+
+	m.DynamoDBProtectionTypeParams = dataAO1.DynamoDBProtectionTypeParams
 
 	return nil
 }
@@ -103,6 +110,8 @@ func (m AwsObjectProtectionUpdateRequestParams) MarshalJSON() ([]byte, error) {
 		S3ProtectionTypeParams *AwsS3ProtectionParams `json:"s3ProtectionTypeParams,omitempty"`
 
 		RdsPostgresProtectionTypeParams *AwsRdsPostgresProtectionParams `json:"rdsPostgresProtectionTypeParams,omitempty"`
+
+		DynamoDBProtectionTypeParams *AwsDynamoDBProtectionParams `json:"dynamoDBProtectionTypeParams,omitempty"`
 	}
 
 	dataAO1.NativeProtectionTypeParams = m.NativeProtectionTypeParams
@@ -116,6 +125,8 @@ func (m AwsObjectProtectionUpdateRequestParams) MarshalJSON() ([]byte, error) {
 	dataAO1.S3ProtectionTypeParams = m.S3ProtectionTypeParams
 
 	dataAO1.RdsPostgresProtectionTypeParams = m.RdsPostgresProtectionTypeParams
+
+	dataAO1.DynamoDBProtectionTypeParams = m.DynamoDBProtectionTypeParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -155,6 +166,10 @@ func (m *AwsObjectProtectionUpdateRequestParams) Validate(formats strfmt.Registr
 	}
 
 	if err := m.validateRdsPostgresProtectionTypeParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDynamoDBProtectionTypeParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -284,6 +299,26 @@ func (m *AwsObjectProtectionUpdateRequestParams) validateRdsPostgresProtectionTy
 	return nil
 }
 
+func (m *AwsObjectProtectionUpdateRequestParams) validateDynamoDBProtectionTypeParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.DynamoDBProtectionTypeParams) { // not required
+		return nil
+	}
+
+	if m.DynamoDBProtectionTypeParams != nil {
+		if err := m.DynamoDBProtectionTypeParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("dynamoDBProtectionTypeParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("dynamoDBProtectionTypeParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this aws object protection update request params based on the context it is used
 func (m *AwsObjectProtectionUpdateRequestParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -314,6 +349,10 @@ func (m *AwsObjectProtectionUpdateRequestParams) ContextValidate(ctx context.Con
 	}
 
 	if err := m.contextValidateRdsPostgresProtectionTypeParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateDynamoDBProtectionTypeParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -441,6 +480,27 @@ func (m *AwsObjectProtectionUpdateRequestParams) contextValidateRdsPostgresProte
 				return ve.ValidateName("rdsPostgresProtectionTypeParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("rdsPostgresProtectionTypeParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AwsObjectProtectionUpdateRequestParams) contextValidateDynamoDBProtectionTypeParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DynamoDBProtectionTypeParams != nil {
+
+		if swag.IsZero(m.DynamoDBProtectionTypeParams) { // not required
+			return nil
+		}
+
+		if err := m.DynamoDBProtectionTypeParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("dynamoDBProtectionTypeParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("dynamoDBProtectionTypeParams")
 			}
 			return err
 		}

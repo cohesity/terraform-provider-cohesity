@@ -62,6 +62,12 @@ GetAllIndexedObjectSnapshotsParams contains all the parameters to send to the AP
 */
 type GetAllIndexedObjectSnapshotsParams struct {
 
+	/* Filename.
+
+	   Specifies the name of the file or folder to find in the snapshots.
+	*/
+	Filename *string
+
 	/* FromTimeUsecs.
 
 	   Specifies the timestamp in Unix time epoch in microseconds to filter indexed object's snapshots which are taken after this value.
@@ -186,6 +192,17 @@ func (o *GetAllIndexedObjectSnapshotsParams) SetHTTPClient(client *http.Client) 
 	o.HTTPClient = client
 }
 
+// WithFilename adds the filename to the get all indexed object snapshots params
+func (o *GetAllIndexedObjectSnapshotsParams) WithFilename(filename *string) *GetAllIndexedObjectSnapshotsParams {
+	o.SetFilename(filename)
+	return o
+}
+
+// SetFilename adds the filename to the get all indexed object snapshots params
+func (o *GetAllIndexedObjectSnapshotsParams) SetFilename(filename *string) {
+	o.Filename = filename
+}
+
 // WithFromTimeUsecs adds the fromTimeUsecs to the get all indexed object snapshots params
 func (o *GetAllIndexedObjectSnapshotsParams) WithFromTimeUsecs(fromTimeUsecs *int64) *GetAllIndexedObjectSnapshotsParams {
 	o.SetFromTimeUsecs(fromTimeUsecs)
@@ -292,6 +309,23 @@ func (o *GetAllIndexedObjectSnapshotsParams) WriteToRequest(r runtime.ClientRequ
 		return err
 	}
 	var res []error
+
+	if o.Filename != nil {
+
+		// query param filename
+		var qrFilename string
+
+		if o.Filename != nil {
+			qrFilename = *o.Filename
+		}
+		qFilename := qrFilename
+		if qFilename != "" {
+
+			if err := r.SetQueryParam("filename", qFilename); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.FromTimeUsecs != nil {
 

@@ -24,6 +24,15 @@ type NodeInterfaces struct {
 	// Specifies the id of the node.
 	ID *int64 `json:"id,omitempty"`
 
+	// Specifies the ip of the node.
+	IP *string `json:"ip,omitempty"`
+
+	// Specifies the ip of the node.
+	ChassisSerial *string `json:"chassisSerial,omitempty"`
+
+	// Specifies the slot number.
+	SlotNumber *uint32 `json:"slotNumber,omitempty"`
+
 	// Specifies the list of network interfaces present on this Node.
 	Interfaces []*NetworkInterface `json:"interfaces"`
 }

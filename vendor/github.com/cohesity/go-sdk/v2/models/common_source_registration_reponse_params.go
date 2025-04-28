@@ -33,16 +33,16 @@ type CommonSourceRegistrationReponseParams struct {
 	SourceInfo *Object `json:"sourceInfo,omitempty"`
 
 	// Specifies the environment type of the Protection Source.
-	// Enum: ["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 
 	// The user specified name for this source.
 	Name *string `json:"name,omitempty"`
 
-	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. This field will be depricated in future. Use connections field.
+	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. This field will be deprecated in future. Use connections field.
 	ConnectionID *int64 `json:"connectionId,omitempty"`
 
-	// Specfies the list of connections for the source.
+	// Specifies the list of connections for the source.
 	Connections []*ConnectionConfig `json:"connections"`
 
 	// Specifies the connector group id of connector groups.
@@ -50,6 +50,9 @@ type CommonSourceRegistrationReponseParams struct {
 
 	// Specifies the advanced configuration for a protection source.
 	AdvancedConfigs []*KeyValuePair `json:"advancedConfigs"`
+
+	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. Also, this is the 'string' of connectionId. This property was added to accommodate for ID values that exceed 2^53 - 1, which is the max value for which JS maintains precision.
+	DataSourceConnectionID *string `json:"dataSourceConnectionId,omitempty"`
 
 	RegistrationInfo
 }
@@ -75,6 +78,8 @@ func (m *CommonSourceRegistrationReponseParams) UnmarshalJSON(raw []byte) error 
 		ConnectorGroupID *int64 `json:"connectorGroupId,omitempty"`
 
 		AdvancedConfigs []*KeyValuePair `json:"advancedConfigs"`
+
+		DataSourceConnectionID *string `json:"dataSourceConnectionId,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO0); err != nil {
 		return err
@@ -97,6 +102,8 @@ func (m *CommonSourceRegistrationReponseParams) UnmarshalJSON(raw []byte) error 
 	m.ConnectorGroupID = dataAO0.ConnectorGroupID
 
 	m.AdvancedConfigs = dataAO0.AdvancedConfigs
+
+	m.DataSourceConnectionID = dataAO0.DataSourceConnectionID
 
 	// AO1
 	var aO1 RegistrationInfo
@@ -130,6 +137,8 @@ func (m CommonSourceRegistrationReponseParams) MarshalJSON() ([]byte, error) {
 		ConnectorGroupID *int64 `json:"connectorGroupId,omitempty"`
 
 		AdvancedConfigs []*KeyValuePair `json:"advancedConfigs"`
+
+		DataSourceConnectionID *string `json:"dataSourceConnectionId,omitempty"`
 	}
 
 	dataAO0.ID = m.ID
@@ -149,6 +158,8 @@ func (m CommonSourceRegistrationReponseParams) MarshalJSON() ([]byte, error) {
 	dataAO0.ConnectorGroupID = m.ConnectorGroupID
 
 	dataAO0.AdvancedConfigs = m.AdvancedConfigs
+
+	dataAO0.DataSourceConnectionID = m.DataSourceConnectionID
 
 	jsonDataAO0, errAO0 := swag.WriteJSON(dataAO0)
 	if errAO0 != nil {
@@ -219,7 +230,7 @@ var commonSourceRegistrationReponseParamsTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

@@ -21,7 +21,7 @@ import (
 type CommonEnvSpecificObjectProtectionParams struct {
 
 	// Specifies the environment for current object.
-	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 }
 
@@ -43,7 +43,7 @@ var commonEnvSpecificObjectProtectionParamsTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -101,11 +101,17 @@ const (
 	// CommonEnvSpecificObjectProtectionParamsEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	CommonEnvSpecificObjectProtectionParamsEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// CommonEnvSpecificObjectProtectionParamsEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	CommonEnvSpecificObjectProtectionParamsEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureNative captures enum value "kAzureNative"
 	CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureNative string = "kAzureNative"
 
 	// CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureSQL captures enum value "kAzureSQL"
 	CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureEntraID string = "kAzureEntraID"
 
 	// CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	CommonEnvSpecificObjectProtectionParamsEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -217,6 +223,12 @@ const (
 
 	// CommonEnvSpecificObjectProtectionParamsEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	CommonEnvSpecificObjectProtectionParamsEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// CommonEnvSpecificObjectProtectionParamsEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonEnvSpecificObjectProtectionParamsEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonEnvSpecificObjectProtectionParamsEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonEnvSpecificObjectProtectionParamsEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

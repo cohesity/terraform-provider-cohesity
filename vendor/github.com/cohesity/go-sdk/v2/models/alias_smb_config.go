@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // AliasSmbConfig Message defining SMB config for IRIS. SMB config contains SMB encryption flags, SMB discoverable flag and Share level permissions.
@@ -31,7 +32,8 @@ type AliasSmbConfig struct {
 	// Share level permissions. Note: Supported Access: FullControl, Modify, ReadOnly. Supported type: Allow, Deny.
 	Permissions []*SmbPermission `json:"permissions"`
 
-	// Specifies a list of super user sids.
+	// Specifies a list of super user sids. Duplicate SIDs are not allowed.
+	// Unique: true
 	SuperUserSids []string `json:"superUserSids"`
 
 	// Indicate if offline file caching is supported.
@@ -52,6 +54,10 @@ func (m *AliasSmbConfig) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validatePermissions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSuperUserSids(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -82,6 +88,18 @@ func (m *AliasSmbConfig) validatePermissions(formats strfmt.Registry) error {
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *AliasSmbConfig) validateSuperUserSids(formats strfmt.Registry) error {
+	if swag.IsZero(m.SuperUserSids) { // not required
+		return nil
+	}
+
+	if err := validate.UniqueItems("superUserSids", "body", m.SuperUserSids); err != nil {
+		return err
 	}
 
 	return nil

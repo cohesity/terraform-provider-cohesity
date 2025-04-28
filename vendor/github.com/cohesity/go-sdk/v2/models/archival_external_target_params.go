@@ -39,6 +39,9 @@ type ArchivalExternalTargetParams struct {
 
 	// s3 comp params
 	S3CompParams *ArchivalS3CompExternalTargetParams `json:"s3CompParams,omitempty"`
+
+	// ibm params
+	IbmParams *ArchivalIBMExternalTargetParams `json:"ibmParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -65,6 +68,8 @@ func (m *ArchivalExternalTargetParams) UnmarshalJSON(raw []byte) error {
 		QstarTapeParams *ArchivalQstarTapeExternalTargetParams `json:"qstarTapeParams,omitempty"`
 
 		S3CompParams *ArchivalS3CompExternalTargetParams `json:"s3CompParams,omitempty"`
+
+		IbmParams *ArchivalIBMExternalTargetParams `json:"ibmParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -83,6 +88,8 @@ func (m *ArchivalExternalTargetParams) UnmarshalJSON(raw []byte) error {
 	m.QstarTapeParams = dataAO1.QstarTapeParams
 
 	m.S3CompParams = dataAO1.S3CompParams
+
+	m.IbmParams = dataAO1.IbmParams
 
 	return nil
 }
@@ -110,6 +117,8 @@ func (m ArchivalExternalTargetParams) MarshalJSON() ([]byte, error) {
 		QstarTapeParams *ArchivalQstarTapeExternalTargetParams `json:"qstarTapeParams,omitempty"`
 
 		S3CompParams *ArchivalS3CompExternalTargetParams `json:"s3CompParams,omitempty"`
+
+		IbmParams *ArchivalIBMExternalTargetParams `json:"ibmParams,omitempty"`
 	}
 
 	dataAO1.AzureParams = m.AzureParams
@@ -125,6 +134,8 @@ func (m ArchivalExternalTargetParams) MarshalJSON() ([]byte, error) {
 	dataAO1.QstarTapeParams = m.QstarTapeParams
 
 	dataAO1.S3CompParams = m.S3CompParams
+
+	dataAO1.IbmParams = m.IbmParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -168,6 +179,10 @@ func (m *ArchivalExternalTargetParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateS3CompParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateIbmParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -317,6 +332,26 @@ func (m *ArchivalExternalTargetParams) validateS3CompParams(formats strfmt.Regis
 	return nil
 }
 
+func (m *ArchivalExternalTargetParams) validateIbmParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.IbmParams) { // not required
+		return nil
+	}
+
+	if m.IbmParams != nil {
+		if err := m.IbmParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ibmParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ibmParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this archival external target params based on the context it is used
 func (m *ArchivalExternalTargetParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -351,6 +386,10 @@ func (m *ArchivalExternalTargetParams) ContextValidate(ctx context.Context, form
 	}
 
 	if err := m.contextValidateS3CompParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateIbmParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -499,6 +538,27 @@ func (m *ArchivalExternalTargetParams) contextValidateS3CompParams(ctx context.C
 				return ve.ValidateName("s3CompParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("s3CompParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ArchivalExternalTargetParams) contextValidateIbmParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.IbmParams != nil {
+
+		if swag.IsZero(m.IbmParams) { // not required
+			return nil
+		}
+
+		if err := m.IbmParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ibmParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ibmParams")
 			}
 			return err
 		}

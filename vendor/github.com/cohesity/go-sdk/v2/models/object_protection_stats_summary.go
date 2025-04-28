@@ -17,14 +17,18 @@ import (
 
 // ObjectProtectionStatsSummary Object Protection Stats Summary
 //
-// Specifies the count and size of protected and unprotected objects for a given environment.
+// Specifies the count and size of protected and unprotected objects for a given source environment/protection environment type.
 //
 // swagger:model ObjectProtectionStatsSummary
 type ObjectProtectionStatsSummary struct {
 
-	// Specifies the environment of the object.
-	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]
+	// Specifies the source environment of the object.
+	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
+
+	// Specifies the protection environment type.
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
+	ProtectionEnvType *string `json:"protectionEnvType,omitempty"`
 
 	// Specifies the count of the protected leaf objects.
 	ProtectedCount *int64 `json:"protectedCount,omitempty"`
@@ -50,6 +54,10 @@ func (m *ObjectProtectionStatsSummary) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateProtectionEnvType(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -60,7 +68,7 @@ var objectProtectionStatsSummaryTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -174,6 +182,15 @@ const (
 
 	// ObjectProtectionStatsSummaryEnvironmentKSfdc captures enum value "kSfdc"
 	ObjectProtectionStatsSummaryEnvironmentKSfdc string = "kSfdc"
+
+	// ObjectProtectionStatsSummaryEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ObjectProtectionStatsSummaryEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ObjectProtectionStatsSummaryEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	ObjectProtectionStatsSummaryEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// ObjectProtectionStatsSummaryEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ObjectProtectionStatsSummaryEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -191,6 +208,219 @@ func (m *ObjectProtectionStatsSummary) validateEnvironment(formats strfmt.Regist
 
 	// value enum
 	if err := m.validateEnvironmentEnum("environment", "body", *m.Environment); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var objectProtectionStatsSummaryTypeProtectionEnvTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		objectProtectionStatsSummaryTypeProtectionEnvTypePropEnum = append(objectProtectionStatsSummaryTypeProtectionEnvTypePropEnum, v)
+	}
+}
+
+const (
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKVMware captures enum value "kVMware"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKVMware string = "kVMware"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKHyperV captures enum value "kHyperV"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKHyperV string = "kHyperV"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKVCD captures enum value "kVCD"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKVCD string = "kVCD"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAzure captures enum value "kAzure"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAzure string = "kAzure"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKGCP captures enum value "kGCP"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKGCP string = "kGCP"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKKVM captures enum value "kKVM"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKKVM string = "kKVM"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAcropolis captures enum value "kAcropolis"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAcropolis string = "kAcropolis"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAWS captures enum value "kAWS"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAWS string = "kAWS"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAWSNative captures enum value "kAWSNative"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAWSNative string = "kAWSNative"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAwsS3 captures enum value "kAwsS3"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAwsS3 string = "kAwsS3"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAWSSnapshotManager captures enum value "kAWSSnapshotManager"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAWSSnapshotManager string = "kAWSSnapshotManager"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKRDSSnapshotManager captures enum value "kRDSSnapshotManager"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKRDSSnapshotManager string = "kRDSSnapshotManager"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAuroraSnapshotManager captures enum value "kAuroraSnapshotManager"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAuroraSnapshotManager string = "kAuroraSnapshotManager"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAwsRDSPostgresBackup captures enum value "kAwsRDSPostgresBackup"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAwsRDSPostgresBackup string = "kAwsRDSPostgresBackup"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAwsAuroraPostgres string = "kAwsAuroraPostgres"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAwsDynamoDB string = "kAwsDynamoDB"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAzureNative captures enum value "kAzureNative"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAzureNative string = "kAzureNative"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAzureSQL captures enum value "kAzureSQL"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAzureSQL string = "kAzureSQL"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAzureEntraID captures enum value "kAzureEntraID"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAzureEntraID string = "kAzureEntraID"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAzureSnapshotManager string = "kAzureSnapshotManager"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKPhysical captures enum value "kPhysical"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKPhysical string = "kPhysical"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKPhysicalFiles captures enum value "kPhysicalFiles"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKPhysicalFiles string = "kPhysicalFiles"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKGPFS captures enum value "kGPFS"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKGPFS string = "kGPFS"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKElastifile captures enum value "kElastifile"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKElastifile string = "kElastifile"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKNetapp captures enum value "kNetapp"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKNetapp string = "kNetapp"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKGenericNas captures enum value "kGenericNas"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKGenericNas string = "kGenericNas"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKIsilon captures enum value "kIsilon"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKIsilon string = "kIsilon"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKFlashBlade captures enum value "kFlashBlade"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKFlashBlade string = "kFlashBlade"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKPure captures enum value "kPure"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKPure string = "kPure"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKIbmFlashSystem captures enum value "kIbmFlashSystem"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKIbmFlashSystem string = "kIbmFlashSystem"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKSQL captures enum value "kSQL"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKSQL string = "kSQL"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKExchange captures enum value "kExchange"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKExchange string = "kExchange"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKAD captures enum value "kAD"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKAD string = "kAD"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKOracle captures enum value "kOracle"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKOracle string = "kOracle"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKView captures enum value "kView"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKView string = "kView"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKRemoteAdapter captures enum value "kRemoteAdapter"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKRemoteAdapter string = "kRemoteAdapter"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365 captures enum value "kO365"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365 string = "kO365"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365PublicFolders captures enum value "kO365PublicFolders"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365PublicFolders string = "kO365PublicFolders"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365Teams captures enum value "kO365Teams"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365Teams string = "kO365Teams"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365Group captures enum value "kO365Group"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365Group string = "kO365Group"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365Exchange captures enum value "kO365Exchange"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365Exchange string = "kO365Exchange"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365OneDrive captures enum value "kO365OneDrive"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365OneDrive string = "kO365OneDrive"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365Sharepoint captures enum value "kO365Sharepoint"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365Sharepoint string = "kO365Sharepoint"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKKubernetes captures enum value "kKubernetes"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKKubernetes string = "kKubernetes"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKCassandra captures enum value "kCassandra"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKCassandra string = "kCassandra"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKMongoDB captures enum value "kMongoDB"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKMongoDB string = "kMongoDB"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKCouchbase captures enum value "kCouchbase"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKCouchbase string = "kCouchbase"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKHdfs captures enum value "kHdfs"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKHdfs string = "kHdfs"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKHive captures enum value "kHive"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKHive string = "kHive"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKHBase captures enum value "kHBase"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKHBase string = "kHBase"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKSAPHANA captures enum value "kSAPHANA"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKSAPHANA string = "kSAPHANA"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKUDA captures enum value "kUDA"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKUDA string = "kUDA"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKSfdc captures enum value "kSfdc"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKSfdc string = "kSfdc"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365ExchangeCSM captures enum value "kO365ExchangeCSM"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365ExchangeCSM string = "kO365ExchangeCSM"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365OneDriveCSM captures enum value "kO365OneDriveCSM"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365OneDriveCSM string = "kO365OneDriveCSM"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKO365SharepointCSM captures enum value "kO365SharepointCSM"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ObjectProtectionStatsSummaryProtectionEnvTypeKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ObjectProtectionStatsSummaryProtectionEnvTypeKMongoDBPhysical string = "kMongoDBPhysical"
+)
+
+// prop value enum
+func (m *ObjectProtectionStatsSummary) validateProtectionEnvTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, objectProtectionStatsSummaryTypeProtectionEnvTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ObjectProtectionStatsSummary) validateProtectionEnvType(formats strfmt.Registry) error {
+	if swag.IsZero(m.ProtectionEnvType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateProtectionEnvTypeEnum("protectionEnvType", "body", *m.ProtectionEnvType); err != nil {
 		return err
 	}
 

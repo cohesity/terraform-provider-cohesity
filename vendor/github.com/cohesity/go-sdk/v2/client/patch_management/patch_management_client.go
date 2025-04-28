@@ -90,6 +90,8 @@ type ClientService interface {
 
 	ImportPatches(params *ImportPatchesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ImportPatchesCreated, error)
 
+	RemovePatch(params *RemovePatchParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RemovePatchOK, error)
+
 	RevertPatches(params *RevertPatchesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RevertPatchesCreated, error)
 
 	SetTransport(transport runtime.ClientTransport)
@@ -332,6 +334,46 @@ func (a *Client) ImportPatches(params *ImportPatchesParams, authInfo runtime.Cli
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ImportPatchesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+RemovePatch cleans up the given patch file in data directory
+
+**Privileges:** ```CLUSTER_MAINTENANCE``` <br><br>Cleans up the given patch file in data directory.
+*/
+func (a *Client) RemovePatch(params *RemovePatchParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RemovePatchOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewRemovePatchParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "RemovePatch",
+		Method:             "POST",
+		PathPattern:        "/patch-management/patch-remove",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &RemovePatchReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*RemovePatchOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*RemovePatchDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

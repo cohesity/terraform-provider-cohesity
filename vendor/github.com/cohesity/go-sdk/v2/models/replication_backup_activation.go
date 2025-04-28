@@ -40,7 +40,7 @@ type ReplicationBackupActivation struct {
 	TargetFailoverPolicyID *string `json:"targetFailoverPolicyId,omitempty"`
 
 	// If this is specified, then the protection environment of the failed over objects will be set to this. Otherwise, the protection environment of the failed over objects is determined by the objects' environment.
-	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	TargetFailoverEnvironment *string `json:"targetFailoverEnvironment,omitempty"`
 }
 
@@ -92,7 +92,7 @@ var replicationBackupActivationTypeTargetFailoverEnvironmentPropEnum []interface
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -150,11 +150,17 @@ const (
 	// ReplicationBackupActivationTargetFailoverEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	ReplicationBackupActivationTargetFailoverEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// ReplicationBackupActivationTargetFailoverEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ReplicationBackupActivationTargetFailoverEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// ReplicationBackupActivationTargetFailoverEnvironmentKAzureNative captures enum value "kAzureNative"
 	ReplicationBackupActivationTargetFailoverEnvironmentKAzureNative string = "kAzureNative"
 
 	// ReplicationBackupActivationTargetFailoverEnvironmentKAzureSQL captures enum value "kAzureSQL"
 	ReplicationBackupActivationTargetFailoverEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// ReplicationBackupActivationTargetFailoverEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	ReplicationBackupActivationTargetFailoverEnvironmentKAzureEntraID string = "kAzureEntraID"
 
 	// ReplicationBackupActivationTargetFailoverEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	ReplicationBackupActivationTargetFailoverEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -266,6 +272,12 @@ const (
 
 	// ReplicationBackupActivationTargetFailoverEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	ReplicationBackupActivationTargetFailoverEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// ReplicationBackupActivationTargetFailoverEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ReplicationBackupActivationTargetFailoverEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ReplicationBackupActivationTargetFailoverEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ReplicationBackupActivationTargetFailoverEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

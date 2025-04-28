@@ -62,6 +62,12 @@ SearchObjectsParams contains all the parameters to send to the API endpoint
 */
 type SearchObjectsParams struct {
 
+	/* AnomalyTags.
+
+	   Specifies the Anomaly's tag names to filter the tagged snapshots
+	*/
+	AnomalyTags []string
+
 	/* AwsObjectTypes.
 
 	   Specifies the object types to filter objects on. Only applicable if the environment is AWS.
@@ -93,6 +99,12 @@ type SearchObjectsParams struct {
 	   Format: int32
 	*/
 	Count *int32
+
+	/* DataClassificationTags.
+
+	   Specifies the Data classification's tag names to filter the tagged snapshots
+	*/
+	DataClassificationTags []string
 
 	/* Environments.
 
@@ -251,9 +263,15 @@ type SearchObjectsParams struct {
 
 	/* TagNames.
 
-	   Specifies the tag names to filter the tagged objects and snapshots
+	   Specifies the tag names to filter the tagged objects and snapshots only for non system tags
 	*/
 	TagNames []string
+
+	/* TagNamesExcluded.
+
+	   Specifies the tag names to not include in the tagged snapshots response
+	*/
+	TagNamesExcluded []string
 
 	/* TagSearchName.
 
@@ -278,6 +296,12 @@ type SearchObjectsParams struct {
 	   TenantIds contains ids of the tenants for which objects are to be returned.
 	*/
 	TenantIds []string
+
+	/* ThreatTags.
+
+	   Specifies the threat tag's names to filter the tagged snapshots
+	*/
+	ThreatTags []string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -330,6 +354,17 @@ func (o *SearchObjectsParams) WithHTTPClient(client *http.Client) *SearchObjects
 // SetHTTPClient adds the HTTPClient to the search objects params
 func (o *SearchObjectsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
+}
+
+// WithAnomalyTags adds the anomalyTags to the search objects params
+func (o *SearchObjectsParams) WithAnomalyTags(anomalyTags []string) *SearchObjectsParams {
+	o.SetAnomalyTags(anomalyTags)
+	return o
+}
+
+// SetAnomalyTags adds the anomalyTags to the search objects params
+func (o *SearchObjectsParams) SetAnomalyTags(anomalyTags []string) {
+	o.AnomalyTags = anomalyTags
 }
 
 // WithAwsObjectTypes adds the awsObjectTypes to the search objects params
@@ -385,6 +420,17 @@ func (o *SearchObjectsParams) WithCount(count *int32) *SearchObjectsParams {
 // SetCount adds the count to the search objects params
 func (o *SearchObjectsParams) SetCount(count *int32) {
 	o.Count = count
+}
+
+// WithDataClassificationTags adds the dataClassificationTags to the search objects params
+func (o *SearchObjectsParams) WithDataClassificationTags(dataClassificationTags []string) *SearchObjectsParams {
+	o.SetDataClassificationTags(dataClassificationTags)
+	return o
+}
+
+// SetDataClassificationTags adds the dataClassificationTags to the search objects params
+func (o *SearchObjectsParams) SetDataClassificationTags(dataClassificationTags []string) {
+	o.DataClassificationTags = dataClassificationTags
 }
 
 // WithEnvironments adds the environments to the search objects params
@@ -673,6 +719,17 @@ func (o *SearchObjectsParams) SetTagNames(tagNames []string) {
 	o.TagNames = tagNames
 }
 
+// WithTagNamesExcluded adds the tagNamesExcluded to the search objects params
+func (o *SearchObjectsParams) WithTagNamesExcluded(tagNamesExcluded []string) *SearchObjectsParams {
+	o.SetTagNamesExcluded(tagNamesExcluded)
+	return o
+}
+
+// SetTagNamesExcluded adds the tagNamesExcluded to the search objects params
+func (o *SearchObjectsParams) SetTagNamesExcluded(tagNamesExcluded []string) {
+	o.TagNamesExcluded = tagNamesExcluded
+}
+
 // WithTagSearchName adds the tagSearchName to the search objects params
 func (o *SearchObjectsParams) WithTagSearchName(tagSearchName *string) *SearchObjectsParams {
 	o.SetTagSearchName(tagSearchName)
@@ -717,6 +774,17 @@ func (o *SearchObjectsParams) SetTenantIds(tenantIds []string) {
 	o.TenantIds = tenantIds
 }
 
+// WithThreatTags adds the threatTags to the search objects params
+func (o *SearchObjectsParams) WithThreatTags(threatTags []string) *SearchObjectsParams {
+	o.SetThreatTags(threatTags)
+	return o
+}
+
+// SetThreatTags adds the threatTags to the search objects params
+func (o *SearchObjectsParams) SetThreatTags(threatTags []string) {
+	o.ThreatTags = threatTags
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *SearchObjectsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -724,6 +792,17 @@ func (o *SearchObjectsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		return err
 	}
 	var res []error
+
+	if o.AnomalyTags != nil {
+
+		// binding items for anomalyTags
+		joinedAnomalyTags := o.bindParamAnomalyTags(reg)
+
+		// query array param anomalyTags
+		if err := r.SetQueryParam("anomalyTags", joinedAnomalyTags...); err != nil {
+			return err
+		}
+	}
 
 	if o.AwsObjectTypes != nil {
 
@@ -783,6 +862,17 @@ func (o *SearchObjectsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 			if err := r.SetQueryParam("count", qCount); err != nil {
 				return err
 			}
+		}
+	}
+
+	if o.DataClassificationTags != nil {
+
+		// binding items for dataClassificationTags
+		joinedDataClassificationTags := o.bindParamDataClassificationTags(reg)
+
+		// query array param dataClassificationTags
+		if err := r.SetQueryParam("dataClassificationTags", joinedDataClassificationTags...); err != nil {
+			return err
 		}
 	}
 
@@ -1111,6 +1201,17 @@ func (o *SearchObjectsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		}
 	}
 
+	if o.TagNamesExcluded != nil {
+
+		// binding items for tagNamesExcluded
+		joinedTagNamesExcluded := o.bindParamTagNamesExcluded(reg)
+
+		// query array param tagNamesExcluded
+		if err := r.SetQueryParam("tagNamesExcluded", joinedTagNamesExcluded...); err != nil {
+			return err
+		}
+	}
+
 	if o.TagSearchName != nil {
 
 		// query param tagSearchName
@@ -1161,10 +1262,38 @@ func (o *SearchObjectsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		}
 	}
 
+	if o.ThreatTags != nil {
+
+		// binding items for threatTags
+		joinedThreatTags := o.bindParamThreatTags(reg)
+
+		// query array param threatTags
+		if err := r.SetQueryParam("threatTags", joinedThreatTags...); err != nil {
+			return err
+		}
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
 	return nil
+}
+
+// bindParamSearchObjects binds the parameter anomalyTags
+func (o *SearchObjectsParams) bindParamAnomalyTags(formats strfmt.Registry) []string {
+	anomalyTagsIR := o.AnomalyTags
+
+	var anomalyTagsIC []string
+	for _, anomalyTagsIIR := range anomalyTagsIR { // explode []string
+
+		anomalyTagsIIV := anomalyTagsIIR // string as string
+		anomalyTagsIC = append(anomalyTagsIC, anomalyTagsIIV)
+	}
+
+	// items.CollectionFormat: ""
+	anomalyTagsIS := swag.JoinByFormat(anomalyTagsIC, "")
+
+	return anomalyTagsIS
 }
 
 // bindParamSearchObjects binds the parameter awsObjectTypes
@@ -1233,6 +1362,23 @@ func (o *SearchObjectsParams) bindParamClusterIdentifiers(formats strfmt.Registr
 	clusterIdentifiersIS := swag.JoinByFormat(clusterIdentifiersIC, "")
 
 	return clusterIdentifiersIS
+}
+
+// bindParamSearchObjects binds the parameter dataClassificationTags
+func (o *SearchObjectsParams) bindParamDataClassificationTags(formats strfmt.Registry) []string {
+	dataClassificationTagsIR := o.DataClassificationTags
+
+	var dataClassificationTagsIC []string
+	for _, dataClassificationTagsIIR := range dataClassificationTagsIR { // explode []string
+
+		dataClassificationTagsIIV := dataClassificationTagsIIR // string as string
+		dataClassificationTagsIC = append(dataClassificationTagsIC, dataClassificationTagsIIV)
+	}
+
+	// items.CollectionFormat: ""
+	dataClassificationTagsIS := swag.JoinByFormat(dataClassificationTagsIC, "")
+
+	return dataClassificationTagsIS
 }
 
 // bindParamSearchObjects binds the parameter environments
@@ -1541,6 +1687,23 @@ func (o *SearchObjectsParams) bindParamTagNames(formats strfmt.Registry) []strin
 	return tagNamesIS
 }
 
+// bindParamSearchObjects binds the parameter tagNamesExcluded
+func (o *SearchObjectsParams) bindParamTagNamesExcluded(formats strfmt.Registry) []string {
+	tagNamesExcludedIR := o.TagNamesExcluded
+
+	var tagNamesExcludedIC []string
+	for _, tagNamesExcludedIIR := range tagNamesExcludedIR { // explode []string
+
+		tagNamesExcludedIIV := tagNamesExcludedIIR // string as string
+		tagNamesExcludedIC = append(tagNamesExcludedIC, tagNamesExcludedIIV)
+	}
+
+	// items.CollectionFormat: ""
+	tagNamesExcludedIS := swag.JoinByFormat(tagNamesExcludedIC, "")
+
+	return tagNamesExcludedIS
+}
+
 // bindParamSearchObjects binds the parameter tagSubCategories
 func (o *SearchObjectsParams) bindParamTagSubCategories(formats strfmt.Registry) []string {
 	tagSubCategoriesIR := o.TagSubCategories
@@ -1590,4 +1753,21 @@ func (o *SearchObjectsParams) bindParamTenantIds(formats strfmt.Registry) []stri
 	tenantIdsIS := swag.JoinByFormat(tenantIdsIC, "")
 
 	return tenantIdsIS
+}
+
+// bindParamSearchObjects binds the parameter threatTags
+func (o *SearchObjectsParams) bindParamThreatTags(formats strfmt.Registry) []string {
+	threatTagsIR := o.ThreatTags
+
+	var threatTagsIC []string
+	for _, threatTagsIIR := range threatTagsIR { // explode []string
+
+		threatTagsIIV := threatTagsIIR // string as string
+		threatTagsIC = append(threatTagsIC, threatTagsIIV)
+	}
+
+	// items.CollectionFormat: ""
+	threatTagsIS := swag.JoinByFormat(threatTagsIC, "")
+
+	return threatTagsIS
 }

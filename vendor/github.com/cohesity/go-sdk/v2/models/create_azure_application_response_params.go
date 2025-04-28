@@ -22,7 +22,7 @@ import (
 // swagger:model CreateAzureApplicationResponseParams
 type CreateAzureApplicationResponseParams struct {
 
-	// Specifies a list of Microsoft365 azure application credentials needed to authenticate & authorize users for Office 365.
+	// Specifies a list of Microsoft365 azure application credentials needed to authenticate & authorize users for Office 365/Azure Workflows.
 	// Min Items: 1
 	Microsoft365AppCredentialsList []*Office365AppCredentials `json:"microsoft365AppCredentialsList"`
 }

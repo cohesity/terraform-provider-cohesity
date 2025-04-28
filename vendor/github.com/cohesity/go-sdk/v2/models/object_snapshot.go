@@ -62,7 +62,7 @@ type ObjectSnapshot struct {
 	RunType *string `json:"runType,omitempty"`
 
 	// Specifies the snapshot environment.
-	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 
 	// Specifies the timestamp in Unix time epoch in microseconds when the snapshot is taken for the specified Object.
@@ -98,6 +98,9 @@ type ObjectSnapshot struct {
 	// Specifies the cluster incarnation id where this snapshot belongs to.
 	ClusterIncarnationID *int64 `json:"clusterIncarnationId,omitempty"`
 
+	// Specifies the parameters specific to Oracle database snapshot.
+	OracleParams *OracleObjectParams `json:"oracleParams,omitempty"`
+
 	// Specifies the parameters specific to AWS type snapshot.
 	AwsParams *AwsSnapshotParams `json:"awsParams,omitempty"`
 
@@ -124,6 +127,9 @@ type ObjectSnapshot struct {
 
 	// Specifies the parameters specific to Isilon type snapshot.
 	IsilonParams *IsilonObjectParams `json:"isilonParams,omitempty"`
+
+	// Specifies the paramenters specific to Microsoft 365.
+	M365Params *M365Params `json:"m365Params,omitempty"`
 
 	// Specifies the parameters specific to NetApp type snapshot.
 	NetappParams *NetappObjectParams `json:"netappParams,omitempty"`
@@ -167,6 +173,10 @@ func (m *ObjectSnapshot) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateOracleParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateAwsParams(formats); err != nil {
 		res = append(res, err)
 	}
@@ -200,6 +210,10 @@ func (m *ObjectSnapshot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateIsilonParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateM365Params(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -444,7 +458,7 @@ var objectSnapshotTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -558,6 +572,15 @@ const (
 
 	// ObjectSnapshotEnvironmentKSfdc captures enum value "kSfdc"
 	ObjectSnapshotEnvironmentKSfdc string = "kSfdc"
+
+	// ObjectSnapshotEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ObjectSnapshotEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ObjectSnapshotEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	ObjectSnapshotEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// ObjectSnapshotEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ObjectSnapshotEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -576,6 +599,25 @@ func (m *ObjectSnapshot) validateEnvironment(formats strfmt.Registry) error {
 	// value enum
 	if err := m.validateEnvironmentEnum("environment", "body", *m.Environment); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *ObjectSnapshot) validateOracleParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.OracleParams) { // not required
+		return nil
+	}
+
+	if m.OracleParams != nil {
+		if err := m.OracleParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("oracleParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("oracleParams")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -752,6 +794,25 @@ func (m *ObjectSnapshot) validateIsilonParams(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ObjectSnapshot) validateM365Params(formats strfmt.Registry) error {
+	if swag.IsZero(m.M365Params) { // not required
+		return nil
+	}
+
+	if m.M365Params != nil {
+		if err := m.M365Params.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("m365Params")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("m365Params")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *ObjectSnapshot) validateNetappParams(formats strfmt.Registry) error {
 	if swag.IsZero(m.NetappParams) { // not required
 		return nil
@@ -813,6 +874,10 @@ func (m *ObjectSnapshot) validateSfdcParams(formats strfmt.Registry) error {
 func (m *ObjectSnapshot) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateOracleParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateAwsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -849,6 +914,10 @@ func (m *ObjectSnapshot) ContextValidate(ctx context.Context, formats strfmt.Reg
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateM365Params(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateNetappParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -864,6 +933,27 @@ func (m *ObjectSnapshot) ContextValidate(ctx context.Context, formats strfmt.Reg
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ObjectSnapshot) contextValidateOracleParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.OracleParams != nil {
+
+		if swag.IsZero(m.OracleParams) { // not required
+			return nil
+		}
+
+		if err := m.OracleParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("oracleParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("oracleParams")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -1048,6 +1138,27 @@ func (m *ObjectSnapshot) contextValidateIsilonParams(ctx context.Context, format
 				return ve.ValidateName("isilonParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("isilonParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ObjectSnapshot) contextValidateM365Params(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.M365Params != nil {
+
+		if swag.IsZero(m.M365Params) { // not required
+			return nil
+		}
+
+		if err := m.M365Params.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("m365Params")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("m365Params")
 			}
 			return err
 		}

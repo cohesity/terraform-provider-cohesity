@@ -82,6 +82,12 @@ type GetProtectionGroupRunsParams struct {
 	*/
 	EndTimeUsecs *int64
 
+	/* ExcludeErrorRuns.
+
+	   Specifies whether to exclude runs with error. If no value is specified, then runs with errors are included.
+	*/
+	ExcludeErrorRuns *bool
+
 	/* ExcludeNonRestorableRuns.
 
 	   Specifies whether to exclude non restorable runs. Run is treated restorable only if there is atleast one object snapshot (which may be either a local or an archival snapshot) which is not deleted or expired. Default value is false.
@@ -106,11 +112,23 @@ type GetProtectionGroupRunsParams struct {
 	*/
 	ID string
 
+	/* IncludeExtensionInfo.
+
+	   Specifies if needs to include proto extensions if they are extended.
+	*/
+	IncludeExtensionInfo *bool
+
 	/* IncludeObjectDetails.
 
 	   Specifies if the result includes the object details for each protection run. If set to true, details of the protected object will be returned. If set to false or not specified, details will not be returned.
 	*/
 	IncludeObjectDetails *bool
+
+	/* IncludeRpoSnapshots.
+
+	   If true, then the snapshots for Protection Sources protected by Rpo policies will also be returned.
+	*/
+	IncludeRpoSnapshots *bool
 
 	/* IncludeTenants.
 
@@ -118,11 +136,27 @@ type GetProtectionGroupRunsParams struct {
 	*/
 	IncludeTenants *bool
 
+	/* JobRunStartTimeUsecs.
+
+	   Return a specific Job Run by specifying a time and a group id. Specify the time when the Job Run started as a Unix epoch Timestamp (in microseconds). If this field is specified, jobId must also be specified.
+
+	   Format: int64
+	*/
+	JobRunStartTimeUsecs *int64
+
 	/* LocalBackupRunStatus.
 
 	   Specifies a list of local backup status, runs matching the status will be returned.<br> 'Running' indicates that the run is still running.<br> 'Canceled' indicates that the run has been canceled.<br> 'Canceling' indicates that the run is in the process of being canceled.<br> 'Failed' indicates that the run has failed.<br> 'Missed' indicates that the run was unable to take place at the scheduled time because the previous run was still happening.<br> 'Succeeded' indicates that the run has finished successfully.<br> 'SucceededWithWarning' indicates that the run finished successfully, but there were some warning messages.<br> 'Paused' indicates that the ongoing run has been paused.<br> 'Skipped' indicates that the run was skipped.
 	*/
 	LocalBackupRunStatus []string
+
+	/* MaxResultCount.
+
+	   Identifies the max number of items to be returned. This is specifically to be used with pagination.
+
+	   Format: int64
+	*/
+	MaxResultCount *int64
 
 	/* NumRuns.
 
@@ -132,11 +166,29 @@ type GetProtectionGroupRunsParams struct {
 	*/
 	NumRuns *int64
 
+	/* OnlyReturnDataMigrationJobs.
+
+	   Specifies if only data stubbing jobs should be returned. If not set, no data migration job will be returned.
+	*/
+	OnlyReturnDataMigrationJobs *bool
+
+	/* OnlyReturnShellInfo.
+
+	   If set, returns only shell info such as run's start time, type, error if any.
+	*/
+	OnlyReturnShellInfo *bool
+
 	/* OnlyReturnSuccessfulCopyRun.
 
 	   If set to false, all copy_tasks in any given valid state will be considered. If left empty or set to true, only successful copy_tasks would be considered. Note: this field is only considered when, filterByCopyTaskEndTime is set to true, or else it is ignored.
 	*/
 	OnlyReturnSuccessfulCopyRun *bool
+
+	/* PaginationCookie.
+
+	   Specifies the cookie to fetch the next page of results
+	*/
+	PaginationCookie *string
 
 	/* ReplicationRunStatus.
 
@@ -174,6 +226,14 @@ type GetProtectionGroupRunsParams struct {
 	*/
 	SnapshotTargetTypes []string
 
+	/* SourceID.
+
+	   Filter by source id. Only Job Runs protecting the specified source (such as a VM or View) are returned. The source id is assigned by the Cohesity Cluster.
+
+	   Format: int64
+	*/
+	SourceID *int64
+
 	/* StartTimeUsecs.
 
 	   Start time for time range filter. Specify the start time as a Unix epoch Timestamp (in microseconds), only runs executing after this time will be returned. By default it is endTimeUsecs minus an hour.
@@ -187,6 +247,12 @@ type GetProtectionGroupRunsParams struct {
 	   TenantIds contains ids of the tenants for which objects are to be returned.
 	*/
 	TenantIds []string
+
+	/* TruncateResponse.
+
+	   If set, magneto will truncate the response if it exceeds max size limit governed by magneto_http_rpc_response_size_limit_bytes
+	*/
+	TruncateResponse *bool
 
 	/* UseCachedData.
 
@@ -291,6 +357,17 @@ func (o *GetProtectionGroupRunsParams) SetEndTimeUsecs(endTimeUsecs *int64) {
 	o.EndTimeUsecs = endTimeUsecs
 }
 
+// WithExcludeErrorRuns adds the excludeErrorRuns to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithExcludeErrorRuns(excludeErrorRuns *bool) *GetProtectionGroupRunsParams {
+	o.SetExcludeErrorRuns(excludeErrorRuns)
+	return o
+}
+
+// SetExcludeErrorRuns adds the excludeErrorRuns to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetExcludeErrorRuns(excludeErrorRuns *bool) {
+	o.ExcludeErrorRuns = excludeErrorRuns
+}
+
 // WithExcludeNonRestorableRuns adds the excludeNonRestorableRuns to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) WithExcludeNonRestorableRuns(excludeNonRestorableRuns *bool) *GetProtectionGroupRunsParams {
 	o.SetExcludeNonRestorableRuns(excludeNonRestorableRuns)
@@ -335,6 +412,17 @@ func (o *GetProtectionGroupRunsParams) SetID(id string) {
 	o.ID = id
 }
 
+// WithIncludeExtensionInfo adds the includeExtensionInfo to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithIncludeExtensionInfo(includeExtensionInfo *bool) *GetProtectionGroupRunsParams {
+	o.SetIncludeExtensionInfo(includeExtensionInfo)
+	return o
+}
+
+// SetIncludeExtensionInfo adds the includeExtensionInfo to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetIncludeExtensionInfo(includeExtensionInfo *bool) {
+	o.IncludeExtensionInfo = includeExtensionInfo
+}
+
 // WithIncludeObjectDetails adds the includeObjectDetails to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) WithIncludeObjectDetails(includeObjectDetails *bool) *GetProtectionGroupRunsParams {
 	o.SetIncludeObjectDetails(includeObjectDetails)
@@ -344,6 +432,17 @@ func (o *GetProtectionGroupRunsParams) WithIncludeObjectDetails(includeObjectDet
 // SetIncludeObjectDetails adds the includeObjectDetails to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) SetIncludeObjectDetails(includeObjectDetails *bool) {
 	o.IncludeObjectDetails = includeObjectDetails
+}
+
+// WithIncludeRpoSnapshots adds the includeRpoSnapshots to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithIncludeRpoSnapshots(includeRpoSnapshots *bool) *GetProtectionGroupRunsParams {
+	o.SetIncludeRpoSnapshots(includeRpoSnapshots)
+	return o
+}
+
+// SetIncludeRpoSnapshots adds the includeRpoSnapshots to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetIncludeRpoSnapshots(includeRpoSnapshots *bool) {
+	o.IncludeRpoSnapshots = includeRpoSnapshots
 }
 
 // WithIncludeTenants adds the includeTenants to the get protection group runs params
@@ -357,6 +456,17 @@ func (o *GetProtectionGroupRunsParams) SetIncludeTenants(includeTenants *bool) {
 	o.IncludeTenants = includeTenants
 }
 
+// WithJobRunStartTimeUsecs adds the jobRunStartTimeUsecs to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithJobRunStartTimeUsecs(jobRunStartTimeUsecs *int64) *GetProtectionGroupRunsParams {
+	o.SetJobRunStartTimeUsecs(jobRunStartTimeUsecs)
+	return o
+}
+
+// SetJobRunStartTimeUsecs adds the jobRunStartTimeUsecs to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetJobRunStartTimeUsecs(jobRunStartTimeUsecs *int64) {
+	o.JobRunStartTimeUsecs = jobRunStartTimeUsecs
+}
+
 // WithLocalBackupRunStatus adds the localBackupRunStatus to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) WithLocalBackupRunStatus(localBackupRunStatus []string) *GetProtectionGroupRunsParams {
 	o.SetLocalBackupRunStatus(localBackupRunStatus)
@@ -366,6 +476,17 @@ func (o *GetProtectionGroupRunsParams) WithLocalBackupRunStatus(localBackupRunSt
 // SetLocalBackupRunStatus adds the localBackupRunStatus to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) SetLocalBackupRunStatus(localBackupRunStatus []string) {
 	o.LocalBackupRunStatus = localBackupRunStatus
+}
+
+// WithMaxResultCount adds the maxResultCount to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithMaxResultCount(maxResultCount *int64) *GetProtectionGroupRunsParams {
+	o.SetMaxResultCount(maxResultCount)
+	return o
+}
+
+// SetMaxResultCount adds the maxResultCount to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetMaxResultCount(maxResultCount *int64) {
+	o.MaxResultCount = maxResultCount
 }
 
 // WithNumRuns adds the numRuns to the get protection group runs params
@@ -379,6 +500,28 @@ func (o *GetProtectionGroupRunsParams) SetNumRuns(numRuns *int64) {
 	o.NumRuns = numRuns
 }
 
+// WithOnlyReturnDataMigrationJobs adds the onlyReturnDataMigrationJobs to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithOnlyReturnDataMigrationJobs(onlyReturnDataMigrationJobs *bool) *GetProtectionGroupRunsParams {
+	o.SetOnlyReturnDataMigrationJobs(onlyReturnDataMigrationJobs)
+	return o
+}
+
+// SetOnlyReturnDataMigrationJobs adds the onlyReturnDataMigrationJobs to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetOnlyReturnDataMigrationJobs(onlyReturnDataMigrationJobs *bool) {
+	o.OnlyReturnDataMigrationJobs = onlyReturnDataMigrationJobs
+}
+
+// WithOnlyReturnShellInfo adds the onlyReturnShellInfo to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithOnlyReturnShellInfo(onlyReturnShellInfo *bool) *GetProtectionGroupRunsParams {
+	o.SetOnlyReturnShellInfo(onlyReturnShellInfo)
+	return o
+}
+
+// SetOnlyReturnShellInfo adds the onlyReturnShellInfo to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetOnlyReturnShellInfo(onlyReturnShellInfo *bool) {
+	o.OnlyReturnShellInfo = onlyReturnShellInfo
+}
+
 // WithOnlyReturnSuccessfulCopyRun adds the onlyReturnSuccessfulCopyRun to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) WithOnlyReturnSuccessfulCopyRun(onlyReturnSuccessfulCopyRun *bool) *GetProtectionGroupRunsParams {
 	o.SetOnlyReturnSuccessfulCopyRun(onlyReturnSuccessfulCopyRun)
@@ -388,6 +531,17 @@ func (o *GetProtectionGroupRunsParams) WithOnlyReturnSuccessfulCopyRun(onlyRetur
 // SetOnlyReturnSuccessfulCopyRun adds the onlyReturnSuccessfulCopyRun to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) SetOnlyReturnSuccessfulCopyRun(onlyReturnSuccessfulCopyRun *bool) {
 	o.OnlyReturnSuccessfulCopyRun = onlyReturnSuccessfulCopyRun
+}
+
+// WithPaginationCookie adds the paginationCookie to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithPaginationCookie(paginationCookie *string) *GetProtectionGroupRunsParams {
+	o.SetPaginationCookie(paginationCookie)
+	return o
+}
+
+// SetPaginationCookie adds the paginationCookie to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetPaginationCookie(paginationCookie *string) {
+	o.PaginationCookie = paginationCookie
 }
 
 // WithReplicationRunStatus adds the replicationRunStatus to the get protection group runs params
@@ -456,6 +610,17 @@ func (o *GetProtectionGroupRunsParams) SetSnapshotTargetTypes(snapshotTargetType
 	o.SnapshotTargetTypes = snapshotTargetTypes
 }
 
+// WithSourceID adds the sourceID to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithSourceID(sourceID *int64) *GetProtectionGroupRunsParams {
+	o.SetSourceID(sourceID)
+	return o
+}
+
+// SetSourceID adds the sourceId to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetSourceID(sourceID *int64) {
+	o.SourceID = sourceID
+}
+
 // WithStartTimeUsecs adds the startTimeUsecs to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) WithStartTimeUsecs(startTimeUsecs *int64) *GetProtectionGroupRunsParams {
 	o.SetStartTimeUsecs(startTimeUsecs)
@@ -476,6 +641,17 @@ func (o *GetProtectionGroupRunsParams) WithTenantIds(tenantIds []string) *GetPro
 // SetTenantIds adds the tenantIds to the get protection group runs params
 func (o *GetProtectionGroupRunsParams) SetTenantIds(tenantIds []string) {
 	o.TenantIds = tenantIds
+}
+
+// WithTruncateResponse adds the truncateResponse to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) WithTruncateResponse(truncateResponse *bool) *GetProtectionGroupRunsParams {
+	o.SetTruncateResponse(truncateResponse)
+	return o
+}
+
+// SetTruncateResponse adds the truncateResponse to the get protection group runs params
+func (o *GetProtectionGroupRunsParams) SetTruncateResponse(truncateResponse *bool) {
+	o.TruncateResponse = truncateResponse
 }
 
 // WithUseCachedData adds the useCachedData to the get protection group runs params
@@ -531,6 +707,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		if qEndTimeUsecs != "" {
 
 			if err := r.SetQueryParam("endTimeUsecs", qEndTimeUsecs); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ExcludeErrorRuns != nil {
+
+		// query param excludeErrorRuns
+		var qrExcludeErrorRuns bool
+
+		if o.ExcludeErrorRuns != nil {
+			qrExcludeErrorRuns = *o.ExcludeErrorRuns
+		}
+		qExcludeErrorRuns := swag.FormatBool(qrExcludeErrorRuns)
+		if qExcludeErrorRuns != "" {
+
+			if err := r.SetQueryParam("excludeErrorRuns", qExcludeErrorRuns); err != nil {
 				return err
 			}
 		}
@@ -592,6 +785,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		return err
 	}
 
+	if o.IncludeExtensionInfo != nil {
+
+		// query param includeExtensionInfo
+		var qrIncludeExtensionInfo bool
+
+		if o.IncludeExtensionInfo != nil {
+			qrIncludeExtensionInfo = *o.IncludeExtensionInfo
+		}
+		qIncludeExtensionInfo := swag.FormatBool(qrIncludeExtensionInfo)
+		if qIncludeExtensionInfo != "" {
+
+			if err := r.SetQueryParam("includeExtensionInfo", qIncludeExtensionInfo); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.IncludeObjectDetails != nil {
 
 		// query param includeObjectDetails
@@ -604,6 +814,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		if qIncludeObjectDetails != "" {
 
 			if err := r.SetQueryParam("includeObjectDetails", qIncludeObjectDetails); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeRpoSnapshots != nil {
+
+		// query param includeRpoSnapshots
+		var qrIncludeRpoSnapshots bool
+
+		if o.IncludeRpoSnapshots != nil {
+			qrIncludeRpoSnapshots = *o.IncludeRpoSnapshots
+		}
+		qIncludeRpoSnapshots := swag.FormatBool(qrIncludeRpoSnapshots)
+		if qIncludeRpoSnapshots != "" {
+
+			if err := r.SetQueryParam("includeRpoSnapshots", qIncludeRpoSnapshots); err != nil {
 				return err
 			}
 		}
@@ -626,6 +853,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		}
 	}
 
+	if o.JobRunStartTimeUsecs != nil {
+
+		// query param jobRunStartTimeUsecs
+		var qrJobRunStartTimeUsecs int64
+
+		if o.JobRunStartTimeUsecs != nil {
+			qrJobRunStartTimeUsecs = *o.JobRunStartTimeUsecs
+		}
+		qJobRunStartTimeUsecs := swag.FormatInt64(qrJobRunStartTimeUsecs)
+		if qJobRunStartTimeUsecs != "" {
+
+			if err := r.SetQueryParam("jobRunStartTimeUsecs", qJobRunStartTimeUsecs); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.LocalBackupRunStatus != nil {
 
 		// binding items for localBackupRunStatus
@@ -634,6 +878,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		// query array param localBackupRunStatus
 		if err := r.SetQueryParam("localBackupRunStatus", joinedLocalBackupRunStatus...); err != nil {
 			return err
+		}
+	}
+
+	if o.MaxResultCount != nil {
+
+		// query param maxResultCount
+		var qrMaxResultCount int64
+
+		if o.MaxResultCount != nil {
+			qrMaxResultCount = *o.MaxResultCount
+		}
+		qMaxResultCount := swag.FormatInt64(qrMaxResultCount)
+		if qMaxResultCount != "" {
+
+			if err := r.SetQueryParam("maxResultCount", qMaxResultCount); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -654,6 +915,40 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		}
 	}
 
+	if o.OnlyReturnDataMigrationJobs != nil {
+
+		// query param onlyReturnDataMigrationJobs
+		var qrOnlyReturnDataMigrationJobs bool
+
+		if o.OnlyReturnDataMigrationJobs != nil {
+			qrOnlyReturnDataMigrationJobs = *o.OnlyReturnDataMigrationJobs
+		}
+		qOnlyReturnDataMigrationJobs := swag.FormatBool(qrOnlyReturnDataMigrationJobs)
+		if qOnlyReturnDataMigrationJobs != "" {
+
+			if err := r.SetQueryParam("onlyReturnDataMigrationJobs", qOnlyReturnDataMigrationJobs); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.OnlyReturnShellInfo != nil {
+
+		// query param onlyReturnShellInfo
+		var qrOnlyReturnShellInfo bool
+
+		if o.OnlyReturnShellInfo != nil {
+			qrOnlyReturnShellInfo = *o.OnlyReturnShellInfo
+		}
+		qOnlyReturnShellInfo := swag.FormatBool(qrOnlyReturnShellInfo)
+		if qOnlyReturnShellInfo != "" {
+
+			if err := r.SetQueryParam("onlyReturnShellInfo", qOnlyReturnShellInfo); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.OnlyReturnSuccessfulCopyRun != nil {
 
 		// query param onlyReturnSuccessfulCopyRun
@@ -666,6 +961,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		if qOnlyReturnSuccessfulCopyRun != "" {
 
 			if err := r.SetQueryParam("onlyReturnSuccessfulCopyRun", qOnlyReturnSuccessfulCopyRun); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.PaginationCookie != nil {
+
+		// query param paginationCookie
+		var qrPaginationCookie string
+
+		if o.PaginationCookie != nil {
+			qrPaginationCookie = *o.PaginationCookie
+		}
+		qPaginationCookie := qrPaginationCookie
+		if qPaginationCookie != "" {
+
+			if err := r.SetQueryParam("paginationCookie", qPaginationCookie); err != nil {
 				return err
 			}
 		}
@@ -740,6 +1052,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		}
 	}
 
+	if o.SourceID != nil {
+
+		// query param sourceId
+		var qrSourceID int64
+
+		if o.SourceID != nil {
+			qrSourceID = *o.SourceID
+		}
+		qSourceID := swag.FormatInt64(qrSourceID)
+		if qSourceID != "" {
+
+			if err := r.SetQueryParam("sourceId", qSourceID); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.StartTimeUsecs != nil {
 
 		// query param startTimeUsecs
@@ -765,6 +1094,23 @@ func (o *GetProtectionGroupRunsParams) WriteToRequest(r runtime.ClientRequest, r
 		// query array param tenantIds
 		if err := r.SetQueryParam("tenantIds", joinedTenantIds...); err != nil {
 			return err
+		}
+	}
+
+	if o.TruncateResponse != nil {
+
+		// query param truncateResponse
+		var qrTruncateResponse bool
+
+		if o.TruncateResponse != nil {
+			qrTruncateResponse = *o.TruncateResponse
+		}
+		qTruncateResponse := swag.FormatBool(qrTruncateResponse)
+		if qTruncateResponse != "" {
+
+			if err := r.SetQueryParam("truncateResponse", qTruncateResponse); err != nil {
+				return err
+			}
 		}
 	}
 

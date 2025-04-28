@@ -15,9 +15,15 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/agent"
 	"github.com/cohesity/go-sdk/v2/client/alert"
 	"github.com/cohesity/go-sdk/v2/client/antivirus_service"
+	"github.com/cohesity/go-sdk/v2/client/athena_app_ops"
 	"github.com/cohesity/go-sdk/v2/client/audit_log"
 	"github.com/cohesity/go-sdk/v2/client/baseos_patch_management"
+	"github.com/cohesity/go-sdk/v2/client/cloud_domain"
 	"github.com/cohesity/go-sdk/v2/client/cloud_retrieve_task"
+	"github.com/cohesity/go-sdk/v2/client/data_accessor"
+	"github.com/cohesity/go-sdk/v2/client/data_source_connection"
+	"github.com/cohesity/go-sdk/v2/client/data_source_connector"
+	"github.com/cohesity/go-sdk/v2/client/data_source_connector_local"
 	"github.com/cohesity/go-sdk/v2/client/data_tiering"
 	"github.com/cohesity/go-sdk/v2/client/external_target"
 	"github.com/cohesity/go-sdk/v2/client/failover"
@@ -31,6 +37,7 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/m_f_a"
 	"github.com/cohesity/go-sdk/v2/client/node_group"
 	"github.com/cohesity/go-sdk/v2/client/object"
+	"github.com/cohesity/go-sdk/v2/client/one_helios"
 	"github.com/cohesity/go-sdk/v2/client/patch_management"
 	"github.com/cohesity/go-sdk/v2/client/platform"
 	"github.com/cohesity/go-sdk/v2/client/policy"
@@ -45,6 +52,7 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/routes"
 	"github.com/cohesity/go-sdk/v2/client/search"
 	securityops "github.com/cohesity/go-sdk/v2/client/security"
+	"github.com/cohesity/go-sdk/v2/client/snmp_config"
 	"github.com/cohesity/go-sdk/v2/client/source"
 	"github.com/cohesity/go-sdk/v2/client/stats"
 	"github.com/cohesity/go-sdk/v2/client/storage_domain"
@@ -53,6 +61,7 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/tag"
 	"github.com/cohesity/go-sdk/v2/client/templates"
 	"github.com/cohesity/go-sdk/v2/client/tenant"
+	"github.com/cohesity/go-sdk/v2/client/tenant_deactivation"
 	"github.com/cohesity/go-sdk/v2/client/user"
 	"github.com/cohesity/go-sdk/v2/client/view"
 )
@@ -104,9 +113,15 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.Agent = agent.New(transport, formats)
 	cli.Alert = alert.New(transport, formats)
 	cli.AntivirusService = antivirus_service.New(transport, formats)
+	cli.AthenaAppOps = athena_app_ops.New(transport, formats)
 	cli.AuditLog = audit_log.New(transport, formats)
 	cli.BaseosPatchManagement = baseos_patch_management.New(transport, formats)
+	cli.CloudDomain = cloud_domain.New(transport, formats)
 	cli.CloudRetrieveTask = cloud_retrieve_task.New(transport, formats)
+	cli.DataAccessor = data_accessor.New(transport, formats)
+	cli.DataSourceConnection = data_source_connection.New(transport, formats)
+	cli.DataSourceConnector = data_source_connector.New(transport, formats)
+	cli.DataSourceConnectorLocal = data_source_connector_local.New(transport, formats)
 	cli.DataTiering = data_tiering.New(transport, formats)
 	cli.ExternalTarget = external_target.New(transport, formats)
 	cli.Failover = failover.New(transport, formats)
@@ -120,6 +135,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.Mfa = m_f_a.New(transport, formats)
 	cli.NodeGroup = node_group.New(transport, formats)
 	cli.Object = object.New(transport, formats)
+	cli.OneHelios = one_helios.New(transport, formats)
 	cli.PatchManagement = patch_management.New(transport, formats)
 	cli.Platform = platform.New(transport, formats)
 	cli.Policy = policy.New(transport, formats)
@@ -134,6 +150,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.Routes = routes.New(transport, formats)
 	cli.Search = search.New(transport, formats)
 	cli.Security = securityops.New(transport, formats)
+	cli.SnmpConfig = snmp_config.New(transport, formats)
 	cli.Source = source.New(transport, formats)
 	cli.Stats = stats.New(transport, formats)
 	cli.StorageDomain = storage_domain.New(transport, formats)
@@ -142,6 +159,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.Tag = tag.New(transport, formats)
 	cli.Templates = templates.New(transport, formats)
 	cli.Tenant = tenant.New(transport, formats)
+	cli.TenantDeactivation = tenant_deactivation.New(transport, formats)
 	cli.User = user.New(transport, formats)
 	cli.View = view.New(transport, formats)
 	return cli
@@ -198,11 +216,23 @@ type CohesityRESTAPI struct {
 
 	AntivirusService antivirus_service.ClientService
 
+	AthenaAppOps athena_app_ops.ClientService
+
 	AuditLog audit_log.ClientService
 
 	BaseosPatchManagement baseos_patch_management.ClientService
 
+	CloudDomain cloud_domain.ClientService
+
 	CloudRetrieveTask cloud_retrieve_task.ClientService
+
+	DataAccessor data_accessor.ClientService
+
+	DataSourceConnection data_source_connection.ClientService
+
+	DataSourceConnector data_source_connector.ClientService
+
+	DataSourceConnectorLocal data_source_connector_local.ClientService
 
 	DataTiering data_tiering.ClientService
 
@@ -229,6 +259,8 @@ type CohesityRESTAPI struct {
 	NodeGroup node_group.ClientService
 
 	Object object.ClientService
+
+	OneHelios one_helios.ClientService
 
 	PatchManagement patch_management.ClientService
 
@@ -258,6 +290,8 @@ type CohesityRESTAPI struct {
 
 	Security securityops.ClientService
 
+	SnmpConfig snmp_config.ClientService
+
 	Source source.ClientService
 
 	Stats stats.ClientService
@@ -274,6 +308,8 @@ type CohesityRESTAPI struct {
 
 	Tenant tenant.ClientService
 
+	TenantDeactivation tenant_deactivation.ClientService
+
 	User user.ClientService
 
 	View view.ClientService
@@ -289,9 +325,15 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Agent.SetTransport(transport)
 	c.Alert.SetTransport(transport)
 	c.AntivirusService.SetTransport(transport)
+	c.AthenaAppOps.SetTransport(transport)
 	c.AuditLog.SetTransport(transport)
 	c.BaseosPatchManagement.SetTransport(transport)
+	c.CloudDomain.SetTransport(transport)
 	c.CloudRetrieveTask.SetTransport(transport)
+	c.DataAccessor.SetTransport(transport)
+	c.DataSourceConnection.SetTransport(transport)
+	c.DataSourceConnector.SetTransport(transport)
+	c.DataSourceConnectorLocal.SetTransport(transport)
 	c.DataTiering.SetTransport(transport)
 	c.ExternalTarget.SetTransport(transport)
 	c.Failover.SetTransport(transport)
@@ -305,6 +347,7 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Mfa.SetTransport(transport)
 	c.NodeGroup.SetTransport(transport)
 	c.Object.SetTransport(transport)
+	c.OneHelios.SetTransport(transport)
 	c.PatchManagement.SetTransport(transport)
 	c.Platform.SetTransport(transport)
 	c.Policy.SetTransport(transport)
@@ -319,6 +362,7 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Routes.SetTransport(transport)
 	c.Search.SetTransport(transport)
 	c.Security.SetTransport(transport)
+	c.SnmpConfig.SetTransport(transport)
 	c.Source.SetTransport(transport)
 	c.Stats.SetTransport(transport)
 	c.StorageDomain.SetTransport(transport)
@@ -327,6 +371,7 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Tag.SetTransport(transport)
 	c.Templates.SetTransport(transport)
 	c.Tenant.SetTransport(transport)
+	c.TenantDeactivation.SetTransport(transport)
 	c.User.SetTransport(transport)
 	c.View.SetTransport(transport)
 }

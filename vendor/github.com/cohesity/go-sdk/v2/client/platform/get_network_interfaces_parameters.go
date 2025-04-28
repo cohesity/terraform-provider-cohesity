@@ -14,6 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetNetworkInterfacesParams creates a new GetNetworkInterfacesParams object,
@@ -60,6 +61,51 @@ GetNetworkInterfacesParams contains all the parameters to send to the API endpoi
 	Typically these are written to a http.Request.
 */
 type GetNetworkInterfacesParams struct {
+
+	/* BondInterfaceOnly.
+
+	   Specifies if only show bond interface info.
+	*/
+	BondInterfaceOnly *bool
+
+	/* Cache.
+
+	   Get interfaces information from cache.
+	*/
+	Cache *bool
+
+	/* IfaceGroupAssignedOnly.
+
+	   Specifies if only show interface group assigned interface info.
+	*/
+	IfaceGroupAssignedOnly *bool
+
+	/* IncludeBondSlaveDetails.
+
+	   Specifies if include bond secondary detailed info.
+	*/
+	IncludeBondSlaveDetails *bool
+
+	/* IncludeStats.
+
+	   Specifies if include stats.
+	*/
+	IncludeStats *bool
+
+	/* IncludeUplinkSwitchInfo.
+
+	   Specifies if include uplink switch info.
+	*/
+	IncludeUplinkSwitchInfo *bool
+
+	/* NodeID.
+
+	   Node id, used to get interfaces on a particular node.
+
+	   Format: int64
+	*/
+	NodeID *int64
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -77,7 +123,33 @@ func (o *GetNetworkInterfacesParams) WithDefaults() *GetNetworkInterfacesParams 
 //
 // All values with no default are reset to their zero value.
 func (o *GetNetworkInterfacesParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		bondInterfaceOnlyDefault = bool(false)
+
+		cacheDefault = bool(false)
+
+		ifaceGroupAssignedOnlyDefault = bool(false)
+
+		includeBondSlaveDetailsDefault = bool(false)
+
+		includeStatsDefault = bool(false)
+
+		includeUplinkSwitchInfoDefault = bool(false)
+	)
+
+	val := GetNetworkInterfacesParams{
+		BondInterfaceOnly:       &bondInterfaceOnlyDefault,
+		Cache:                   &cacheDefault,
+		IfaceGroupAssignedOnly:  &ifaceGroupAssignedOnlyDefault,
+		IncludeBondSlaveDetails: &includeBondSlaveDetailsDefault,
+		IncludeStats:            &includeStatsDefault,
+		IncludeUplinkSwitchInfo: &includeUplinkSwitchInfoDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get network interfaces params
@@ -113,6 +185,83 @@ func (o *GetNetworkInterfacesParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithBondInterfaceOnly adds the bondInterfaceOnly to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithBondInterfaceOnly(bondInterfaceOnly *bool) *GetNetworkInterfacesParams {
+	o.SetBondInterfaceOnly(bondInterfaceOnly)
+	return o
+}
+
+// SetBondInterfaceOnly adds the bondInterfaceOnly to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetBondInterfaceOnly(bondInterfaceOnly *bool) {
+	o.BondInterfaceOnly = bondInterfaceOnly
+}
+
+// WithCache adds the cache to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithCache(cache *bool) *GetNetworkInterfacesParams {
+	o.SetCache(cache)
+	return o
+}
+
+// SetCache adds the cache to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetCache(cache *bool) {
+	o.Cache = cache
+}
+
+// WithIfaceGroupAssignedOnly adds the ifaceGroupAssignedOnly to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithIfaceGroupAssignedOnly(ifaceGroupAssignedOnly *bool) *GetNetworkInterfacesParams {
+	o.SetIfaceGroupAssignedOnly(ifaceGroupAssignedOnly)
+	return o
+}
+
+// SetIfaceGroupAssignedOnly adds the ifaceGroupAssignedOnly to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetIfaceGroupAssignedOnly(ifaceGroupAssignedOnly *bool) {
+	o.IfaceGroupAssignedOnly = ifaceGroupAssignedOnly
+}
+
+// WithIncludeBondSlaveDetails adds the includeBondSlaveDetails to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithIncludeBondSlaveDetails(includeBondSlaveDetails *bool) *GetNetworkInterfacesParams {
+	o.SetIncludeBondSlaveDetails(includeBondSlaveDetails)
+	return o
+}
+
+// SetIncludeBondSlaveDetails adds the includeBondSlaveDetails to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetIncludeBondSlaveDetails(includeBondSlaveDetails *bool) {
+	o.IncludeBondSlaveDetails = includeBondSlaveDetails
+}
+
+// WithIncludeStats adds the includeStats to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithIncludeStats(includeStats *bool) *GetNetworkInterfacesParams {
+	o.SetIncludeStats(includeStats)
+	return o
+}
+
+// SetIncludeStats adds the includeStats to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetIncludeStats(includeStats *bool) {
+	o.IncludeStats = includeStats
+}
+
+// WithIncludeUplinkSwitchInfo adds the includeUplinkSwitchInfo to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithIncludeUplinkSwitchInfo(includeUplinkSwitchInfo *bool) *GetNetworkInterfacesParams {
+	o.SetIncludeUplinkSwitchInfo(includeUplinkSwitchInfo)
+	return o
+}
+
+// SetIncludeUplinkSwitchInfo adds the includeUplinkSwitchInfo to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetIncludeUplinkSwitchInfo(includeUplinkSwitchInfo *bool) {
+	o.IncludeUplinkSwitchInfo = includeUplinkSwitchInfo
+}
+
+// WithNodeID adds the nodeID to the get network interfaces params
+func (o *GetNetworkInterfacesParams) WithNodeID(nodeID *int64) *GetNetworkInterfacesParams {
+	o.SetNodeID(nodeID)
+	return o
+}
+
+// SetNodeID adds the nodeId to the get network interfaces params
+func (o *GetNetworkInterfacesParams) SetNodeID(nodeID *int64) {
+	o.NodeID = nodeID
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetNetworkInterfacesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -120,6 +269,125 @@ func (o *GetNetworkInterfacesParams) WriteToRequest(r runtime.ClientRequest, reg
 		return err
 	}
 	var res []error
+
+	if o.BondInterfaceOnly != nil {
+
+		// query param bondInterfaceOnly
+		var qrBondInterfaceOnly bool
+
+		if o.BondInterfaceOnly != nil {
+			qrBondInterfaceOnly = *o.BondInterfaceOnly
+		}
+		qBondInterfaceOnly := swag.FormatBool(qrBondInterfaceOnly)
+		if qBondInterfaceOnly != "" {
+
+			if err := r.SetQueryParam("bondInterfaceOnly", qBondInterfaceOnly); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Cache != nil {
+
+		// query param cache
+		var qrCache bool
+
+		if o.Cache != nil {
+			qrCache = *o.Cache
+		}
+		qCache := swag.FormatBool(qrCache)
+		if qCache != "" {
+
+			if err := r.SetQueryParam("cache", qCache); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IfaceGroupAssignedOnly != nil {
+
+		// query param ifaceGroupAssignedOnly
+		var qrIfaceGroupAssignedOnly bool
+
+		if o.IfaceGroupAssignedOnly != nil {
+			qrIfaceGroupAssignedOnly = *o.IfaceGroupAssignedOnly
+		}
+		qIfaceGroupAssignedOnly := swag.FormatBool(qrIfaceGroupAssignedOnly)
+		if qIfaceGroupAssignedOnly != "" {
+
+			if err := r.SetQueryParam("ifaceGroupAssignedOnly", qIfaceGroupAssignedOnly); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeBondSlaveDetails != nil {
+
+		// query param includeBondSlaveDetails
+		var qrIncludeBondSlaveDetails bool
+
+		if o.IncludeBondSlaveDetails != nil {
+			qrIncludeBondSlaveDetails = *o.IncludeBondSlaveDetails
+		}
+		qIncludeBondSlaveDetails := swag.FormatBool(qrIncludeBondSlaveDetails)
+		if qIncludeBondSlaveDetails != "" {
+
+			if err := r.SetQueryParam("includeBondSlaveDetails", qIncludeBondSlaveDetails); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeStats != nil {
+
+		// query param includeStats
+		var qrIncludeStats bool
+
+		if o.IncludeStats != nil {
+			qrIncludeStats = *o.IncludeStats
+		}
+		qIncludeStats := swag.FormatBool(qrIncludeStats)
+		if qIncludeStats != "" {
+
+			if err := r.SetQueryParam("includeStats", qIncludeStats); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IncludeUplinkSwitchInfo != nil {
+
+		// query param includeUplinkSwitchInfo
+		var qrIncludeUplinkSwitchInfo bool
+
+		if o.IncludeUplinkSwitchInfo != nil {
+			qrIncludeUplinkSwitchInfo = *o.IncludeUplinkSwitchInfo
+		}
+		qIncludeUplinkSwitchInfo := swag.FormatBool(qrIncludeUplinkSwitchInfo)
+		if qIncludeUplinkSwitchInfo != "" {
+
+			if err := r.SetQueryParam("includeUplinkSwitchInfo", qIncludeUplinkSwitchInfo); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.NodeID != nil {
+
+		// query param nodeId
+		var qrNodeID int64
+
+		if o.NodeID != nil {
+			qrNodeID = *o.NodeID
+		}
+		qNodeID := swag.FormatInt64(qrNodeID)
+		if qNodeID != "" {
+
+			if err := r.SetQueryParam("nodeId", qNodeID); err != nil {
+				return err
+			}
+		}
+	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

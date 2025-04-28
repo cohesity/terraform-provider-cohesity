@@ -60,11 +60,15 @@ type ClientService interface {
 
 	CreateRecovery(params *CreateRecoveryParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateRecoveryCreated, error)
 
+	DeleteRecoveryCloneTaskByID(params *DeleteRecoveryCloneTaskByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRecoveryCloneTaskByIDNoContent, error)
+
 	DownloadFilesFromRecovery(params *DownloadFilesFromRecoveryParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DownloadFilesFromRecoveryOK, error)
 
 	DownloadIndexedFile(params *DownloadIndexedFileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DownloadIndexedFileOK, error)
 
 	FetchUptierData(params *FetchUptierDataParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*FetchUptierDataOK, error)
+
+	GetDirectories(params *GetDirectoriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetDirectoriesOK, error)
 
 	GetRecoveries(params *GetRecoveriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRecoveriesOK, error)
 
@@ -74,7 +78,11 @@ type ClientService interface {
 
 	GetRecoveryErrorsReport(params *GetRecoveryErrorsReportParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRecoveryErrorsReportOK, error)
 
+	GetRestorePointsInTimeRange(params *GetRestorePointsInTimeRangeParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRestorePointsInTimeRangeCreated, error)
+
 	TearDownRecoveryByID(params *TearDownRecoveryByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TearDownRecoveryByIDNoContent, error)
+
+	VirtualDiskInformation(params *VirtualDiskInformationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*VirtualDiskInformationOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -200,6 +208,46 @@ func (a *Client) CreateRecovery(params *CreateRecoveryParams, authInfo runtime.C
 }
 
 /*
+DeleteRecoveryCloneTaskByID deletes a restore clone task
+
+**Privileges:** ```RESTORE_MODIFY``` <br><br>Delete a restore clone task with specified id
+*/
+func (a *Client) DeleteRecoveryCloneTaskByID(params *DeleteRecoveryCloneTaskByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRecoveryCloneTaskByIDNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDeleteRecoveryCloneTaskByIDParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "DeleteRecoveryCloneTaskById",
+		Method:             "DELETE",
+		PathPattern:        "/data-protect/recoveries/clone/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DeleteRecoveryCloneTaskByIDReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DeleteRecoveryCloneTaskByIDNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DeleteRecoveryCloneTaskByIDDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 DownloadFilesFromRecovery downloads files from the given download file recovery
 
 **Privileges:** ```RESTORE_DOWNLOAD``` <br><br>Download files from the given download file recovery.
@@ -316,6 +364,46 @@ func (a *Client) FetchUptierData(params *FetchUptierDataParams, authInfo runtime
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*FetchUptierDataDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetDirectories fetches the children of a directory
+
+**Privileges:** ```RESTORE_VIEW``` <br><br>Retrieves the immediate files and subdirectories of a specified directory within a VM, View, NAS Volume, Physical machine etc. i.e. any adapter that supports browse functionality
+*/
+func (a *Client) GetDirectories(params *GetDirectoriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetDirectoriesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetDirectoriesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetDirectories",
+		Method:             "GET",
+		PathPattern:        "/data-protect/recoveries/directories",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetDirectoriesReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetDirectoriesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetDirectoriesDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -480,6 +568,46 @@ func (a *Client) GetRecoveryErrorsReport(params *GetRecoveryErrorsReportParams, 
 }
 
 /*
+GetRestorePointsInTimeRange lists restore points in a given time range
+
+**Privileges:** ```RESTORE_VIEW``` <br><br>List Restore Points i.e. returns the snapshots in in a given time range
+*/
+func (a *Client) GetRestorePointsInTimeRange(params *GetRestorePointsInTimeRangeParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRestorePointsInTimeRangeCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetRestorePointsInTimeRangeParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetRestorePointsInTimeRange",
+		Method:             "POST",
+		PathPattern:        "/data-protect/snapshots/restore-points",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetRestorePointsInTimeRangeReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetRestorePointsInTimeRangeCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetRestorePointsInTimeRangeDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 TearDownRecoveryByID tears down recovery for a given id
 
 **Privileges:** ```RESTORE_MODIFY``` <br><br>Tear down Recovery for a given id.
@@ -516,6 +644,46 @@ func (a *Client) TearDownRecoveryByID(params *TearDownRecoveryByIDParams, authIn
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*TearDownRecoveryByIDDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+VirtualDiskInformation fetches information of virtual disks
+
+**Privileges:** ```RESTORE_VIEW``` <br><br>Fetches information of virtual disks of an object such as a VM or a physical server for a given snapshot.
+*/
+func (a *Client) VirtualDiskInformation(params *VirtualDiskInformationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*VirtualDiskInformationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewVirtualDiskInformationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "VirtualDiskInformation",
+		Method:             "GET",
+		PathPattern:        "/data-protect/recoveries/virtual-disks",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &VirtualDiskInformationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*VirtualDiskInformationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*VirtualDiskInformationDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

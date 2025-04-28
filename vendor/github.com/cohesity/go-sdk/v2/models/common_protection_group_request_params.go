@@ -66,11 +66,14 @@ type CommonProtectionGroupRequestParams struct {
 
 	// Specifies the environment type of the Protection Group.
 	// Required: true
-	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment"`
 
 	// Specifies if the the Protection Group is paused. New runs are not scheduled for the paused Protection Groups. Active run if any is not impacted.
 	IsPaused *bool `json:"isPaused,omitempty"`
+
+	// A note from the current user explaining the reason for pausing future runs, if applicable.
+	PausedNote *string `json:"pausedNote,omitempty"`
 
 	// Specifies the advanced configuration for a protection job.
 	AdvancedConfigs []*KeyValuePair `json:"advancedConfigs"`
@@ -301,7 +304,7 @@ var commonProtectionGroupRequestParamsTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -359,11 +362,17 @@ const (
 	// CommonProtectionGroupRequestParamsEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	CommonProtectionGroupRequestParamsEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// CommonProtectionGroupRequestParamsEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	CommonProtectionGroupRequestParamsEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// CommonProtectionGroupRequestParamsEnvironmentKAzureNative captures enum value "kAzureNative"
 	CommonProtectionGroupRequestParamsEnvironmentKAzureNative string = "kAzureNative"
 
 	// CommonProtectionGroupRequestParamsEnvironmentKAzureSQL captures enum value "kAzureSQL"
 	CommonProtectionGroupRequestParamsEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// CommonProtectionGroupRequestParamsEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	CommonProtectionGroupRequestParamsEnvironmentKAzureEntraID string = "kAzureEntraID"
 
 	// CommonProtectionGroupRequestParamsEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	CommonProtectionGroupRequestParamsEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -475,6 +484,12 @@ const (
 
 	// CommonProtectionGroupRequestParamsEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	CommonProtectionGroupRequestParamsEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// CommonProtectionGroupRequestParamsEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonProtectionGroupRequestParamsEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonProtectionGroupRequestParamsEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonProtectionGroupRequestParamsEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

@@ -84,8 +84,17 @@ type SourceRegistration struct {
 	// Specifies the parameters to register an Azure source.
 	AzureParams *AzureSourceRegistrationParams `json:"azureParams,omitempty"`
 
+	// Specifies the parameters to register an Experimental Adapter source.
+	ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
+
 	// Specifies the External Metadata registered for the entity.
 	ExternalMetadata *EntityExternalMetadata `json:"externalMetadata,omitempty"`
+
+	// Specifies the parameters to register a MongoDB Ops Manager Source.
+	MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
+
+	// Specifies the parameters to register an Kubernetes source.
+	KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -141,7 +150,13 @@ func (m *SourceRegistration) UnmarshalJSON(raw []byte) error {
 
 		AzureParams *AzureSourceRegistrationParams `json:"azureParams,omitempty"`
 
+		ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
+
 		ExternalMetadata *EntityExternalMetadata `json:"externalMetadata,omitempty"`
+
+		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
+
+		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -189,7 +204,13 @@ func (m *SourceRegistration) UnmarshalJSON(raw []byte) error {
 
 	m.AzureParams = dataAO1.AzureParams
 
+	m.ExperimentalAdapterParams = dataAO1.ExperimentalAdapterParams
+
 	m.ExternalMetadata = dataAO1.ExternalMetadata
+
+	m.MongodbOpsParams = dataAO1.MongodbOpsParams
+
+	m.KubernetesParams = dataAO1.KubernetesParams
 
 	return nil
 }
@@ -246,7 +267,13 @@ func (m SourceRegistration) MarshalJSON() ([]byte, error) {
 
 		AzureParams *AzureSourceRegistrationParams `json:"azureParams,omitempty"`
 
+		ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
+
 		ExternalMetadata *EntityExternalMetadata `json:"externalMetadata,omitempty"`
+
+		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
+
+		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 
 	dataAO1.VmwareParams = m.VmwareParams
@@ -291,7 +318,13 @@ func (m SourceRegistration) MarshalJSON() ([]byte, error) {
 
 	dataAO1.AzureParams = m.AzureParams
 
+	dataAO1.ExperimentalAdapterParams = m.ExperimentalAdapterParams
+
 	dataAO1.ExternalMetadata = m.ExternalMetadata
+
+	dataAO1.MongodbOpsParams = m.MongodbOpsParams
+
+	dataAO1.KubernetesParams = m.KubernetesParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -394,7 +427,19 @@ func (m *SourceRegistration) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateExperimentalAdapterParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateExternalMetadata(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMongodbOpsParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -824,6 +869,26 @@ func (m *SourceRegistration) validateAzureParams(formats strfmt.Registry) error 
 	return nil
 }
 
+func (m *SourceRegistration) validateExperimentalAdapterParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+		return nil
+	}
+
+	if m.ExperimentalAdapterParams != nil {
+		if err := m.ExperimentalAdapterParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *SourceRegistration) validateExternalMetadata(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.ExternalMetadata) { // not required
@@ -836,6 +901,46 @@ func (m *SourceRegistration) validateExternalMetadata(formats strfmt.Registry) e
 				return ve.ValidateName("externalMetadata")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("externalMetadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistration) validateMongodbOpsParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.MongodbOpsParams) { // not required
+		return nil
+	}
+
+	if m.MongodbOpsParams != nil {
+		if err := m.MongodbOpsParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistration) validateKubernetesParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.KubernetesParams) { // not required
+		return nil
+	}
+
+	if m.KubernetesParams != nil {
+		if err := m.KubernetesParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}
@@ -937,7 +1042,19 @@ func (m *SourceRegistration) ContextValidate(ctx context.Context, formats strfmt
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateExperimentalAdapterParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateExternalMetadata(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMongodbOpsParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1388,6 +1505,27 @@ func (m *SourceRegistration) contextValidateAzureParams(ctx context.Context, for
 	return nil
 }
 
+func (m *SourceRegistration) contextValidateExperimentalAdapterParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ExperimentalAdapterParams != nil {
+
+		if swag.IsZero(m.ExperimentalAdapterParams) { // not required
+			return nil
+		}
+
+		if err := m.ExperimentalAdapterParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("experimentalAdapterParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("experimentalAdapterParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *SourceRegistration) contextValidateExternalMetadata(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.ExternalMetadata != nil {
@@ -1401,6 +1539,48 @@ func (m *SourceRegistration) contextValidateExternalMetadata(ctx context.Context
 				return ve.ValidateName("externalMetadata")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("externalMetadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistration) contextValidateMongodbOpsParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MongodbOpsParams != nil {
+
+		if swag.IsZero(m.MongodbOpsParams) { // not required
+			return nil
+		}
+
+		if err := m.MongodbOpsParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mongodbOpsParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mongodbOpsParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SourceRegistration) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.KubernetesParams != nil {
+
+		if swag.IsZero(m.KubernetesParams) { // not required
+			return nil
+		}
+
+		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

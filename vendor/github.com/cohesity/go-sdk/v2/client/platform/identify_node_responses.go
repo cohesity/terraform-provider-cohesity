@@ -162,12 +162,12 @@ func (o *IdentifyNodeDefault) Code() int {
 
 func (o *IdentifyNodeDefault) Error() string {
 	payload, _ := json.Marshal(o.Payload)
-	return fmt.Sprintf("[POST /nodes/{id}/identify][%d] Identify node default %s", o._statusCode, payload)
+	return fmt.Sprintf("[POST /nodes/{id}/identify][%d] IdentifyNode default %s", o._statusCode, payload)
 }
 
 func (o *IdentifyNodeDefault) String() string {
 	payload, _ := json.Marshal(o.Payload)
-	return fmt.Sprintf("[POST /nodes/{id}/identify][%d] Identify node default %s", o._statusCode, payload)
+	return fmt.Sprintf("[POST /nodes/{id}/identify][%d] IdentifyNode default %s", o._statusCode, payload)
 }
 
 func (o *IdentifyNodeDefault) GetPayload() *models.Error {

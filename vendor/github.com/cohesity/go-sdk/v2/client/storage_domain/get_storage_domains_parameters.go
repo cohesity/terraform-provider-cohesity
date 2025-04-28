@@ -100,7 +100,7 @@ type GetStorageDomainsParams struct {
 
 	/* MatchPartialNames.
 
-	   If true, the names in viewNames are matched by any partial rather than exactly matched.
+	   If set to true, names in the 'names' parameter will be matched partially instead of exactly.
 	*/
 	MatchPartialNames *bool
 

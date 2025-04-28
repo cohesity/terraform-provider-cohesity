@@ -23,8 +23,11 @@ import (
 type ConstructMetaInfoResult struct {
 
 	// Specifies the environment type for fetching the meta Info.
-	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
+
+	// Specifies include/exclude resource metadata for k8s obj
+	KubernetesParams *KubernetesResourceMetaInfoResult `json:"kubernetesParams,omitempty"`
 
 	// Specifies 3 Maps required to fill pfile text box.
 	OracleParams *OracleRestoreMetaInfoResult `json:"oracleParams,omitempty"`
@@ -38,6 +41,10 @@ func (m *ConstructMetaInfoResult) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateEnvironment(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -59,7 +66,7 @@ var constructMetaInfoResultTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -117,11 +124,17 @@ const (
 	// ConstructMetaInfoResultEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	ConstructMetaInfoResultEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// ConstructMetaInfoResultEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ConstructMetaInfoResultEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// ConstructMetaInfoResultEnvironmentKAzureNative captures enum value "kAzureNative"
 	ConstructMetaInfoResultEnvironmentKAzureNative string = "kAzureNative"
 
 	// ConstructMetaInfoResultEnvironmentKAzureSQL captures enum value "kAzureSQL"
 	ConstructMetaInfoResultEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// ConstructMetaInfoResultEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	ConstructMetaInfoResultEnvironmentKAzureEntraID string = "kAzureEntraID"
 
 	// ConstructMetaInfoResultEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	ConstructMetaInfoResultEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -233,6 +246,12 @@ const (
 
 	// ConstructMetaInfoResultEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	ConstructMetaInfoResultEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// ConstructMetaInfoResultEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ConstructMetaInfoResultEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ConstructMetaInfoResultEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ConstructMetaInfoResultEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -251,6 +270,25 @@ func (m *ConstructMetaInfoResult) validateEnvironment(formats strfmt.Registry) e
 	// value enum
 	if err := m.validateEnvironmentEnum("environment", "body", *m.Environment); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *ConstructMetaInfoResult) validateKubernetesParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.KubernetesParams) { // not required
+		return nil
+	}
+
+	if m.KubernetesParams != nil {
+		if err := m.KubernetesParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -298,6 +336,10 @@ func (m *ConstructMetaInfoResult) validateSfdcParams(formats strfmt.Registry) er
 func (m *ConstructMetaInfoResult) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateOracleParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -309,6 +351,27 @@ func (m *ConstructMetaInfoResult) ContextValidate(ctx context.Context, formats s
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ConstructMetaInfoResult) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.KubernetesParams != nil {
+
+		if swag.IsZero(m.KubernetesParams) { // not required
+			return nil
+		}
+
+		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

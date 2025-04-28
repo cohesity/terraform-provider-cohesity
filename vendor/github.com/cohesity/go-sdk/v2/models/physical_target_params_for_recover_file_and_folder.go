@@ -50,6 +50,9 @@ type PhysicalTargetParamsForRecoverFileAndFolder struct {
 	// Enum: ["kRegular","kACLOnly"]
 	RestoreEntityType *string `json:"restoreEntityType,omitempty"`
 
+	// Specifies list of exclusions that needs to be applicable for the current file level restores. Applicable only for file level restores.
+	RestoreExclusionParam []string `json:"restoreExclusionParam"`
+
 	// Specifies the target entity where the volumes are being mounted.
 	// Required: true
 	RecoverTarget *RecoverTarget `json:"recoverTarget"`

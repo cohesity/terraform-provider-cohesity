@@ -48,6 +48,9 @@ type Office365SourceRegistrationParams struct {
 
 	// Specifies whether to enable M365 Storage Service API based(CSM) Backup for this M365 source.
 	EnableM365CSMBackup *bool `json:"enableM365CSMBackup,omitempty"`
+
+	// Specifies the Microsoft 365 Backup Storage parameters for the source.
+	M365CsmParams *M365CsmParams `json:"m365CsmParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -76,6 +79,8 @@ func (m *Office365SourceRegistrationParams) UnmarshalJSON(raw []byte) error {
 		UseExistingCredentials *bool `json:"useExistingCredentials,omitempty"`
 
 		EnableM365CSMBackup *bool `json:"enableM365CSMBackup,omitempty"`
+
+		M365CsmParams *M365CsmParams `json:"m365CsmParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -96,6 +101,8 @@ func (m *Office365SourceRegistrationParams) UnmarshalJSON(raw []byte) error {
 	m.UseExistingCredentials = dataAO1.UseExistingCredentials
 
 	m.EnableM365CSMBackup = dataAO1.EnableM365CSMBackup
+
+	m.M365CsmParams = dataAO1.M365CsmParams
 
 	return nil
 }
@@ -125,6 +132,8 @@ func (m Office365SourceRegistrationParams) MarshalJSON() ([]byte, error) {
 		UseExistingCredentials *bool `json:"useExistingCredentials,omitempty"`
 
 		EnableM365CSMBackup *bool `json:"enableM365CSMBackup,omitempty"`
+
+		M365CsmParams *M365CsmParams `json:"m365CsmParams,omitempty"`
 	}
 
 	dataAO1.Office365AppCredentialsList = m.Office365AppCredentialsList
@@ -142,6 +151,8 @@ func (m Office365SourceRegistrationParams) MarshalJSON() ([]byte, error) {
 	dataAO1.UseExistingCredentials = m.UseExistingCredentials
 
 	dataAO1.EnableM365CSMBackup = m.EnableM365CSMBackup
+
+	dataAO1.M365CsmParams = m.M365CsmParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -173,6 +184,10 @@ func (m *Office365SourceRegistrationParams) Validate(formats strfmt.Registry) er
 	}
 
 	if err := m.validateO365ObjectsDiscoveryParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateM365CsmParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -290,6 +305,26 @@ func (m *Office365SourceRegistrationParams) validateO365ObjectsDiscoveryParams(f
 	return nil
 }
 
+func (m *Office365SourceRegistrationParams) validateM365CsmParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.M365CsmParams) { // not required
+		return nil
+	}
+
+	if m.M365CsmParams != nil {
+		if err := m.M365CsmParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("m365CsmParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("m365CsmParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this office365 source registration params based on the context it is used
 func (m *Office365SourceRegistrationParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -308,6 +343,10 @@ func (m *Office365SourceRegistrationParams) ContextValidate(ctx context.Context,
 	}
 
 	if err := m.contextValidateO365ObjectsDiscoveryParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateM365CsmParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -380,6 +419,27 @@ func (m *Office365SourceRegistrationParams) contextValidateO365ObjectsDiscoveryP
 				return ve.ValidateName("o365ObjectsDiscoveryParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("o365ObjectsDiscoveryParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Office365SourceRegistrationParams) contextValidateM365CsmParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.M365CsmParams != nil {
+
+		if swag.IsZero(m.M365CsmParams) { // not required
+			return nil
+		}
+
+		if err := m.M365CsmParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("m365CsmParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("m365CsmParams")
 			}
 			return err
 		}

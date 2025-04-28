@@ -29,6 +29,9 @@ type VmwareObjectEntityParams struct {
 
 	// Specifies if the object is a VM template.
 	IsTemplate *bool `json:"isTemplate,omitempty"`
+
+	// Specifies the managed object reference to the object (w.r.t vCenter).
+	MoRef *MOref `json:"moRef,omitempty"`
 }
 
 // Validate validates this vmware object entity params
@@ -40,6 +43,10 @@ func (m *VmwareObjectEntityParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateCdpInfo(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMoRef(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -176,11 +183,34 @@ func (m *VmwareObjectEntityParams) validateCdpInfo(formats strfmt.Registry) erro
 	return nil
 }
 
+func (m *VmwareObjectEntityParams) validateMoRef(formats strfmt.Registry) error {
+	if swag.IsZero(m.MoRef) { // not required
+		return nil
+	}
+
+	if m.MoRef != nil {
+		if err := m.MoRef.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("moRef")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("moRef")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this vmware object entity params based on the context it is used
 func (m *VmwareObjectEntityParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateCdpInfo(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMoRef(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -203,6 +233,27 @@ func (m *VmwareObjectEntityParams) contextValidateCdpInfo(ctx context.Context, f
 				return ve.ValidateName("cdpInfo")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("cdpInfo")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *VmwareObjectEntityParams) contextValidateMoRef(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MoRef != nil {
+
+		if swag.IsZero(m.MoRef) { // not required
+			return nil
+		}
+
+		if err := m.MoRef.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("moRef")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("moRef")
 			}
 			return err
 		}

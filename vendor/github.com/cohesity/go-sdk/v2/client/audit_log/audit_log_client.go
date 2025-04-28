@@ -54,6 +54,8 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	CreateAuditLogs(params *CreateAuditLogsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateAuditLogsOK, error)
+
 	GetAuditLogs(params *GetAuditLogsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAuditLogsOK, error)
 
 	GetAuditLogsActions(params *GetAuditLogsActionsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAuditLogsActionsOK, error)
@@ -65,6 +67,46 @@ type ClientService interface {
 	UpdateFilerAuditLogConfigs(params *UpdateFilerAuditLogConfigsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateFilerAuditLogConfigsOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+CreateAuditLogs creates cluster audit logs
+
+```No Privileges Required``` <br><br>Create a cluster audit logs.
+*/
+func (a *Client) CreateAuditLogs(params *CreateAuditLogsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateAuditLogsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCreateAuditLogsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "CreateAuditLogs",
+		Method:             "POST",
+		PathPattern:        "/create-audit-logs",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &CreateAuditLogsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*CreateAuditLogsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*CreateAuditLogsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*

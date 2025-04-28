@@ -74,13 +74,31 @@ type GetTimeSeriesStatsParams struct {
 
 	   Specifies the entity id.
 	*/
-	EntityID string
+	EntityID *string
+
+	/* EntityIDList.
+
+	   Specifies an entity id list represented as a string. The stats result will be the sum over all these entities. Duplicate id's will be ignored. If both EntityIdList and EntityId are specified, EntityId will be ignored.
+	*/
+	EntityIDList []string
+
+	/* IncludeGrowthChange.
+
+	   Specifies if the response should return the difference of a data point with the previous datapoint. Used for determining the change in growth rate. Datapoint could be +x, 0, -x showing the growth is up, no change or down respectively.
+	*/
+	IncludeGrowthChange *bool
 
 	/* MetricNames.
 
 	   Specifies a list of metric names.
 	*/
 	MetricNames []string
+
+	/* ProrateDataPoints.
+
+	   Specifies to create pro rated data point for every rollup interval instead of returning the actual raw data points. This should be used only when rollup function is provided.
+	*/
+	ProrateDataPoints *bool
 
 	/* RollupFunction.
 
@@ -175,14 +193,36 @@ func (o *GetTimeSeriesStatsParams) SetEndTimeMsecs(endTimeMsecs *int64) {
 }
 
 // WithEntityID adds the entityID to the get time series stats params
-func (o *GetTimeSeriesStatsParams) WithEntityID(entityID string) *GetTimeSeriesStatsParams {
+func (o *GetTimeSeriesStatsParams) WithEntityID(entityID *string) *GetTimeSeriesStatsParams {
 	o.SetEntityID(entityID)
 	return o
 }
 
 // SetEntityID adds the entityId to the get time series stats params
-func (o *GetTimeSeriesStatsParams) SetEntityID(entityID string) {
+func (o *GetTimeSeriesStatsParams) SetEntityID(entityID *string) {
 	o.EntityID = entityID
+}
+
+// WithEntityIDList adds the entityIDList to the get time series stats params
+func (o *GetTimeSeriesStatsParams) WithEntityIDList(entityIDList []string) *GetTimeSeriesStatsParams {
+	o.SetEntityIDList(entityIDList)
+	return o
+}
+
+// SetEntityIDList adds the entityIdList to the get time series stats params
+func (o *GetTimeSeriesStatsParams) SetEntityIDList(entityIDList []string) {
+	o.EntityIDList = entityIDList
+}
+
+// WithIncludeGrowthChange adds the includeGrowthChange to the get time series stats params
+func (o *GetTimeSeriesStatsParams) WithIncludeGrowthChange(includeGrowthChange *bool) *GetTimeSeriesStatsParams {
+	o.SetIncludeGrowthChange(includeGrowthChange)
+	return o
+}
+
+// SetIncludeGrowthChange adds the includeGrowthChange to the get time series stats params
+func (o *GetTimeSeriesStatsParams) SetIncludeGrowthChange(includeGrowthChange *bool) {
+	o.IncludeGrowthChange = includeGrowthChange
 }
 
 // WithMetricNames adds the metricNames to the get time series stats params
@@ -194,6 +234,17 @@ func (o *GetTimeSeriesStatsParams) WithMetricNames(metricNames []string) *GetTim
 // SetMetricNames adds the metricNames to the get time series stats params
 func (o *GetTimeSeriesStatsParams) SetMetricNames(metricNames []string) {
 	o.MetricNames = metricNames
+}
+
+// WithProrateDataPoints adds the prorateDataPoints to the get time series stats params
+func (o *GetTimeSeriesStatsParams) WithProrateDataPoints(prorateDataPoints *bool) *GetTimeSeriesStatsParams {
+	o.SetProrateDataPoints(prorateDataPoints)
+	return o
+}
+
+// SetProrateDataPoints adds the prorateDataPoints to the get time series stats params
+func (o *GetTimeSeriesStatsParams) SetProrateDataPoints(prorateDataPoints *bool) {
+	o.ProrateDataPoints = prorateDataPoints
 }
 
 // WithRollupFunction adds the rollupFunction to the get time series stats params
@@ -265,13 +316,48 @@ func (o *GetTimeSeriesStatsParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
-	// query param entityId
-	qrEntityID := o.EntityID
-	qEntityID := qrEntityID
-	if qEntityID != "" {
+	if o.EntityID != nil {
 
-		if err := r.SetQueryParam("entityId", qEntityID); err != nil {
+		// query param entityId
+		var qrEntityID string
+
+		if o.EntityID != nil {
+			qrEntityID = *o.EntityID
+		}
+		qEntityID := qrEntityID
+		if qEntityID != "" {
+
+			if err := r.SetQueryParam("entityId", qEntityID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.EntityIDList != nil {
+
+		// binding items for entityIdList
+		joinedEntityIDList := o.bindParamEntityIDList(reg)
+
+		// query array param entityIdList
+		if err := r.SetQueryParam("entityIdList", joinedEntityIDList...); err != nil {
 			return err
+		}
+	}
+
+	if o.IncludeGrowthChange != nil {
+
+		// query param includeGrowthChange
+		var qrIncludeGrowthChange bool
+
+		if o.IncludeGrowthChange != nil {
+			qrIncludeGrowthChange = *o.IncludeGrowthChange
+		}
+		qIncludeGrowthChange := swag.FormatBool(qrIncludeGrowthChange)
+		if qIncludeGrowthChange != "" {
+
+			if err := r.SetQueryParam("includeGrowthChange", qIncludeGrowthChange); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -283,6 +369,23 @@ func (o *GetTimeSeriesStatsParams) WriteToRequest(r runtime.ClientRequest, reg s
 		// query array param metricNames
 		if err := r.SetQueryParam("metricNames", joinedMetricNames...); err != nil {
 			return err
+		}
+	}
+
+	if o.ProrateDataPoints != nil {
+
+		// query param prorateDataPoints
+		var qrProrateDataPoints bool
+
+		if o.ProrateDataPoints != nil {
+			qrProrateDataPoints = *o.ProrateDataPoints
+		}
+		qProrateDataPoints := swag.FormatBool(qrProrateDataPoints)
+		if qProrateDataPoints != "" {
+
+			if err := r.SetQueryParam("prorateDataPoints", qProrateDataPoints); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -344,6 +447,23 @@ func (o *GetTimeSeriesStatsParams) WriteToRequest(r runtime.ClientRequest, reg s
 		return errors.CompositeValidationError(res...)
 	}
 	return nil
+}
+
+// bindParamGetTimeSeriesStats binds the parameter entityIdList
+func (o *GetTimeSeriesStatsParams) bindParamEntityIDList(formats strfmt.Registry) []string {
+	entityIDListIR := o.EntityIDList
+
+	var entityIDListIC []string
+	for _, entityIDListIIR := range entityIDListIR { // explode []string
+
+		entityIDListIIV := entityIDListIIR // string as string
+		entityIDListIC = append(entityIDListIC, entityIDListIIV)
+	}
+
+	// items.CollectionFormat: ""
+	entityIDListIS := swag.JoinByFormat(entityIDListIC, "")
+
+	return entityIDListIS
 }
 
 // bindParamGetTimeSeriesStats binds the parameter metricNames

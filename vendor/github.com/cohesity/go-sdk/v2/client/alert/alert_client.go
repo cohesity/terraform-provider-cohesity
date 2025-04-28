@@ -6,6 +6,8 @@ package alert
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"fmt"
+
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -54,9 +56,99 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	CreateAlertNotificationRule(params *CreateAlertNotificationRuleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateAlertNotificationRuleCreated, error)
+
+	GetAlertNotificationRules(params *GetAlertNotificationRulesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAlertNotificationRulesOK, error)
+
 	GetAlertSummary(params *GetAlertSummaryParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAlertSummaryOK, error)
 
+	GetAlerts(params *GetAlertsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAlertsOK, error)
+
+	RemoveAlertNotificationRule(params *RemoveAlertNotificationRuleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RemoveAlertNotificationRuleNoContent, error)
+
+	UpdateAlertNotificationRule(params *UpdateAlertNotificationRuleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateAlertNotificationRuleOK, error)
+
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+CreateAlertNotificationRule adds a notification rule
+
+**Privileges:** ```ALERT_MODIFY``` <br><br>Create a new notification rule rules that send emails, SNMP, Syslog, and/or cURL HTTP POST requests to a webhook URL based on the alert categories, severities, and names.
+*/
+func (a *Client) CreateAlertNotificationRule(params *CreateAlertNotificationRuleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateAlertNotificationRuleCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCreateAlertNotificationRuleParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "CreateAlertNotificationRule",
+		Method:             "POST",
+		PathPattern:        "/alerts/config/notification-rules",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &CreateAlertNotificationRuleReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*CreateAlertNotificationRuleCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*CreateAlertNotificationRuleDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetAlertNotificationRules lists all notification rules
+
+**Privileges:** ```ALERT_VIEW``` <br><br>List all notification rules configured.
+*/
+func (a *Client) GetAlertNotificationRules(params *GetAlertNotificationRulesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAlertNotificationRulesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetAlertNotificationRulesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetAlertNotificationRules",
+		Method:             "GET",
+		PathPattern:        "/alerts/config/notification-rules",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetAlertNotificationRulesReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetAlertNotificationRulesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetAlertNotificationRulesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
@@ -96,6 +188,127 @@ func (a *Client) GetAlertSummary(params *GetAlertSummaryParams, authInfo runtime
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetAlertSummaryDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetAlerts gets alerts
+
+**Privileges:** ```ALERT_VIEW``` <br><br>
+*/
+func (a *Client) GetAlerts(params *GetAlertsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAlertsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetAlertsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetAlerts",
+		Method:             "GET",
+		PathPattern:        "/alerts",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetAlertsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetAlertsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for GetAlerts: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+RemoveAlertNotificationRule removes a notification rule
+
+**Privileges:** ```ALERT_MODIFY``` <br><br>Remove an alert notification rule specified by id.
+*/
+func (a *Client) RemoveAlertNotificationRule(params *RemoveAlertNotificationRuleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RemoveAlertNotificationRuleNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewRemoveAlertNotificationRuleParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "RemoveAlertNotificationRule",
+		Method:             "DELETE",
+		PathPattern:        "/alerts/config/notification-rules/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &RemoveAlertNotificationRuleReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*RemoveAlertNotificationRuleNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*RemoveAlertNotificationRuleDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateAlertNotificationRule updates a notification rule
+
+**Privileges:** ```ALERT_MODIFY``` <br><br>Update Notification rule specified by id.
+*/
+func (a *Client) UpdateAlertNotificationRule(params *UpdateAlertNotificationRuleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateAlertNotificationRuleOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateAlertNotificationRuleParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdateAlertNotificationRule",
+		Method:             "PUT",
+		PathPattern:        "/alerts/config/notification-rules/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateAlertNotificationRuleReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateAlertNotificationRuleOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateAlertNotificationRuleDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

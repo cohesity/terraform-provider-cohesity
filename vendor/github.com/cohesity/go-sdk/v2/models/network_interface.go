@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -47,6 +48,9 @@ type NetworkInterface struct {
 	// Specifies whether or not the interface is up.
 	IsUp *bool `json:"isUp,omitempty"`
 
+	// Services which use this interface.
+	Services []string `json:"services"`
+
 	// Specifies the group to which this interface belongs.
 	Group *string `json:"group,omitempty"`
 
@@ -63,6 +67,9 @@ type NetworkInterface struct {
 	// Specifies the slots of the bond slaves for this interface.
 	BondSlaveSlots []string `json:"bondSlaveSlots"`
 
+	// Bond member details for bond interface.
+	BondSlavesDetails []*BondMember `json:"bondSlavesDetails"`
+
 	// Specifies the bonding mode of this interface.
 	// Enum: ["ActiveBackup","802_3ad","BalanceAlb","Invalid"]
 	BondingMode *string `json:"bondingMode,omitempty"`
@@ -76,6 +83,21 @@ type NetworkInterface struct {
 	// Specifies the speed of this interface.
 	// Enum: ["1Gbit/s","10Gbit/s","25Gbit/s","40Gbit/s","100Gbit/s","Unknown"]
 	Speed *string `json:"speed,omitempty"`
+
+	// Current active slave. This is only valid in active-backup mode.
+	ActiveBondSlave *string `json:"activeBondSlave,omitempty"`
+
+	// Specifies the static IPV6 of the network interface.
+	StaticIPV6 *string `json:"staticIpV6,omitempty"`
+
+	// Specifies the gatewayV6 of the network interface.
+	GatewayV6 *string `json:"gatewayV6,omitempty"`
+
+	// Specifies the subnetV6 of the network interface.
+	SubnetV6 *string `json:"subnetV6,omitempty"`
+
+	// Specifies the Interface Stats
+	Stats *InterfaceStats `json:"stats,omitempty"`
 }
 
 // Validate validates this network interface
@@ -90,11 +112,19 @@ func (m *NetworkInterface) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateBondSlavesDetails(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateBondingMode(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateSpeed(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStats(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -215,6 +245,32 @@ func (m *NetworkInterface) validateRole(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *NetworkInterface) validateBondSlavesDetails(formats strfmt.Registry) error {
+	if swag.IsZero(m.BondSlavesDetails) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.BondSlavesDetails); i++ {
+		if swag.IsZero(m.BondSlavesDetails[i]) { // not required
+			continue
+		}
+
+		if m.BondSlavesDetails[i] != nil {
+			if err := m.BondSlavesDetails[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("bondSlavesDetails" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("bondSlavesDetails" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 var networkInterfaceTypeBondingModePropEnum []interface{}
 
 func init() {
@@ -317,8 +373,86 @@ func (m *NetworkInterface) validateSpeed(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this network interface based on context it is used
+func (m *NetworkInterface) validateStats(formats strfmt.Registry) error {
+	if swag.IsZero(m.Stats) { // not required
+		return nil
+	}
+
+	if m.Stats != nil {
+		if err := m.Stats.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("stats")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("stats")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ContextValidate validate this network interface based on the context it is used
 func (m *NetworkInterface) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateBondSlavesDetails(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateStats(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *NetworkInterface) contextValidateBondSlavesDetails(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.BondSlavesDetails); i++ {
+
+		if m.BondSlavesDetails[i] != nil {
+
+			if swag.IsZero(m.BondSlavesDetails[i]) { // not required
+				return nil
+			}
+
+			if err := m.BondSlavesDetails[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("bondSlavesDetails" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("bondSlavesDetails" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *NetworkInterface) contextValidateStats(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Stats != nil {
+
+		if swag.IsZero(m.Stats) { // not required
+			return nil
+		}
+
+		if err := m.Stats.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("stats")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("stats")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

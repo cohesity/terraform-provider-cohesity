@@ -88,12 +88,12 @@ func (o *UpgradeCheckGetResultsOK) Code() int {
 
 func (o *UpgradeCheckGetResultsOK) Error() string {
 	payload, _ := json.Marshal(o.Payload)
-	return fmt.Sprintf("[GET /cluster/upgrade-checks/{testRunInstanceId}][%d] upgradeCheckGetResultsOK %s", 200, payload)
+	return fmt.Sprintf("[GET /clusters/upgrade-checks/{testRunInstanceId}][%d] upgradeCheckGetResultsOK %s", 200, payload)
 }
 
 func (o *UpgradeCheckGetResultsOK) String() string {
 	payload, _ := json.Marshal(o.Payload)
-	return fmt.Sprintf("[GET /cluster/upgrade-checks/{testRunInstanceId}][%d] upgradeCheckGetResultsOK %s", 200, payload)
+	return fmt.Sprintf("[GET /clusters/upgrade-checks/{testRunInstanceId}][%d] upgradeCheckGetResultsOK %s", 200, payload)
 }
 
 func (o *UpgradeCheckGetResultsOK) GetPayload() *models.UpgradeChecksResults {
@@ -162,12 +162,12 @@ func (o *UpgradeCheckGetResultsDefault) Code() int {
 
 func (o *UpgradeCheckGetResultsDefault) Error() string {
 	payload, _ := json.Marshal(o.Payload)
-	return fmt.Sprintf("[GET /cluster/upgrade-checks/{testRunInstanceId}][%d] UpgradeCheckGetResults default %s", o._statusCode, payload)
+	return fmt.Sprintf("[GET /clusters/upgrade-checks/{testRunInstanceId}][%d] UpgradeCheckGetResults default %s", o._statusCode, payload)
 }
 
 func (o *UpgradeCheckGetResultsDefault) String() string {
 	payload, _ := json.Marshal(o.Payload)
-	return fmt.Sprintf("[GET /cluster/upgrade-checks/{testRunInstanceId}][%d] UpgradeCheckGetResults default %s", o._statusCode, payload)
+	return fmt.Sprintf("[GET /clusters/upgrade-checks/{testRunInstanceId}][%d] UpgradeCheckGetResults default %s", o._statusCode, payload)
 }
 
 func (o *UpgradeCheckGetResultsDefault) GetPayload() *models.Error {

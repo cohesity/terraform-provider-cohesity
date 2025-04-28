@@ -52,6 +52,7 @@ func Provider() *schema.Provider {
 			"cohesity_gcp_external_target": resourceCohesityGCPExternalTarget(),
 			"cohesity_source_netapp":       resourceCohesitySourceNetapp(),
 			"cohesity_source_gcp":          resourceCohesitySourceGcp(),
+			"cohesity_configure_snmp":      resourceCohesityConfigureSnmp(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

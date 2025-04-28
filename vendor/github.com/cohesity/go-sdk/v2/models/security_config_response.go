@@ -20,6 +20,8 @@ import (
 // swagger:model SecurityConfigResponse
 type SecurityConfigResponse struct {
 	SecurityConfig
+
+	SecurityConfigMetaData
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -31,18 +33,31 @@ func (m *SecurityConfigResponse) UnmarshalJSON(raw []byte) error {
 	}
 	m.SecurityConfig = aO0
 
+	// AO1
+	var aO1 SecurityConfigMetaData
+	if err := swag.ReadJSON(raw, &aO1); err != nil {
+		return err
+	}
+	m.SecurityConfigMetaData = aO1
+
 	return nil
 }
 
 // MarshalJSON marshals this object to a JSON structure
 func (m SecurityConfigResponse) MarshalJSON() ([]byte, error) {
-	_parts := make([][]byte, 0, 1)
+	_parts := make([][]byte, 0, 2)
 
 	aO0, err := swag.WriteJSON(m.SecurityConfig)
 	if err != nil {
 		return nil, err
 	}
 	_parts = append(_parts, aO0)
+
+	aO1, err := swag.WriteJSON(m.SecurityConfigMetaData)
+	if err != nil {
+		return nil, err
+	}
+	_parts = append(_parts, aO1)
 	return swag.ConcatJSON(_parts...), nil
 }
 
@@ -52,6 +67,10 @@ func (m *SecurityConfigResponse) Validate(formats strfmt.Registry) error {
 
 	// validation for a type composition with SecurityConfig
 	if err := m.SecurityConfig.Validate(formats); err != nil {
+		res = append(res, err)
+	}
+	// validation for a type composition with SecurityConfigMetaData
+	if err := m.SecurityConfigMetaData.Validate(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -67,6 +86,10 @@ func (m *SecurityConfigResponse) ContextValidate(ctx context.Context, formats st
 
 	// validation for a type composition with SecurityConfig
 	if err := m.SecurityConfig.ContextValidate(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+	// validation for a type composition with SecurityConfigMetaData
+	if err := m.SecurityConfigMetaData.ContextValidate(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 

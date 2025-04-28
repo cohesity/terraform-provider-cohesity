@@ -22,7 +22,7 @@ type SourceRegistrationPatchRequestParams struct {
 
 	// Specifies the environment type of the Protection Source to be patched. Currently the only environment supported is kCassandra
 	// Required: true
-	// Enum: ["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment"`
 
 	// Specifies the parameters to patch the registration of a Cassandra Protection Source.
@@ -51,7 +51,7 @@ var sourceRegistrationPatchRequestParamsTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAcropolis","kKVM","kAWS","kGCP","kAzure","kPhysical","kPure","kIbmFlashSystem","kNimble","kNetapp","kGenericNas","kIsilon","kFlashBlade","kGPFS","kElastifile","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSQL","kOracle","kSfdc","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -153,6 +153,12 @@ const (
 
 	// SourceRegistrationPatchRequestParamsEnvironmentKSfdc captures enum value "kSfdc"
 	SourceRegistrationPatchRequestParamsEnvironmentKSfdc string = "kSfdc"
+
+	// SourceRegistrationPatchRequestParamsEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	SourceRegistrationPatchRequestParamsEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// SourceRegistrationPatchRequestParamsEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	SourceRegistrationPatchRequestParamsEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

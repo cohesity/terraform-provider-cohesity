@@ -80,8 +80,11 @@ type CommonProtectionGroupResponseParams struct {
 	// Specifies if the the Protection Group is paused. New runs are not scheduled for the paused Protection Groups. Active run if any is not impacted.
 	IsPaused *bool `json:"isPaused,omitempty"`
 
+	// Specifies more information about pause operation.
+	PauseMetadata *PauseMetadata `json:"pauseMetadata,omitempty"`
+
 	// Specifies the environment of the Protection Group.
-	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 
 	// Specifies information about the last run for this Protection Group.
@@ -127,6 +130,10 @@ func (m *CommonProtectionGroupResponseParams) Validate(formats strfmt.Registry) 
 	}
 
 	if err := m.validateQosPolicy(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePauseMetadata(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -317,11 +324,30 @@ func (m *CommonProtectionGroupResponseParams) validateQosPolicy(formats strfmt.R
 	return nil
 }
 
+func (m *CommonProtectionGroupResponseParams) validatePauseMetadata(formats strfmt.Registry) error {
+	if swag.IsZero(m.PauseMetadata) { // not required
+		return nil
+	}
+
+	if m.PauseMetadata != nil {
+		if err := m.PauseMetadata.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("pauseMetadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("pauseMetadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 var commonProtectionGroupResponseParamsTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -379,11 +405,17 @@ const (
 	// CommonProtectionGroupResponseParamsEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	CommonProtectionGroupResponseParamsEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// CommonProtectionGroupResponseParamsEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	CommonProtectionGroupResponseParamsEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// CommonProtectionGroupResponseParamsEnvironmentKAzureNative captures enum value "kAzureNative"
 	CommonProtectionGroupResponseParamsEnvironmentKAzureNative string = "kAzureNative"
 
 	// CommonProtectionGroupResponseParamsEnvironmentKAzureSQL captures enum value "kAzureSQL"
 	CommonProtectionGroupResponseParamsEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// CommonProtectionGroupResponseParamsEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	CommonProtectionGroupResponseParamsEnvironmentKAzureEntraID string = "kAzureEntraID"
 
 	// CommonProtectionGroupResponseParamsEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	CommonProtectionGroupResponseParamsEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -495,6 +527,12 @@ const (
 
 	// CommonProtectionGroupResponseParamsEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	CommonProtectionGroupResponseParamsEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// CommonProtectionGroupResponseParamsEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	CommonProtectionGroupResponseParamsEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// CommonProtectionGroupResponseParamsEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	CommonProtectionGroupResponseParamsEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -657,6 +695,10 @@ func (m *CommonProtectionGroupResponseParams) ContextValidate(ctx context.Contex
 		res = append(res, err)
 	}
 
+	if err := m.contextValidatePauseMetadata(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateLastRun(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -745,6 +787,27 @@ func (m *CommonProtectionGroupResponseParams) contextValidateSLA(ctx context.Con
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *CommonProtectionGroupResponseParams) contextValidatePauseMetadata(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.PauseMetadata != nil {
+
+		if swag.IsZero(m.PauseMetadata) { // not required
+			return nil
+		}
+
+		if err := m.PauseMetadata.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("pauseMetadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("pauseMetadata")
+			}
+			return err
+		}
 	}
 
 	return nil

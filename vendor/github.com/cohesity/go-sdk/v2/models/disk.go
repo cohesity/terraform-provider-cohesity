@@ -56,6 +56,10 @@ type Disk struct {
 	// Specifies SSD used percentage.
 	SsdUsedPercentage *int32 `json:"ssdUsedPercentage,omitempty"`
 
+	// Specifies SSD usage level as Normal, Warning or Critical.
+	// Enum: ["Normal","Warning","Critical"]
+	SsdUsageLevel *string `json:"ssdUsageLevel,omitempty"`
+
 	// Specifies the removal reason of the disk.
 	RemovalReason *string `json:"removalReason,omitempty"`
 
@@ -100,6 +104,10 @@ func (m *Disk) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateEncryptionStatus(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSsdUsageLevel(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -288,6 +296,51 @@ func (m *Disk) validateEncryptionStatus(formats strfmt.Registry) error {
 
 	// value enum
 	if err := m.validateEncryptionStatusEnum("encryptionStatus", "body", m.EncryptionStatus); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var diskTypeSsdUsageLevelPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["Normal","Warning","Critical"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		diskTypeSsdUsageLevelPropEnum = append(diskTypeSsdUsageLevelPropEnum, v)
+	}
+}
+
+const (
+
+	// DiskSsdUsageLevelNormal captures enum value "Normal"
+	DiskSsdUsageLevelNormal string = "Normal"
+
+	// DiskSsdUsageLevelWarning captures enum value "Warning"
+	DiskSsdUsageLevelWarning string = "Warning"
+
+	// DiskSsdUsageLevelCritical captures enum value "Critical"
+	DiskSsdUsageLevelCritical string = "Critical"
+)
+
+// prop value enum
+func (m *Disk) validateSsdUsageLevelEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, diskTypeSsdUsageLevelPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Disk) validateSsdUsageLevel(formats strfmt.Registry) error {
+	if swag.IsZero(m.SsdUsageLevel) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateSsdUsageLevelEnum("ssdUsageLevel", "body", *m.SsdUsageLevel); err != nil {
 		return err
 	}
 

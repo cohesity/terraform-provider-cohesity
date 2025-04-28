@@ -66,6 +66,12 @@ type ProtectionPolicy struct {
 	// Specifies the last time this Policy was updated. If this is passed into a PUT request, then the backend will validate that the timestamp passed in matches the time that the policy was actually last modified. If the two timestamps do not match, then the request will be rejected with a stale error.
 	LastModificationTimeUsecs *int64 `json:"lastModificationTimeUsecs,omitempty"`
 
+	// Specifies all the additional settings that are applicable only to an RPO policy. This can include storage domain, settings of different environments, etc.
+	RpoPolicySettings *RpoPolicySettings `json:"rpoPolicySettings,omitempty"`
+
+	// Specifies the period of time before skipping the execution of new group Runs if an existing queued group Run of the same Protection group has not started. For example if this field is set to 30 minutes and a group Run is scheduled to start at 5:00 AM every day but does not start due to conflicts (such as too many groups are running). If the new group Run does not start by 5:30AM, the Cohesity Cluster will skip the new group Run. If the original group Run completes before 5:30AM the next day, a new group Run is created and starts executing. This field is optional.
+	SkipIntervalMins *int32 `json:"skipIntervalMins,omitempty"`
+
 	// Specifies whether smart local retention adjustment is enabled or not. If enabled, local retention would be extended upon failure of any outgoing replications or archivals. Later, if manual intervention causes the failed copies to succeed, retention would automatically be reduced.
 	EnableSmartLocalRetentionAdjustment *bool `json:"enableSmartLocalRetentionAdjustment,omitempty"`
 }
@@ -103,6 +109,10 @@ func (m *ProtectionPolicy) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDataLock(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRpoPolicySettings(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -299,6 +309,25 @@ func (m *ProtectionPolicy) validateDataLock(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ProtectionPolicy) validateRpoPolicySettings(formats strfmt.Registry) error {
+	if swag.IsZero(m.RpoPolicySettings) { // not required
+		return nil
+	}
+
+	if m.RpoPolicySettings != nil {
+		if err := m.RpoPolicySettings.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("rpoPolicySettings")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("rpoPolicySettings")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this protection policy based on the context it is used
 func (m *ProtectionPolicy) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -324,6 +353,10 @@ func (m *ProtectionPolicy) ContextValidate(ctx context.Context, formats strfmt.R
 	}
 
 	if err := m.contextValidateRetryOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateRpoPolicySettings(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -459,6 +492,27 @@ func (m *ProtectionPolicy) contextValidateRetryOptions(ctx context.Context, form
 				return ve.ValidateName("retryOptions")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("retryOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ProtectionPolicy) contextValidateRpoPolicySettings(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.RpoPolicySettings != nil {
+
+		if swag.IsZero(m.RpoPolicySettings) { // not required
+			return nil
+		}
+
+		if err := m.RpoPolicySettings.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("rpoPolicySettings")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("rpoPolicySettings")
 			}
 			return err
 		}

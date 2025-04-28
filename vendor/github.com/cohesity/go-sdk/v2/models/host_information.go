@@ -27,7 +27,7 @@ type HostInformation struct {
 	Name *string `json:"name,omitempty"`
 
 	// Specifies the environment of the object.
-	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]
+	// Enum: ["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]
 	Environment *string `json:"environment,omitempty"`
 }
 
@@ -49,7 +49,7 @@ var hostInformationTypeEnvironmentPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kAzure","kKVM","kAWS","kAcropolis","kGCP","kPhysical","kPhysicalFiles","kIsilon","kNetapp","kGenericNas","kFlashBlade","kElastifile","kGPFS","kPure","kIbmFlashSystem","kNimble","kSQL","kOracle","kExchange","kAD","kView","kO365","kHyperFlex","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kExperimentalAdapter","kAzureEntraID","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -163,6 +163,15 @@ const (
 
 	// HostInformationEnvironmentKSfdc captures enum value "kSfdc"
 	HostInformationEnvironmentKSfdc string = "kSfdc"
+
+	// HostInformationEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	HostInformationEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// HostInformationEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	HostInformationEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// HostInformationEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	HostInformationEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum

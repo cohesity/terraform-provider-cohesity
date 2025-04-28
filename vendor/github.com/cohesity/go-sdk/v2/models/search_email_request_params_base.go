@@ -125,7 +125,7 @@ var searchEmailRequestParamsBaseTypesItemsEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Email","Folder","Calendar","Contact","Task","Note"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Email","Folder","Calendar","Contact","Task","Note","CalendarFolder","ContactFolder","TaskFolder","SearchFolder"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

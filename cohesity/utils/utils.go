@@ -80,3 +80,11 @@ func SuppressNodeIPsDiff(k, old, new string, d *schema.ResourceData) bool {
 func SuppressNetworkNameDiff(k, old, new string, d *schema.ResourceData) bool {
 	return strings.HasSuffix(old, "networks/"+new)
 }
+
+func Int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func StringPtr(s string) *string {
+	return &s
+}

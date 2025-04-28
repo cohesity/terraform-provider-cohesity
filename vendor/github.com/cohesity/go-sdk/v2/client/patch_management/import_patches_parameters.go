@@ -14,6 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 )
 
 // NewImportPatchesParams creates a new ImportPatchesParams object,
@@ -67,6 +68,9 @@ type ImportPatchesParams struct {
 	// FileName.
 	FileName string
 
+	// IsUpgradeAndPatch.
+	IsUpgradeAndPatch *bool
+
 	// Patch.
 	Patch runtime.NamedReadCloser
 
@@ -87,7 +91,18 @@ func (o *ImportPatchesParams) WithDefaults() *ImportPatchesParams {
 //
 // All values with no default are reset to their zero value.
 func (o *ImportPatchesParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		isUpgradeAndPatchDefault = bool(false)
+	)
+
+	val := ImportPatchesParams{
+		IsUpgradeAndPatch: &isUpgradeAndPatchDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the import patches params
@@ -145,6 +160,17 @@ func (o *ImportPatchesParams) SetFileName(fileName string) {
 	o.FileName = fileName
 }
 
+// WithIsUpgradeAndPatch adds the isUpgradeAndPatch to the import patches params
+func (o *ImportPatchesParams) WithIsUpgradeAndPatch(isUpgradeAndPatch *bool) *ImportPatchesParams {
+	o.SetIsUpgradeAndPatch(isUpgradeAndPatch)
+	return o
+}
+
+// SetIsUpgradeAndPatch adds the isUpgradeAndPatch to the import patches params
+func (o *ImportPatchesParams) SetIsUpgradeAndPatch(isUpgradeAndPatch *bool) {
+	o.IsUpgradeAndPatch = isUpgradeAndPatch
+}
+
 // WithPatch adds the patch to the import patches params
 func (o *ImportPatchesParams) WithPatch(patch runtime.NamedReadCloser) *ImportPatchesParams {
 	o.SetPatch(patch)
@@ -179,6 +205,21 @@ func (o *ImportPatchesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 	if fFileName != "" {
 		if err := r.SetFormParam("fileName", fFileName); err != nil {
 			return err
+		}
+	}
+
+	if o.IsUpgradeAndPatch != nil {
+
+		// form param isUpgradeAndPatch
+		var frIsUpgradeAndPatch bool
+		if o.IsUpgradeAndPatch != nil {
+			frIsUpgradeAndPatch = *o.IsUpgradeAndPatch
+		}
+		fIsUpgradeAndPatch := swag.FormatBool(frIsUpgradeAndPatch)
+		if fIsUpgradeAndPatch != "" {
+			if err := r.SetFormParam("isUpgradeAndPatch", fIsUpgradeAndPatch); err != nil {
+				return err
+			}
 		}
 	}
 	// form file param patch

@@ -86,6 +86,12 @@ type GetCapacityTrendAnalysisParams struct {
 	*/
 	StartTimeUsecs *int64
 
+	/* TruncateResponse.
+
+	   If set, magneto will truncate the response if it exceeds max size limit governed by magneto_http_rpc_response_size_limit_bytes
+	*/
+	TruncateResponse *bool
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -172,6 +178,17 @@ func (o *GetCapacityTrendAnalysisParams) SetStartTimeUsecs(startTimeUsecs *int64
 	o.StartTimeUsecs = startTimeUsecs
 }
 
+// WithTruncateResponse adds the truncateResponse to the get capacity trend analysis params
+func (o *GetCapacityTrendAnalysisParams) WithTruncateResponse(truncateResponse *bool) *GetCapacityTrendAnalysisParams {
+	o.SetTruncateResponse(truncateResponse)
+	return o
+}
+
+// SetTruncateResponse adds the truncateResponse to the get capacity trend analysis params
+func (o *GetCapacityTrendAnalysisParams) SetTruncateResponse(truncateResponse *bool) {
+	o.TruncateResponse = truncateResponse
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetCapacityTrendAnalysisParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -226,6 +243,23 @@ func (o *GetCapacityTrendAnalysisParams) WriteToRequest(r runtime.ClientRequest,
 		if qStartTimeUsecs != "" {
 
 			if err := r.SetQueryParam("startTimeUsecs", qStartTimeUsecs); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.TruncateResponse != nil {
+
+		// query param truncateResponse
+		var qrTruncateResponse bool
+
+		if o.TruncateResponse != nil {
+			qrTruncateResponse = *o.TruncateResponse
+		}
+		qTruncateResponse := swag.FormatBool(qrTruncateResponse)
+		if qTruncateResponse != "" {
+
+			if err := r.SetQueryParam("truncateResponse", qTruncateResponse); err != nil {
 				return err
 			}
 		}

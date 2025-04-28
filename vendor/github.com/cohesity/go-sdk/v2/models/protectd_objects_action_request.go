@@ -27,7 +27,7 @@ type ProtectdObjectsActionRequest struct {
 	Action *string `json:"action"`
 
 	// Specifies the object action key for any action on the given object.
-	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]
+	// Enum: ["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	ObjectActionKey *string `json:"objectActionKey,omitempty"`
 
 	// If provided action is 'Pause' then this object should be provided as input.
@@ -138,7 +138,7 @@ var protectdObjectsActionRequestTypeObjectActionKeyPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAzureNative","kAzureSQL","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kAzure","kGCP","kKVM","kAcropolis","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kPhysical","kPhysicalFiles","kGPFS","kElastifile","kNetapp","kGenericNas","kIsilon","kFlashBlade","kPure","kIbmFlashSystem","kSQL","kExchange","kAD","kOracle","kView","kRemoteAdapter","kO365","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kO365Sharepoint","kKubernetes","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kSAPHANA","kUDA","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -196,11 +196,17 @@ const (
 	// ProtectdObjectsActionRequestObjectActionKeyKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
 	ProtectdObjectsActionRequestObjectActionKeyKAwsAuroraPostgres string = "kAwsAuroraPostgres"
 
+	// ProtectdObjectsActionRequestObjectActionKeyKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ProtectdObjectsActionRequestObjectActionKeyKAwsDynamoDB string = "kAwsDynamoDB"
+
 	// ProtectdObjectsActionRequestObjectActionKeyKAzureNative captures enum value "kAzureNative"
 	ProtectdObjectsActionRequestObjectActionKeyKAzureNative string = "kAzureNative"
 
 	// ProtectdObjectsActionRequestObjectActionKeyKAzureSQL captures enum value "kAzureSQL"
 	ProtectdObjectsActionRequestObjectActionKeyKAzureSQL string = "kAzureSQL"
+
+	// ProtectdObjectsActionRequestObjectActionKeyKAzureEntraID captures enum value "kAzureEntraID"
+	ProtectdObjectsActionRequestObjectActionKeyKAzureEntraID string = "kAzureEntraID"
 
 	// ProtectdObjectsActionRequestObjectActionKeyKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
 	ProtectdObjectsActionRequestObjectActionKeyKAzureSnapshotManager string = "kAzureSnapshotManager"
@@ -312,6 +318,12 @@ const (
 
 	// ProtectdObjectsActionRequestObjectActionKeyKO365SharepointCSM captures enum value "kO365SharepointCSM"
 	ProtectdObjectsActionRequestObjectActionKeyKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// ProtectdObjectsActionRequestObjectActionKeyKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ProtectdObjectsActionRequestObjectActionKeyKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ProtectdObjectsActionRequestObjectActionKeyKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ProtectdObjectsActionRequestObjectActionKeyKMongoDBPhysical string = "kMongoDBPhysical"
 )
 
 // prop value enum
@@ -415,7 +427,7 @@ var protectdObjectsActionRequestSnapshotBackendTypesItemsEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAWSNative","kAWSSnapshotManager","kPhysical","kSQL","kOracle","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAzureNative","kAzureSnapshotManager","kAzureSQL","kAwsAuroraPostgres","kAwsRDSPostgres"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAWSNative","kAWSSnapshotManager","kPhysical","kSQL","kOracle","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAzureNative","kAzureSnapshotManager","kAzureSQL","kAwsAuroraPostgres","kAwsRDSPostgres","kAzureEntraID","kAwsDynamoDB"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

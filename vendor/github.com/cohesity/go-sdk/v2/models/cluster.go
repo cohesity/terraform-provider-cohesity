@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -35,6 +36,10 @@ type Cluster struct {
 
 	// Description of the cluster.
 	Description *string `json:"description,omitempty"`
+
+	// Type of Cluster Deployment.
+	// Enum: ["kStandAlone","kCDC","kIBMBaaS"]
+	ClusterDeploymentType *string `json:"clusterDeploymentType,omitempty"`
 
 	// Specifies the type of the new cluster.
 	// Read Only: true
@@ -84,13 +89,261 @@ type Cluster struct {
 	// Specifies the File Services audit log configuration.
 	FileServicesAuditLogConfig *AuditLogConfig `json:"fileServicesAuditLogConfig,omitempty"`
 
-	// cluster audit log config
+	// Specifies the Cluster audit log configuration.
 	ClusterAuditLogConfig *ClusterAuditLogConfig `json:"clusterAuditLogConfig,omitempty"`
+
+	// Specifies the SmartTier audit log configuration.
+	TieringAuditLogConfig *AuditLogConfig `json:"tieringAuditLogConfig,omitempty"`
+
+	// Specifies the metadata configuration for the cluster.
+	Metadata *ClusterMetadataRequest `json:"metadata,omitempty"`
+
+	// Specifies the time when the Cohesity Cluster was created.
+	CreatedTimeMsecs *int64 `json:"createdTimeMsecs,omitempty"`
+
+	// Specifies the current system time on the Cohesity Cluster.
+	CurrentTimeMsecs *int64 `json:"currentTimeMsecs,omitempty"`
+
+	// Specifies the number of Nodes in the Cohesity Cluster.
+	NodeCount *int64 `json:"nodeCount,omitempty"`
+
+	// Specifies the current release of the Cohesity software running on the Cohesity Cluster.
+	ClusterSoftwareVersion *string `json:"clusterSoftwareVersion,omitempty"`
+
+	// Specifies the Cohesity release that this Cluster is being upgraded to if an upgrade operation is in progress.
+	TargetSoftwareVersion *string `json:"targetSoftwareVersion,omitempty"`
+
+	// Specifies the current Cluster-level operation in progress.
+	// Enum: ["kRemoveNode","kUpgrade","kNone","kDestroy","kClean","kRestartServices","kRestartSystemServices","kUpgradeBaseos","kClusterExpand","kRunUpgradeChecks","kPatchApplyOrchestration","kRunPatchPrechecks","kPatchRevertOrchestration"]
+	CurrentOperation *string `json:"currentOperation,omitempty"`
+
+	// Specifies the time scheduled by the Cohesity Cluster to start the current running operation.
+	CurrentOpScheduledTimeSecs *int64 `json:"currentOpScheduledTimeSecs,omitempty"`
+
+	// Specifies a hardware type for motherboard of the nodes that make dnsServerIps this Cohesity Cluster
+	HardwareInfo *ClusterHardwareInfo `json:"hardwareInfo,omitempty"`
+
+	// Specifies the End User License Agreement acceptance information.
+	EulaConfig *EulaConfig `json:"eulaConfig,omitempty"`
+
+	// Specifies the state of licensing workflow.
+	LicenseState *LicenseState `json:"licenseState,omitempty"`
+
+	// Specifies the authentication scheme for the cluster.
+	// Enum: ["kPasswordOnly","kCertificateOnly","kPasswordAndCertificate"]
+	AuthType *string `json:"authType,omitempty"`
+
+	//  Specifies the type of Cohesity Software.
+	// Enum: ["kRegular","kOneHelios"]
+	SoftwareType *string `json:"softwareType,omitempty"`
+
+	// Specifies information about supported configuration.
+	SupportedConfig *SupportedConfig `json:"supportedConfig,omitempty"`
+
+	// Specifies information about storage available for metadata
+	AvailableMetadataSpace *int64 `json:"availableMetadataSpace,omitempty"`
+
+	// Measures the percentage about storage used for metadata over the total storage available for metadata
+	UsedMetadataSpacePct *float32 `json:"usedMetadataSpacePct,omitempty"`
+
+	// Specifies the subnet reserved for ProxyVM.
+	ProxyVMSubnet *string `json:"proxyVMSubnet,omitempty"`
+
+	// Specifies the IP addresses of the DNS Servers used by the Cohesity Cluster.
+	DNSServerIps []string `json:"dnsServerIps,omitempty"`
+
+	// Specifies array of Domain Names.
+	DomainNames []string `json:"domainNames,omitempty"`
+
+	// If 'true', Cohesity's Remote Tunnel is enabled.
+	ReverseTunnelEnabled *bool `json:"reverseTunnelEnabled,omitempty"`
+
+	// Specifies the end time in milliseconds since epoch until when the reverse tunnel will stay enabled.
+	ReverseTunnelEndTimeMsecs *int64 `json:"reverseTunnelEndTimeMsecs,omitempty"`
+
+	// If 'true', Cohesity's upgrade server is polled for new releases.
+	EnableUpgradePkgPolling *bool `json:"enableUpgradePkgPolling,omitempty"`
+
+	// Specifies if Cohesity can receive monitoring information from the Cohesity Cluster.
+	EnableActiveMonitoring *bool `json:"enableActiveMonitoring,omitempty"`
+
+	// Specifies the period of time (in seconds) when encryption keys are rotated
+	EncryptionKeyRotationPeriodSecs *int64 `json:"encryptionKeyRotationPeriodSecs,omitempty"`
+
+	// Specifies what version of the documentation is used.
+	IsDocumentationLocal *bool `json:"isDocumentationLocal,omitempty"`
+
+	// Specifies the gateway IP address.
+	Gateway *string `json:"gateway,omitempty"`
+
+	// Specifies a list of authorized SSH public keys that have been uploaded to this Cohesity Cluster.
+	AuthorizedSSHPublicKeys []string `json:"authorizedSshPublicKeys,omitempty"`
+
+	// Specifies the language and locale for this Cohesity Cluster.
+	LanguageLocale *string `json:"languageLocale,omitempty"`
+
+	// Specifies the timezone to use.
+	Timezone *string `json:"timezone,omitempty"`
+
+	// Specifies if Active Directory should be disabled for authentication of SMB shares.
+	SmbAdDisabled *bool `json:"smbAdDisabled,omitempty"`
+
+	// Specifies whether SMB multichannel is enabled on the cluster.
+	SmbMultichannelEnabled *bool `json:"smbMultichannelEnabled,omitempty"`
+
+	// Specifies if the cluster is in Turbo mode..
+	TurboMode *bool `json:"turboMode,omitempty"`
+
+	// Specifies if the ntp/primary secondary scheme should be disabled
+	NtpSettings *NTPSettings `json:"ntpSettings,omitempty"`
+
+	// Specifies if multi tenancy is enabled in the cluster.
+	MultiTenancyEnabled *bool `json:"multiTenancyEnabled,omitempty"`
+
+	// Specifies whether multiple tenants can be placed on the same viewbox.
+	TenantViewboxSharingEnabled *bool `json:"tenantViewboxSharingEnabled,omitempty"`
+
+	// Specifies metadata fault tolerance setting for the cluster.
+	MetadataFaultToleranceFactor *int32 `json:"metadataFaultToleranceFactor,omitempty"`
+
+	// Specifies the level which 'MetadataFaultToleranceFactor' applies to.
+	// Enum: ["kNode","kChassis","kRack"]
+	FaultToleranceLevel *string `json:"faultToleranceLevel,omitempty"`
+
+	// The subnet for Athena apps.
+	AppsSubnet *SubnetDefinition `json:"appsSubnet,omitempty"`
+
+	// Specifies whether Google Analytics is enabled.
+	GoogleAnalyticsEnabled *bool `json:"googleAnalyticsEnabled,omitempty"`
+
+	// Specifies whether UI banner is enabled on the cluster or not.
+	BannerEnabled *bool `json:"bannerEnabled,omitempty"`
+
+	// Specifies whether to enable local groups on cluster.
+	LocalGroupsEnabled *bool `json:"localGroupsEnabled,omitempty"`
+
+	// Specifies whether to enable downloading patches from Cohesity download site.
+	EnablePatchesDownload *bool `json:"enablePatchesDownload,omitempty"`
+
+	// Specifies domain name for SMB local authentication.
+	LocalAuthDomainName *string `json:"localAuthDomainName,omitempty"`
+
+	// Specifies the rebalance delay in seconds for cluster PcieSSD storage tier.
+	PcieSsdTierRebalanceDelaySecs *int32 `json:"pcieSsdTierRebalanceDelaySecs,omitempty"`
+
+	// Specifies the admission control for cluster SATAHDD storage tier.
+	SataHddTierAdmissionControl *int32 `json:"sataHddTierAdmissionControl,omitempty"`
+
+	// Specifies the KMS Server Id.
+	KmsServerID *int64 `json:"kmsServerId,omitempty"`
+
+	// Specifies the AMQP target config.
+	AmqpTargetConfig *ClusterAMQPTargetConfig `json:"amqpTargetConfig,omitempty"`
+
+	// Specifies whether to enable Heimdall which tells whether services should use temporary fleet instances to mount disks by talking to Heimdall.
+	UseHeimdall *bool `json:"useHeimdall,omitempty"`
+
+	// Specifies if Security Mode DOD is enabled or not.
+	SecurityModeDod *bool `json:"securityModeDod,omitempty"`
+
+	// Specifies if protorpc encryption is enabled or not.
+	ProtoRPCEncryptionEnabled *bool `json:"protoRpcEncryptionEnabled,omitempty"`
+
+	// Specifies the default AES Encryption mode on the cluster.
+	AesEncryptionMode *string `json:"aesEncryptionMode,omitempty"`
+
+	// Specifies the list of domain names for S3.
+	S3VirtualHostedDomainNames []string `json:"s3VirtualHostedDomainNames,omitempty"`
+
+	// To use default ports 50051 & 21213.
+	UseDefaultAgentPorts *bool `json:"useDefaultAgentPorts,omitempty"`
+
+	// To attempt agent connection on port 21213 first.
+	AttemptAgentPortsUpgrade *bool `json:"attemptAgentPortsUpgrade,omitempty"`
+
+	// Specifies IP addresses of nodes in the cluster.
+	NodeIps *string `json:"nodeIps,omitempty"`
+
+	// Specifies IP preference.
+	IPPreference *int32 `json:"ipPreference,omitempty"`
+
+	// Specifies the number of chassis in cluster.
+	ChassisCount *int32 `json:"chassisCount,omitempty"`
+
+	// Specifies the number of racks in cluster with at least one rack assigned.
+	AssignedRacksCount *int32 `json:"assignedRacksCount,omitempty"`
+
+	// Specifies the patch version applied to cluster.
+	PatchVersion *string `json:"patchVersion,omitempty"`
+
+	// Specifies minimum failure domains needed in the cluster.
+	MinimumFailureDomainsNeeded *int32 `json:"minimumFailureDomainsNeeded,omitempty"`
+
+	// Specifies if hardware encryption(SED) is enabled.
+	HardwareEncryptionEnabled *bool `json:"hardwareEncryptionEnabled,omitempty"`
+
+	// Specifies if MFA is enabled on cluster.
+	IsClusterMfaEnabled *bool `json:"isClusterMfaEnabled,omitempty"`
+
+	// Specifies the Trust Domain.
+	TrustDomain *string `json:"trustDomain,omitempty"`
+
+	// Specifies whether or not athena subnet is clashing with some other internal subnet
+	IsAthenaSubnetClash *bool `json:"isAthenaSubnetClash,omitempty"`
+
+	// Specifies if split key host access is enabled.
+	SplitKeyHostAccess *bool `json:"splitKeyHostAccess,omitempty"`
+
+	// Specifies the number of disks on the cluster by Storage Tier.
+	DiskCountByTier []*CountByTier `json:"diskCountByTier,omitempty"`
+
+	// Specifies if the current upgrade has been aborted.
+	IsUpgradeAborted *bool `json:"isUpgradeAborted,omitempty"`
+
+	// Error string to capture why the upgrade failed.
+	UpgradeFailureErrorString *string `json:"upgradeFailureErrorString,omitempty"`
+
+	// Specifies if cluster can support authHeaders for upgrade.
+	AuthSupportForPkgDownloads *bool `json:"authSupportForPkgDownloads,omitempty"`
+
+	// Specifies the error message for a failed patch apply.
+	PatchApplyFailureErrorMessage *string `json:"patchApplyFailureErrorMessage,omitempty"`
+
+	// Specifies the target version for applying the patch.
+	PatchTargetVersion *string `json:"patchTargetVersion,omitempty"`
+
+	// Specifies that the patch apply was aborted.
+	IsPatchApplyAborted *bool `json:"isPatchApplyAborted,omitempty"`
+
+	// Specifies the error message for a failed patch revert.
+	PatchRevertFailureErrorMessage *string `json:"patchRevertFailureErrorMessage,omitempty"`
+
+	// Specifies the target version for reverting the patch.
+	PatchRevertVersion *string `json:"patchRevertVersion,omitempty"`
+
+	// Specifies that the patch revert was aborted.
+	IsPatchRevertAborted *bool `json:"isPatchRevertAborted,omitempty"`
+
+	// Specifies if cluster can support patch reverts.
+	PatchV2RevertsAllowed *bool `json:"patchV2RevertsAllowed,omitempty"`
+
+	// Load balancer VIP config for OneHelios cluster.
+	LoadBalancerVipConfig *LoadBalancerConfig `json:"loadBalancerVipConfig,omitempty"`
+
+	// Specifies statistics about the Cohesity Cluster.
+	Stats *ClusterStats `json:"stats,omitempty"`
+
+	// Specifies the time series schema info of the cluster.
+	SchemaInfoList []*SchemaInfo `json:"schemaInfoList,omitempty"`
 }
 
 // Validate validates this cluster
 func (m *Cluster) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateClusterDeploymentType(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateType(formats); err != nil {
 		res = append(res, err)
@@ -128,9 +381,122 @@ func (m *Cluster) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateTieringAuditLogConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMetadata(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCurrentOperation(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateHardwareInfo(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateEulaConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLicenseState(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAuthType(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSoftwareType(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSupportedConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNtpSettings(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFaultToleranceLevel(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAppsSubnet(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAmqpTargetConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDiskCountByTier(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLoadBalancerVipConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStats(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSchemaInfoList(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+var clusterTypeClusterDeploymentTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kStandAlone","kCDC","kIBMBaaS"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		clusterTypeClusterDeploymentTypePropEnum = append(clusterTypeClusterDeploymentTypePropEnum, v)
+	}
+}
+
+const (
+
+	// ClusterClusterDeploymentTypeKStandAlone captures enum value "kStandAlone"
+	ClusterClusterDeploymentTypeKStandAlone string = "kStandAlone"
+
+	// ClusterClusterDeploymentTypeKCDC captures enum value "kCDC"
+	ClusterClusterDeploymentTypeKCDC string = "kCDC"
+
+	// ClusterClusterDeploymentTypeKIBMBaaS captures enum value "kIBMBaaS"
+	ClusterClusterDeploymentTypeKIBMBaaS string = "kIBMBaaS"
+)
+
+// prop value enum
+func (m *Cluster) validateClusterDeploymentTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, clusterTypeClusterDeploymentTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Cluster) validateClusterDeploymentType(formats strfmt.Registry) error {
+	if swag.IsZero(m.ClusterDeploymentType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateClusterDeploymentTypeEnum("clusterDeploymentType", "body", *m.ClusterDeploymentType); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -375,6 +741,474 @@ func (m *Cluster) validateClusterAuditLogConfig(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Cluster) validateTieringAuditLogConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.TieringAuditLogConfig) { // not required
+		return nil
+	}
+
+	if m.TieringAuditLogConfig != nil {
+		if err := m.TieringAuditLogConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("tieringAuditLogConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tieringAuditLogConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateMetadata(formats strfmt.Registry) error {
+	if swag.IsZero(m.Metadata) { // not required
+		return nil
+	}
+
+	if m.Metadata != nil {
+		if err := m.Metadata.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("metadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("metadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+var clusterTypeCurrentOperationPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kRemoveNode","kUpgrade","kNone","kDestroy","kClean","kRestartServices","kRestartSystemServices","kUpgradeBaseos","kClusterExpand","kRunUpgradeChecks","kPatchApplyOrchestration","kRunPatchPrechecks","kPatchRevertOrchestration"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		clusterTypeCurrentOperationPropEnum = append(clusterTypeCurrentOperationPropEnum, v)
+	}
+}
+
+const (
+
+	// ClusterCurrentOperationKRemoveNode captures enum value "kRemoveNode"
+	ClusterCurrentOperationKRemoveNode string = "kRemoveNode"
+
+	// ClusterCurrentOperationKUpgrade captures enum value "kUpgrade"
+	ClusterCurrentOperationKUpgrade string = "kUpgrade"
+
+	// ClusterCurrentOperationKNone captures enum value "kNone"
+	ClusterCurrentOperationKNone string = "kNone"
+
+	// ClusterCurrentOperationKDestroy captures enum value "kDestroy"
+	ClusterCurrentOperationKDestroy string = "kDestroy"
+
+	// ClusterCurrentOperationKClean captures enum value "kClean"
+	ClusterCurrentOperationKClean string = "kClean"
+
+	// ClusterCurrentOperationKRestartServices captures enum value "kRestartServices"
+	ClusterCurrentOperationKRestartServices string = "kRestartServices"
+
+	// ClusterCurrentOperationKRestartSystemServices captures enum value "kRestartSystemServices"
+	ClusterCurrentOperationKRestartSystemServices string = "kRestartSystemServices"
+
+	// ClusterCurrentOperationKUpgradeBaseos captures enum value "kUpgradeBaseos"
+	ClusterCurrentOperationKUpgradeBaseos string = "kUpgradeBaseos"
+
+	// ClusterCurrentOperationKClusterExpand captures enum value "kClusterExpand"
+	ClusterCurrentOperationKClusterExpand string = "kClusterExpand"
+
+	// ClusterCurrentOperationKRunUpgradeChecks captures enum value "kRunUpgradeChecks"
+	ClusterCurrentOperationKRunUpgradeChecks string = "kRunUpgradeChecks"
+
+	// ClusterCurrentOperationKPatchApplyOrchestration captures enum value "kPatchApplyOrchestration"
+	ClusterCurrentOperationKPatchApplyOrchestration string = "kPatchApplyOrchestration"
+
+	// ClusterCurrentOperationKRunPatchPrechecks captures enum value "kRunPatchPrechecks"
+	ClusterCurrentOperationKRunPatchPrechecks string = "kRunPatchPrechecks"
+
+	// ClusterCurrentOperationKPatchRevertOrchestration captures enum value "kPatchRevertOrchestration"
+	ClusterCurrentOperationKPatchRevertOrchestration string = "kPatchRevertOrchestration"
+)
+
+// prop value enum
+func (m *Cluster) validateCurrentOperationEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, clusterTypeCurrentOperationPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Cluster) validateCurrentOperation(formats strfmt.Registry) error {
+	if swag.IsZero(m.CurrentOperation) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateCurrentOperationEnum("currentOperation", "body", *m.CurrentOperation); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateHardwareInfo(formats strfmt.Registry) error {
+	if swag.IsZero(m.HardwareInfo) { // not required
+		return nil
+	}
+
+	if m.HardwareInfo != nil {
+		if err := m.HardwareInfo.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("hardwareInfo")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("hardwareInfo")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateEulaConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.EulaConfig) { // not required
+		return nil
+	}
+
+	if m.EulaConfig != nil {
+		if err := m.EulaConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("eulaConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("eulaConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateLicenseState(formats strfmt.Registry) error {
+	if swag.IsZero(m.LicenseState) { // not required
+		return nil
+	}
+
+	if m.LicenseState != nil {
+		if err := m.LicenseState.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("licenseState")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("licenseState")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+var clusterTypeAuthTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kPasswordOnly","kCertificateOnly","kPasswordAndCertificate"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		clusterTypeAuthTypePropEnum = append(clusterTypeAuthTypePropEnum, v)
+	}
+}
+
+const (
+
+	// ClusterAuthTypeKPasswordOnly captures enum value "kPasswordOnly"
+	ClusterAuthTypeKPasswordOnly string = "kPasswordOnly"
+
+	// ClusterAuthTypeKCertificateOnly captures enum value "kCertificateOnly"
+	ClusterAuthTypeKCertificateOnly string = "kCertificateOnly"
+
+	// ClusterAuthTypeKPasswordAndCertificate captures enum value "kPasswordAndCertificate"
+	ClusterAuthTypeKPasswordAndCertificate string = "kPasswordAndCertificate"
+)
+
+// prop value enum
+func (m *Cluster) validateAuthTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, clusterTypeAuthTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Cluster) validateAuthType(formats strfmt.Registry) error {
+	if swag.IsZero(m.AuthType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateAuthTypeEnum("authType", "body", *m.AuthType); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var clusterTypeSoftwareTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kRegular","kOneHelios"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		clusterTypeSoftwareTypePropEnum = append(clusterTypeSoftwareTypePropEnum, v)
+	}
+}
+
+const (
+
+	// ClusterSoftwareTypeKRegular captures enum value "kRegular"
+	ClusterSoftwareTypeKRegular string = "kRegular"
+
+	// ClusterSoftwareTypeKOneHelios captures enum value "kOneHelios"
+	ClusterSoftwareTypeKOneHelios string = "kOneHelios"
+)
+
+// prop value enum
+func (m *Cluster) validateSoftwareTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, clusterTypeSoftwareTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Cluster) validateSoftwareType(formats strfmt.Registry) error {
+	if swag.IsZero(m.SoftwareType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateSoftwareTypeEnum("softwareType", "body", *m.SoftwareType); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateSupportedConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.SupportedConfig) { // not required
+		return nil
+	}
+
+	if m.SupportedConfig != nil {
+		if err := m.SupportedConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("supportedConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("supportedConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateNtpSettings(formats strfmt.Registry) error {
+	if swag.IsZero(m.NtpSettings) { // not required
+		return nil
+	}
+
+	if m.NtpSettings != nil {
+		if err := m.NtpSettings.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ntpSettings")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ntpSettings")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+var clusterTypeFaultToleranceLevelPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kNode","kChassis","kRack"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		clusterTypeFaultToleranceLevelPropEnum = append(clusterTypeFaultToleranceLevelPropEnum, v)
+	}
+}
+
+const (
+
+	// ClusterFaultToleranceLevelKNode captures enum value "kNode"
+	ClusterFaultToleranceLevelKNode string = "kNode"
+
+	// ClusterFaultToleranceLevelKChassis captures enum value "kChassis"
+	ClusterFaultToleranceLevelKChassis string = "kChassis"
+
+	// ClusterFaultToleranceLevelKRack captures enum value "kRack"
+	ClusterFaultToleranceLevelKRack string = "kRack"
+)
+
+// prop value enum
+func (m *Cluster) validateFaultToleranceLevelEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, clusterTypeFaultToleranceLevelPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Cluster) validateFaultToleranceLevel(formats strfmt.Registry) error {
+	if swag.IsZero(m.FaultToleranceLevel) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateFaultToleranceLevelEnum("faultToleranceLevel", "body", *m.FaultToleranceLevel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateAppsSubnet(formats strfmt.Registry) error {
+	if swag.IsZero(m.AppsSubnet) { // not required
+		return nil
+	}
+
+	if m.AppsSubnet != nil {
+		if err := m.AppsSubnet.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("appsSubnet")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("appsSubnet")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateAmqpTargetConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.AmqpTargetConfig) { // not required
+		return nil
+	}
+
+	if m.AmqpTargetConfig != nil {
+		if err := m.AmqpTargetConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("amqpTargetConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("amqpTargetConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateDiskCountByTier(formats strfmt.Registry) error {
+	if swag.IsZero(m.DiskCountByTier) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.DiskCountByTier); i++ {
+		if swag.IsZero(m.DiskCountByTier[i]) { // not required
+			continue
+		}
+
+		if m.DiskCountByTier[i] != nil {
+			if err := m.DiskCountByTier[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateLoadBalancerVipConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.LoadBalancerVipConfig) { // not required
+		return nil
+	}
+
+	if m.LoadBalancerVipConfig != nil {
+		if err := m.LoadBalancerVipConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("loadBalancerVipConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("loadBalancerVipConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateStats(formats strfmt.Registry) error {
+	if swag.IsZero(m.Stats) { // not required
+		return nil
+	}
+
+	if m.Stats != nil {
+		if err := m.Stats.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("stats")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("stats")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) validateSchemaInfoList(formats strfmt.Registry) error {
+	if swag.IsZero(m.SchemaInfoList) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.SchemaInfoList); i++ {
+		if swag.IsZero(m.SchemaInfoList[i]) { // not required
+			continue
+		}
+
+		if m.SchemaInfoList[i] != nil {
+			if err := m.SchemaInfoList[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("schemaInfoList" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("schemaInfoList" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 // ContextValidate validate this cluster based on the context it is used
 func (m *Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -440,6 +1274,58 @@ func (m *Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 	}
 
 	if err := m.contextValidateClusterAuditLogConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTieringAuditLogConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMetadata(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateHardwareInfo(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateEulaConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateLicenseState(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateSupportedConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNtpSettings(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateAppsSubnet(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateAmqpTargetConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateDiskCountByTier(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateLoadBalancerVipConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateStats(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateSchemaInfoList(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -672,6 +1558,287 @@ func (m *Cluster) contextValidateClusterAuditLogConfig(ctx context.Context, form
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateTieringAuditLogConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.TieringAuditLogConfig != nil {
+
+		if swag.IsZero(m.TieringAuditLogConfig) { // not required
+			return nil
+		}
+
+		if err := m.TieringAuditLogConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("tieringAuditLogConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tieringAuditLogConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateMetadata(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Metadata != nil {
+
+		if swag.IsZero(m.Metadata) { // not required
+			return nil
+		}
+
+		if err := m.Metadata.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("metadata")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("metadata")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateHardwareInfo(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.HardwareInfo != nil {
+
+		if swag.IsZero(m.HardwareInfo) { // not required
+			return nil
+		}
+
+		if err := m.HardwareInfo.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("hardwareInfo")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("hardwareInfo")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateEulaConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.EulaConfig != nil {
+
+		if swag.IsZero(m.EulaConfig) { // not required
+			return nil
+		}
+
+		if err := m.EulaConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("eulaConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("eulaConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateLicenseState(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.LicenseState != nil {
+
+		if swag.IsZero(m.LicenseState) { // not required
+			return nil
+		}
+
+		if err := m.LicenseState.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("licenseState")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("licenseState")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateSupportedConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.SupportedConfig != nil {
+
+		if swag.IsZero(m.SupportedConfig) { // not required
+			return nil
+		}
+
+		if err := m.SupportedConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("supportedConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("supportedConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateNtpSettings(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.NtpSettings != nil {
+
+		if swag.IsZero(m.NtpSettings) { // not required
+			return nil
+		}
+
+		if err := m.NtpSettings.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ntpSettings")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ntpSettings")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateAppsSubnet(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.AppsSubnet != nil {
+
+		if swag.IsZero(m.AppsSubnet) { // not required
+			return nil
+		}
+
+		if err := m.AppsSubnet.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("appsSubnet")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("appsSubnet")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateAmqpTargetConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.AmqpTargetConfig != nil {
+
+		if swag.IsZero(m.AmqpTargetConfig) { // not required
+			return nil
+		}
+
+		if err := m.AmqpTargetConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("amqpTargetConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("amqpTargetConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateDiskCountByTier(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.DiskCountByTier); i++ {
+
+		if m.DiskCountByTier[i] != nil {
+
+			if swag.IsZero(m.DiskCountByTier[i]) { // not required
+				return nil
+			}
+
+			if err := m.DiskCountByTier[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("diskCountByTier" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateLoadBalancerVipConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.LoadBalancerVipConfig != nil {
+
+		if swag.IsZero(m.LoadBalancerVipConfig) { // not required
+			return nil
+		}
+
+		if err := m.LoadBalancerVipConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("loadBalancerVipConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("loadBalancerVipConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateStats(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Stats != nil {
+
+		if swag.IsZero(m.Stats) { // not required
+			return nil
+		}
+
+		if err := m.Stats.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("stats")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("stats")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Cluster) contextValidateSchemaInfoList(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.SchemaInfoList); i++ {
+
+		if m.SchemaInfoList[i] != nil {
+
+			if swag.IsZero(m.SchemaInfoList[i]) { // not required
+				return nil
+			}
+
+			if err := m.SchemaInfoList[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("schemaInfoList" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("schemaInfoList" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

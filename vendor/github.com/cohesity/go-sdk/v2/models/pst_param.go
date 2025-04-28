@@ -28,6 +28,9 @@ type PstParam struct {
 
 	// Specifies PST size threshold in bytes.
 	SizeThresholdBytes *int64 `json:"sizeThresholdBytes,omitempty"`
+
+	// If true, a separate download file will be made for each snapshot. If false, a single common download file will be used for all snapshots. Default is false.
+	SeparateDownloadFiles *bool `json:"separateDownloadFiles,omitempty"`
 }
 
 // Validate validates this pst param

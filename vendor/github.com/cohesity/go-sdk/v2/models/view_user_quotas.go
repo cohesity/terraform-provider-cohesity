@@ -20,6 +20,9 @@ type ViewUserQuotas struct {
 	ViewUserQuotaSettings
 
 	UserQuotaOverrides
+
+	// Specifies summary for user quotas in a view.
+	SummaryForView *UserQuotaSummaryForView `json:"summaryForView,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -38,12 +41,22 @@ func (m *ViewUserQuotas) UnmarshalJSON(raw []byte) error {
 	}
 	m.UserQuotaOverrides = aO1
 
+	// AO2
+	var dataAO2 struct {
+		SummaryForView *UserQuotaSummaryForView `json:"summaryForView,omitempty"`
+	}
+	if err := swag.ReadJSON(raw, &dataAO2); err != nil {
+		return err
+	}
+
+	m.SummaryForView = dataAO2.SummaryForView
+
 	return nil
 }
 
 // MarshalJSON marshals this object to a JSON structure
 func (m ViewUserQuotas) MarshalJSON() ([]byte, error) {
-	_parts := make([][]byte, 0, 2)
+	_parts := make([][]byte, 0, 3)
 
 	aO0, err := swag.WriteJSON(m.ViewUserQuotaSettings)
 	if err != nil {
@@ -56,6 +69,17 @@ func (m ViewUserQuotas) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	_parts = append(_parts, aO1)
+	var dataAO2 struct {
+		SummaryForView *UserQuotaSummaryForView `json:"summaryForView,omitempty"`
+	}
+
+	dataAO2.SummaryForView = m.SummaryForView
+
+	jsonDataAO2, errAO2 := swag.WriteJSON(dataAO2)
+	if errAO2 != nil {
+		return nil, errAO2
+	}
+	_parts = append(_parts, jsonDataAO2)
 	return swag.ConcatJSON(_parts...), nil
 }
 
@@ -72,9 +96,33 @@ func (m *ViewUserQuotas) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateSummaryForView(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ViewUserQuotas) validateSummaryForView(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.SummaryForView) { // not required
+		return nil
+	}
+
+	if m.SummaryForView != nil {
+		if err := m.SummaryForView.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("summaryForView")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("summaryForView")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -91,9 +139,34 @@ func (m *ViewUserQuotas) ContextValidate(ctx context.Context, formats strfmt.Reg
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateSummaryForView(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ViewUserQuotas) contextValidateSummaryForView(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.SummaryForView != nil {
+
+		if swag.IsZero(m.SummaryForView) { // not required
+			return nil
+		}
+
+		if err := m.SummaryForView.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("summaryForView")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("summaryForView")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

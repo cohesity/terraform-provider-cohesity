@@ -53,7 +53,7 @@ GetDataTieringAnalysisGroupRunsOK describes a response with status code 200, wit
 Success
 */
 type GetDataTieringAnalysisGroupRunsOK struct {
-	Payload models.DataTieringAnalysisGroupRuns
+	Payload *models.DataTieringAnalysisGroupRuns
 }
 
 // IsSuccess returns true when this get data tiering analysis group runs o k response has a 2xx status code
@@ -96,14 +96,16 @@ func (o *GetDataTieringAnalysisGroupRunsOK) String() string {
 	return fmt.Sprintf("[GET /data-tiering/analysis-groups/{id}/runs][%d] getDataTieringAnalysisGroupRunsOK %s", 200, payload)
 }
 
-func (o *GetDataTieringAnalysisGroupRunsOK) GetPayload() models.DataTieringAnalysisGroupRuns {
+func (o *GetDataTieringAnalysisGroupRunsOK) GetPayload() *models.DataTieringAnalysisGroupRuns {
 	return o.Payload
 }
 
 func (o *GetDataTieringAnalysisGroupRunsOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
+	o.Payload = new(models.DataTieringAnalysisGroupRuns)
+
 	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 

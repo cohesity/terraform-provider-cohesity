@@ -26,6 +26,9 @@ type AzureObjectProtectionRequestParams struct {
 
 	// Specifies the parameters which are specific to Azure SQL related Protection using Azure native APIs.
 	AzureSQLProtectionTypeParams *AzureSQLObjectProtectionParams `json:"azureSqlProtectionTypeParams,omitempty"`
+
+	// Specifies the parameters which are specific to Azure Entra ID related Protection using Azure native APIs.
+	AzureEntraIDProtectionTypeParams *AzureEntraIDObjectProtectionParams `json:"azureEntraIdProtectionTypeParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -42,6 +45,8 @@ func (m *AzureObjectProtectionRequestParams) UnmarshalJSON(raw []byte) error {
 		NativeProtectionTypeParams *AzureNativeObjectProtectionParams `json:"nativeProtectionTypeParams,omitempty"`
 
 		AzureSQLProtectionTypeParams *AzureSQLObjectProtectionParams `json:"azureSqlProtectionTypeParams,omitempty"`
+
+		AzureEntraIDProtectionTypeParams *AzureEntraIDObjectProtectionParams `json:"azureEntraIdProtectionTypeParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -50,6 +55,8 @@ func (m *AzureObjectProtectionRequestParams) UnmarshalJSON(raw []byte) error {
 	m.NativeProtectionTypeParams = dataAO1.NativeProtectionTypeParams
 
 	m.AzureSQLProtectionTypeParams = dataAO1.AzureSQLProtectionTypeParams
+
+	m.AzureEntraIDProtectionTypeParams = dataAO1.AzureEntraIDProtectionTypeParams
 
 	return nil
 }
@@ -67,11 +74,15 @@ func (m AzureObjectProtectionRequestParams) MarshalJSON() ([]byte, error) {
 		NativeProtectionTypeParams *AzureNativeObjectProtectionParams `json:"nativeProtectionTypeParams,omitempty"`
 
 		AzureSQLProtectionTypeParams *AzureSQLObjectProtectionParams `json:"azureSqlProtectionTypeParams,omitempty"`
+
+		AzureEntraIDProtectionTypeParams *AzureEntraIDObjectProtectionParams `json:"azureEntraIdProtectionTypeParams,omitempty"`
 	}
 
 	dataAO1.NativeProtectionTypeParams = m.NativeProtectionTypeParams
 
 	dataAO1.AzureSQLProtectionTypeParams = m.AzureSQLProtectionTypeParams
+
+	dataAO1.AzureEntraIDProtectionTypeParams = m.AzureEntraIDProtectionTypeParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -95,6 +106,10 @@ func (m *AzureObjectProtectionRequestParams) Validate(formats strfmt.Registry) e
 	}
 
 	if err := m.validateAzureSQLProtectionTypeParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAzureEntraIDProtectionTypeParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -144,6 +159,26 @@ func (m *AzureObjectProtectionRequestParams) validateAzureSQLProtectionTypeParam
 	return nil
 }
 
+func (m *AzureObjectProtectionRequestParams) validateAzureEntraIDProtectionTypeParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.AzureEntraIDProtectionTypeParams) { // not required
+		return nil
+	}
+
+	if m.AzureEntraIDProtectionTypeParams != nil {
+		if err := m.AzureEntraIDProtectionTypeParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureEntraIdProtectionTypeParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureEntraIdProtectionTypeParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this azure object protection request params based on the context it is used
 func (m *AzureObjectProtectionRequestParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -158,6 +193,10 @@ func (m *AzureObjectProtectionRequestParams) ContextValidate(ctx context.Context
 	}
 
 	if err := m.contextValidateAzureSQLProtectionTypeParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateAzureEntraIDProtectionTypeParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -201,6 +240,27 @@ func (m *AzureObjectProtectionRequestParams) contextValidateAzureSQLProtectionTy
 				return ve.ValidateName("azureSqlProtectionTypeParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azureSqlProtectionTypeParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AzureObjectProtectionRequestParams) contextValidateAzureEntraIDProtectionTypeParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.AzureEntraIDProtectionTypeParams != nil {
+
+		if swag.IsZero(m.AzureEntraIDProtectionTypeParams) { // not required
+			return nil
+		}
+
+		if err := m.AzureEntraIDProtectionTypeParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureEntraIdProtectionTypeParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureEntraIdProtectionTypeParams")
 			}
 			return err
 		}

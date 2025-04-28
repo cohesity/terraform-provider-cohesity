@@ -54,6 +54,9 @@ type ArchivalNasExternalTargetParams struct {
 
 	// Specifies the Kerberos realm name for a Kerberos-secured target.
 	KerberosRealmName *string `json:"kerberosRealmName,omitempty"`
+
+	// Specifies whether the garbage collection mode is network optimized or storage optimized. If this field is set to true, it refers to network optimized GC and if set to false, it refers to storage optimized GC.
+	IsNetworkOptimizedGC *bool `json:"isNetworkOptimizedGC,omitempty"`
 }
 
 // Validate validates this archival nas external target params

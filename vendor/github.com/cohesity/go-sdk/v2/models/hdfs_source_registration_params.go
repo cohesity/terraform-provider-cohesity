@@ -43,6 +43,10 @@ type HdfsSourceRegistrationParams struct {
 	// Required: true
 	HadoopVersion *string `json:"hadoopVersion"`
 
+	// HDFS Connection Type.
+	// Enum: ["DFS","WEBHDFS","HTTPFSLB","HTTPFS"]
+	ConnectionType *string `json:"connectionType,omitempty"`
+
 	// ssh password credentials
 	SSHPasswordCredentials *HdfsSourceRegistrationParamsAO1SSHPasswordCredentials `json:"sshPasswordCredentials,omitempty"`
 
@@ -71,6 +75,8 @@ func (m *HdfsSourceRegistrationParams) UnmarshalJSON(raw []byte) error {
 
 		HadoopVersion *string `json:"hadoopVersion"`
 
+		ConnectionType *string `json:"connectionType,omitempty"`
+
 		SSHPasswordCredentials *HdfsSourceRegistrationParamsAO1SSHPasswordCredentials `json:"sshPasswordCredentials,omitempty"`
 
 		SSHPrivateKeyCredentials *HdfsSourceRegistrationParamsAO1SSHPrivateKeyCredentials `json:"sshPrivateKeyCredentials,omitempty"`
@@ -88,6 +94,8 @@ func (m *HdfsSourceRegistrationParams) UnmarshalJSON(raw []byte) error {
 	m.HadoopDistribution = dataAO1.HadoopDistribution
 
 	m.HadoopVersion = dataAO1.HadoopVersion
+
+	m.ConnectionType = dataAO1.ConnectionType
 
 	m.SSHPasswordCredentials = dataAO1.SSHPasswordCredentials
 
@@ -116,6 +124,8 @@ func (m HdfsSourceRegistrationParams) MarshalJSON() ([]byte, error) {
 
 		HadoopVersion *string `json:"hadoopVersion"`
 
+		ConnectionType *string `json:"connectionType,omitempty"`
+
 		SSHPasswordCredentials *HdfsSourceRegistrationParamsAO1SSHPasswordCredentials `json:"sshPasswordCredentials,omitempty"`
 
 		SSHPrivateKeyCredentials *HdfsSourceRegistrationParamsAO1SSHPrivateKeyCredentials `json:"sshPrivateKeyCredentials,omitempty"`
@@ -130,6 +140,8 @@ func (m HdfsSourceRegistrationParams) MarshalJSON() ([]byte, error) {
 	dataAO1.HadoopDistribution = m.HadoopDistribution
 
 	dataAO1.HadoopVersion = m.HadoopVersion
+
+	dataAO1.ConnectionType = m.ConnectionType
 
 	dataAO1.SSHPasswordCredentials = m.SSHPasswordCredentials
 
@@ -165,6 +177,10 @@ func (m *HdfsSourceRegistrationParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateHadoopVersion(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateConnectionType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -237,6 +253,40 @@ func (m *HdfsSourceRegistrationParams) validateHadoopDistribution(formats strfmt
 func (m *HdfsSourceRegistrationParams) validateHadoopVersion(formats strfmt.Registry) error {
 
 	if err := validate.Required("hadoopVersion", "body", m.HadoopVersion); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var hdfsSourceRegistrationParamsTypeConnectionTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["DFS","WEBHDFS","HTTPFSLB","HTTPFS"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		hdfsSourceRegistrationParamsTypeConnectionTypePropEnum = append(hdfsSourceRegistrationParamsTypeConnectionTypePropEnum, v)
+	}
+}
+
+// property enum
+func (m *HdfsSourceRegistrationParams) validateConnectionTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, hdfsSourceRegistrationParamsTypeConnectionTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *HdfsSourceRegistrationParams) validateConnectionType(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.ConnectionType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateConnectionTypeEnum("connectionType", "body", *m.ConnectionType); err != nil {
 		return err
 	}
 

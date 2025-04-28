@@ -15,6 +15,8 @@ import (
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+
+	"github.com/cohesity/go-sdk/v2/models"
 )
 
 // NewDeleteProtectionSourceRegistrationParams creates a new DeleteProtectionSourceRegistrationParams object,
@@ -61,6 +63,12 @@ DeleteProtectionSourceRegistrationParams contains all the parameters to send to 
 	Typically these are written to a http.Request.
 */
 type DeleteProtectionSourceRegistrationParams struct {
+
+	/* Body.
+
+	   Specifies the request to unregister a source.
+	*/
+	Body *models.SourceUnRegisterRequestParams
 
 	/* ID.
 
@@ -123,6 +131,17 @@ func (o *DeleteProtectionSourceRegistrationParams) SetHTTPClient(client *http.Cl
 	o.HTTPClient = client
 }
 
+// WithBody adds the body to the delete protection source registration params
+func (o *DeleteProtectionSourceRegistrationParams) WithBody(body *models.SourceUnRegisterRequestParams) *DeleteProtectionSourceRegistrationParams {
+	o.SetBody(body)
+	return o
+}
+
+// SetBody adds the body to the delete protection source registration params
+func (o *DeleteProtectionSourceRegistrationParams) SetBody(body *models.SourceUnRegisterRequestParams) {
+	o.Body = body
+}
+
 // WithID adds the id to the delete protection source registration params
 func (o *DeleteProtectionSourceRegistrationParams) WithID(id int64) *DeleteProtectionSourceRegistrationParams {
 	o.SetID(id)
@@ -141,6 +160,11 @@ func (o *DeleteProtectionSourceRegistrationParams) WriteToRequest(r runtime.Clie
 		return err
 	}
 	var res []error
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
+	}
 
 	// path param id
 	if err := r.SetPathParam("id", swag.FormatInt64(o.ID)); err != nil {

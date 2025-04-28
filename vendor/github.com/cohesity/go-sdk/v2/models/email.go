@@ -41,7 +41,7 @@ type Email struct {
 	DirectoryPath *string `json:"directoryPath,omitempty"`
 
 	// Specifies the Mailbox item type.
-	// Enum: ["Email","Folder","Calendar","Contact","Task","Note"]
+	// Enum: ["Email","Folder","Calendar","Contact","Task","Note","CalendarFolder","ContactFolder","TaskFolder","SearchFolder"]
 	Type *string `json:"type,omitempty"`
 
 	// Specifies the subject of this email.
@@ -469,7 +469,7 @@ var emailTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Email","Folder","Calendar","Contact","Task","Note"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Email","Folder","Calendar","Contact","Task","Note","CalendarFolder","ContactFolder","TaskFolder","SearchFolder"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

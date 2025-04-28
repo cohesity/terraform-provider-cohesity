@@ -20,11 +20,20 @@ type FreeNodeInformation struct {
 	// Specifies the ID of the node.
 	ID *int64 `json:"id,omitempty"`
 
+	// Specifies the model number of the Chassis the Node is installed in.
+	ChassisModel *string `json:"chassisModel,omitempty"`
+
 	// Specifies the serial number of the Chassis the Node is installed in.
 	ChassisSerial *string `json:"chassisSerial,omitempty"`
 
-	// Specifies if Node can be connected.
+	// Deprecated - This field is deprecated, use connectedTo field.
 	CanConnect *bool `json:"canConnect,omitempty"`
+
+	// Specifies if this is the node from where this API response was received.
+	ConnectedTo *bool `json:"connectedTo,omitempty"`
+
+	// Specifies the host name of the node.
+	Hostname *string `json:"hostname,omitempty"`
 
 	// Specifies the IPMI IP of the Node.
 	IpmiIP *string `json:"ipmiIp,omitempty"`
@@ -41,6 +50,12 @@ type FreeNodeInformation struct {
 	// Specifies the number of Node slots present in the Chassis where this Node is installed.
 	NumSlotsInChassis *uint32 `json:"numSlotsInChassis,omitempty"`
 
+	// IPv4 addresses in primary interface's LAN.
+	PrimaryIPV4Address *string `json:"primaryIPv4Address,omitempty"`
+
+	// IPv6 addresses in primary interface's LAN.
+	PrimaryIPV6Address *string `json:"primaryIPv6Address,omitempty"`
+
 	// Specifies the product model of the node.
 	ProductModel *string `json:"productModel,omitempty"`
 
@@ -49,6 +64,9 @@ type FreeNodeInformation struct {
 
 	// Specifies the version of the software installed on the Node.
 	SoftwareVersion *string `json:"softwareVersion,omitempty"`
+
+	// Specifies the node model.
+	NodeModel *string `json:"nodeModel,omitempty"`
 }
 
 // Validate validates this free node information

@@ -14,6 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 )
 
 // NewListFreeNodesParams creates a new ListFreeNodesParams object,
@@ -60,6 +61,13 @@ ListFreeNodesParams contains all the parameters to send to the API endpoint
 	Typically these are written to a http.Request.
 */
 type ListFreeNodesParams struct {
+
+	/* Ips.
+
+	   "Specifies a list of ips of nodes among which free and compatible nodes to be returned"
+	*/
+	Ips []string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -113,6 +121,17 @@ func (o *ListFreeNodesParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithIps adds the ips to the list free nodes params
+func (o *ListFreeNodesParams) WithIps(ips []string) *ListFreeNodesParams {
+	o.SetIps(ips)
+	return o
+}
+
+// SetIps adds the ips to the list free nodes params
+func (o *ListFreeNodesParams) SetIps(ips []string) {
+	o.Ips = ips
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *ListFreeNodesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -121,8 +140,36 @@ func (o *ListFreeNodesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 	}
 	var res []error
 
+	if o.Ips != nil {
+
+		// binding items for ips
+		joinedIps := o.bindParamIps(reg)
+
+		// query array param ips
+		if err := r.SetQueryParam("ips", joinedIps...); err != nil {
+			return err
+		}
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
 	return nil
+}
+
+// bindParamListFreeNodes binds the parameter ips
+func (o *ListFreeNodesParams) bindParamIps(formats strfmt.Registry) []string {
+	ipsIR := o.Ips
+
+	var ipsIC []string
+	for _, ipsIIR := range ipsIR { // explode []string
+
+		ipsIIV := ipsIIR // string as string
+		ipsIC = append(ipsIC, ipsIIV)
+	}
+
+	// items.CollectionFormat: ""
+	ipsIS := swag.JoinByFormat(ipsIC, "")
+
+	return ipsIS
 }

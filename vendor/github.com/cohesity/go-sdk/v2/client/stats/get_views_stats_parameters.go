@@ -64,29 +64,35 @@ type GetViewsStatsParams struct {
 
 	/* LastHours.
 
-	   Specifies the last hours of stats to sort.
+	   Specifies the last hours of stats to sort. Defaults to 24.
 
 	   Format: int64
+	   Default: 24
 	*/
 	LastHours *int64
 
 	/* Metric.
 
-	   Specifies the metric to which stats has to be sorted.
+	   Specifies the metric to which stats has to be sorted. Defaults to kNumBytesRead.
+
+	   Default: "kNumBytesRead"
 	*/
 	Metric *string
 
 	/* NumTopViews.
 
-	   Specifies the number of view for which stats has to be computed. Specifying this field will return the Views sorted in the descending order on the metric specified. If specified, minimum value is 1. If not specified, all view will be returned. If metric is not specified, this parameter must also not be specified.
+	   Specifies the number of view for which stats has to be computed. Returned Views will be sorted in descending order based on the 'metric' param. Minimum value has to be 1. Defaults to 100.
 
 	   Format: int64
+	   Default: 100
 	*/
 	NumTopViews *int64
 
 	/* Protocol.
 
-	   Specifies the protocol to sort.
+	   Specifies the protocol to sort. Defaults to kAny.
+
+	   Default: "kAny"
 	*/
 	Protocol *string
 
@@ -107,7 +113,27 @@ func (o *GetViewsStatsParams) WithDefaults() *GetViewsStatsParams {
 //
 // All values with no default are reset to their zero value.
 func (o *GetViewsStatsParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		lastHoursDefault = int64(24)
+
+		metricDefault = string("kNumBytesRead")
+
+		numTopViewsDefault = int64(100)
+
+		protocolDefault = string("kAny")
+	)
+
+	val := GetViewsStatsParams{
+		LastHours:   &lastHoursDefault,
+		Metric:      &metricDefault,
+		NumTopViews: &numTopViewsDefault,
+		Protocol:    &protocolDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get views stats params

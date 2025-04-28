@@ -53,6 +53,9 @@ type OracleDbChannel struct {
 	// Specifies the type of Oracle RMAN backup requested
 	// Enum: ["kImageCopy","kBackupSets","kSbt"]
 	RmanBackupType string `json:"rmanBackupType,omitempty"`
+
+	// Control the Oracle Data Guard role based backup.
+	DgRoleBasedBackup *DgRoleBasedBackup `json:"dgRoleBasedBackup,omitempty"`
 }
 
 // Validate validates this oracle db channel
@@ -68,6 +71,10 @@ func (m *OracleDbChannel) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRmanBackupType(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDgRoleBasedBackup(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -167,6 +174,25 @@ func (m *OracleDbChannel) validateRmanBackupType(formats strfmt.Registry) error 
 	return nil
 }
 
+func (m *OracleDbChannel) validateDgRoleBasedBackup(formats strfmt.Registry) error {
+	if swag.IsZero(m.DgRoleBasedBackup) { // not required
+		return nil
+	}
+
+	if m.DgRoleBasedBackup != nil {
+		if err := m.DgRoleBasedBackup.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("dgRoleBasedBackup")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("dgRoleBasedBackup")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this oracle db channel based on the context it is used
 func (m *OracleDbChannel) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -176,6 +202,10 @@ func (m *OracleDbChannel) ContextValidate(ctx context.Context, formats strfmt.Re
 	}
 
 	if err := m.contextValidateDatabaseHosts(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateDgRoleBasedBackup(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -226,6 +256,27 @@ func (m *OracleDbChannel) contextValidateDatabaseHosts(ctx context.Context, form
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *OracleDbChannel) contextValidateDgRoleBasedBackup(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DgRoleBasedBackup != nil {
+
+		if swag.IsZero(m.DgRoleBasedBackup) { // not required
+			return nil
+		}
+
+		if err := m.DgRoleBasedBackup.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("dgRoleBasedBackup")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("dgRoleBasedBackup")
+			}
+			return err
+		}
 	}
 
 	return nil

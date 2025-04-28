@@ -34,6 +34,9 @@ type SapHanaSourceRegistrationParams struct {
 	// Specifies user friendly name for the source.
 	// Required: true
 	SourceName *string `json:"sourceName"`
+
+	// Backint protocol version to be used during backup/restore.
+	BackintProtocolVersion *string `json:"backintProtocolVersion,omitempty"`
 }
 
 // Validate validates this sap hana source registration params

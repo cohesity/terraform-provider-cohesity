@@ -94,6 +94,12 @@ type GetRecoveriesParams struct {
 	*/
 	RecoveryActions []string
 
+	/* ReturnChildTasks.
+
+	   If set to true, also allows child tasks created by restore jobs or multi-state restores to be returned.
+	*/
+	ReturnChildTasks *bool
+
 	/* ReturnOnlyChildRecoveries.
 
 	   Returns only child recoveries if passed as true. This filter should always be used along with 'ids' filter.
@@ -157,7 +163,18 @@ func (o *GetRecoveriesParams) WithDefaults() *GetRecoveriesParams {
 //
 // All values with no default are reset to their zero value.
 func (o *GetRecoveriesParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		returnChildTasksDefault = bool(false)
+	)
+
+	val := GetRecoveriesParams{
+		ReturnChildTasks: &returnChildTasksDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get recoveries params
@@ -246,6 +263,17 @@ func (o *GetRecoveriesParams) WithRecoveryActions(recoveryActions []string) *Get
 // SetRecoveryActions adds the recoveryActions to the get recoveries params
 func (o *GetRecoveriesParams) SetRecoveryActions(recoveryActions []string) {
 	o.RecoveryActions = recoveryActions
+}
+
+// WithReturnChildTasks adds the returnChildTasks to the get recoveries params
+func (o *GetRecoveriesParams) WithReturnChildTasks(returnChildTasks *bool) *GetRecoveriesParams {
+	o.SetReturnChildTasks(returnChildTasks)
+	return o
+}
+
+// SetReturnChildTasks adds the returnChildTasks to the get recoveries params
+func (o *GetRecoveriesParams) SetReturnChildTasks(returnChildTasks *bool) {
+	o.ReturnChildTasks = returnChildTasks
 }
 
 // WithReturnOnlyChildRecoveries adds the returnOnlyChildRecoveries to the get recoveries params
@@ -397,6 +425,23 @@ func (o *GetRecoveriesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		// query array param recoveryActions
 		if err := r.SetQueryParam("recoveryActions", joinedRecoveryActions...); err != nil {
 			return err
+		}
+	}
+
+	if o.ReturnChildTasks != nil {
+
+		// query param returnChildTasks
+		var qrReturnChildTasks bool
+
+		if o.ReturnChildTasks != nil {
+			qrReturnChildTasks = *o.ReturnChildTasks
+		}
+		qReturnChildTasks := swag.FormatBool(qrReturnChildTasks)
+		if qReturnChildTasks != "" {
+
+			if err := r.SetQueryParam("returnChildTasks", qReturnChildTasks); err != nil {
+				return err
+			}
 		}
 	}
 

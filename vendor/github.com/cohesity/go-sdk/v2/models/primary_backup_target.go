@@ -20,6 +20,9 @@ import (
 // swagger:model PrimaryBackupTarget
 type PrimaryBackupTarget struct {
 
+	// Specifies if the default primary backup target must be used for backups. If this is not specified or set to false, then targets specified in 'archivalTargetSettings' will be used for backups. If the value is specified as true, then default backup target is used internally. This field should only be set in the environment where tenant policy management is enabled and external targets are assigned to tenant when provisioning tenants.
+	UseDefaultBackupTarget *bool `json:"useDefaultBackupTarget,omitempty"`
+
 	// Specifies the primary backup location where backups will be stored. If not specified, then default is assumed as local backup on Cohesity cluster.
 	// Enum: ["Local","Archival"]
 	TargetType *string `json:"targetType,omitempty"`

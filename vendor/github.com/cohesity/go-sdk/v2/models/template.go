@@ -41,7 +41,7 @@ type Template struct {
 
 	// Used for uniquely indentifying a default template.
 	// Read Only: true
-	// Enum: ["Unknown","BackupGeneral","BackupCommvault","BackupVeeam","FileServiceVideos","FileServiceMultimedia","FileServiceArchive","ObjectServiceContainer","ZDLRA","SAPHANA","TSM","ApplicationsDump","FileServiceGeneral","DigitalArchive","ObjectServiceGeneral","SplunkSmartStore","Hadoop"]
+	// Enum: ["Unknown","BackupGeneral","BackupCommvault","BackupVeeam","FileServiceVideos","FileServiceMultimedia","FileServiceArchive","ObjectServiceContainer","ZDLRA","SAPHANA","TSM","ApplicationsDump","FileServiceGeneral","DigitalArchive","ObjectServiceGeneral","SplunkSmartStore","Hadoop","GeneralArchive"]
 	DefaultTemplateName *string `json:"defaultTemplateName,omitempty"`
 
 	// Specifies the parameters which is used to create the view.
@@ -71,7 +71,7 @@ var templateTypeDefaultTemplateNamePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Unknown","BackupGeneral","BackupCommvault","BackupVeeam","FileServiceVideos","FileServiceMultimedia","FileServiceArchive","ObjectServiceContainer","ZDLRA","SAPHANA","TSM","ApplicationsDump","FileServiceGeneral","DigitalArchive","ObjectServiceGeneral","SplunkSmartStore","Hadoop"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Unknown","BackupGeneral","BackupCommvault","BackupVeeam","FileServiceVideos","FileServiceMultimedia","FileServiceArchive","ObjectServiceContainer","ZDLRA","SAPHANA","TSM","ApplicationsDump","FileServiceGeneral","DigitalArchive","ObjectServiceGeneral","SplunkSmartStore","Hadoop","GeneralArchive"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -131,6 +131,9 @@ const (
 
 	// TemplateDefaultTemplateNameHadoop captures enum value "Hadoop"
 	TemplateDefaultTemplateNameHadoop string = "Hadoop"
+
+	// TemplateDefaultTemplateNameGeneralArchive captures enum value "GeneralArchive"
+	TemplateDefaultTemplateNameGeneralArchive string = "GeneralArchive"
 )
 
 // prop value enum

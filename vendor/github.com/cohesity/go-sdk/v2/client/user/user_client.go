@@ -100,6 +100,8 @@ type ClientService interface {
 
 	UpdateGroup(params *UpdateGroupParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateGroupOK, error)
 
+	UpdateLinuxCredentialsV2(params *UpdateLinuxCredentialsV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateLinuxCredentialsV2Accepted, error)
+
 	UpdatePrincipalSources(params *UpdatePrincipalSourcesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdatePrincipalSourcesOK, error)
 
 	UpdateUser(params *UpdateUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateUserOK, error)
@@ -152,9 +154,11 @@ func (a *Client) CreateGroup(params *CreateGroupParams, authInfo runtime.ClientA
 }
 
 /*
-CreateSession creates a user session
+	CreateSession creates a user session
 
-```No Privileges Required``` <br><br>Create a user session
+	```No Privileges Required``` <br><br>Creates a new user session. Session Management must be enabled before exercising this endpoint. <br/>Subsequent requests to other Cohesity REST API operations must specify the returned session token and 'session-id' in the http header in the following format:
+
+`session-id: generated-session-key`
 */
 func (a *Client) CreateSession(params *CreateSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateSessionCreated, error) {
 	// TODO: Validate the params before sending
@@ -1028,6 +1032,46 @@ func (a *Client) UpdateGroup(params *UpdateGroupParams, authInfo runtime.ClientA
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*UpdateGroupDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateLinuxCredentialsV2 updates or validate linux user password
+
+**Privileges:** ```CLUSTER_MODIFY``` <br><br>Update or validate linux user password.
+*/
+func (a *Client) UpdateLinuxCredentialsV2(params *UpdateLinuxCredentialsV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateLinuxCredentialsV2Accepted, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateLinuxCredentialsV2Params()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdateLinuxCredentialsV2",
+		Method:             "PUT",
+		PathPattern:        "/users/linux-password",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateLinuxCredentialsV2Reader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateLinuxCredentialsV2Accepted)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateLinuxCredentialsV2Default)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

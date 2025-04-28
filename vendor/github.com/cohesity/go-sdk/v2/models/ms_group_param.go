@@ -8,7 +8,6 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -32,15 +31,15 @@ type MsGroupParam struct {
 	// Enum: ["kFull","kPartial"]
 	SiteRestoreType *string `json:"siteRestoreType,omitempty"`
 
-	// Specifies the parameters to recover a MSGroup site document.
-	SiteRestoreParams []*OneDriveParam `json:"siteRestoreParams"`
-
 	// Specifies parameters to recover a MSGroup Mailbox.
 	MailboxRestoreParams *MailboxParam `json:"mailboxRestoreParams,omitempty"`
 
 	// Specifies the MS group recover Object info.
 	// Required: true
 	RecoverObject *CommonRecoverObjectSnapshotParams `json:"recoverObject"`
+
+	// Specifies the parameters to recover a MSGroup site document.
+	SiteRestoreParams *SiteRestoreParam `json:"siteRestoreParams,omitempty"`
 }
 
 // Validate validates this ms group param
@@ -55,15 +54,15 @@ func (m *MsGroupParam) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateSiteRestoreParams(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateMailboxRestoreParams(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateRecoverObject(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSiteRestoreParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -157,32 +156,6 @@ func (m *MsGroupParam) validateSiteRestoreType(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *MsGroupParam) validateSiteRestoreParams(formats strfmt.Registry) error {
-	if swag.IsZero(m.SiteRestoreParams) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.SiteRestoreParams); i++ {
-		if swag.IsZero(m.SiteRestoreParams[i]) { // not required
-			continue
-		}
-
-		if m.SiteRestoreParams[i] != nil {
-			if err := m.SiteRestoreParams[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("siteRestoreParams" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("siteRestoreParams" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
 func (m *MsGroupParam) validateMailboxRestoreParams(formats strfmt.Registry) error {
 	if swag.IsZero(m.MailboxRestoreParams) { // not required
 		return nil
@@ -222,13 +195,28 @@ func (m *MsGroupParam) validateRecoverObject(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *MsGroupParam) validateSiteRestoreParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.SiteRestoreParams) { // not required
+		return nil
+	}
+
+	if m.SiteRestoreParams != nil {
+		if err := m.SiteRestoreParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("siteRestoreParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("siteRestoreParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this ms group param based on the context it is used
 func (m *MsGroupParam) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.contextValidateSiteRestoreParams(ctx, formats); err != nil {
-		res = append(res, err)
-	}
 
 	if err := m.contextValidateMailboxRestoreParams(ctx, formats); err != nil {
 		res = append(res, err)
@@ -238,34 +226,13 @@ func (m *MsGroupParam) ContextValidate(ctx context.Context, formats strfmt.Regis
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateSiteRestoreParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *MsGroupParam) contextValidateSiteRestoreParams(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.SiteRestoreParams); i++ {
-
-		if m.SiteRestoreParams[i] != nil {
-
-			if swag.IsZero(m.SiteRestoreParams[i]) { // not required
-				return nil
-			}
-
-			if err := m.SiteRestoreParams[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("siteRestoreParams" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("siteRestoreParams" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
 	return nil
 }
 
@@ -299,6 +266,27 @@ func (m *MsGroupParam) contextValidateRecoverObject(ctx context.Context, formats
 				return ve.ValidateName("recoverObject")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("recoverObject")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *MsGroupParam) contextValidateSiteRestoreParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.SiteRestoreParams != nil {
+
+		if swag.IsZero(m.SiteRestoreParams) { // not required
+			return nil
+		}
+
+		if err := m.SiteRestoreParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("siteRestoreParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("siteRestoreParams")
 			}
 			return err
 		}

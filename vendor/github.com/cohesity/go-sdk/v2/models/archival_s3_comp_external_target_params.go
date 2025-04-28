@@ -38,6 +38,9 @@ type ArchivalS3CompExternalTargetParams struct {
 
 	// Specifies the account Id of the S3 bucket owner.
 	BucketOwnerAccountID *string `json:"bucketOwnerAccountId,omitempty"`
+
+	// Specifies whether the garbage collection mode is network optimized or storage optimized. If this field is set to true, it refers to network optimized GC and if set to false, it refers to storage optimized GC.
+	IsNetworkOptimizedGC *bool `json:"isNetworkOptimizedGC,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -60,6 +63,8 @@ func (m *ArchivalS3CompExternalTargetParams) UnmarshalJSON(raw []byte) error {
 		IsForeverIncrementalArchivalEnabled *bool `json:"isForeverIncrementalArchivalEnabled,omitempty"`
 
 		BucketOwnerAccountID *string `json:"bucketOwnerAccountId,omitempty"`
+
+		IsNetworkOptimizedGC *bool `json:"isNetworkOptimizedGC,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -74,6 +79,8 @@ func (m *ArchivalS3CompExternalTargetParams) UnmarshalJSON(raw []byte) error {
 	m.IsForeverIncrementalArchivalEnabled = dataAO1.IsForeverIncrementalArchivalEnabled
 
 	m.BucketOwnerAccountID = dataAO1.BucketOwnerAccountID
+
+	m.IsNetworkOptimizedGC = dataAO1.IsNetworkOptimizedGC
 
 	return nil
 }
@@ -97,6 +104,8 @@ func (m ArchivalS3CompExternalTargetParams) MarshalJSON() ([]byte, error) {
 		IsForeverIncrementalArchivalEnabled *bool `json:"isForeverIncrementalArchivalEnabled,omitempty"`
 
 		BucketOwnerAccountID *string `json:"bucketOwnerAccountId,omitempty"`
+
+		IsNetworkOptimizedGC *bool `json:"isNetworkOptimizedGC,omitempty"`
 	}
 
 	dataAO1.StorageClass = m.StorageClass
@@ -108,6 +117,8 @@ func (m ArchivalS3CompExternalTargetParams) MarshalJSON() ([]byte, error) {
 	dataAO1.IsForeverIncrementalArchivalEnabled = m.IsForeverIncrementalArchivalEnabled
 
 	dataAO1.BucketOwnerAccountID = m.BucketOwnerAccountID
+
+	dataAO1.IsNetworkOptimizedGC = m.IsNetworkOptimizedGC
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {

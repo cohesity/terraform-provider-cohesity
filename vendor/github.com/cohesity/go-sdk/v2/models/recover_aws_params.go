@@ -28,7 +28,7 @@ type RecoverAwsParams struct {
 
 	// Specifies the type of recover action to be performed.
 	// Required: true
-	// Enum: ["RecoverVMs","RecoverRDS","RecoverAurora","RecoverFiles","RecoverS3Buckets","RecoverRDSPostgres"]
+	// Enum: ["RecoverVMs","RecoverRDS","RecoverAurora","RecoverFiles","RecoverS3Buckets","RecoverRDSPostgres","RecoverAwsDynamoDB"]
 	RecoveryAction *string `json:"recoveryAction"`
 
 	// Specifies the parameters to download files and folders.
@@ -36,6 +36,9 @@ type RecoverAwsParams struct {
 
 	// Specifies the parameters to recover AWS Aurora.
 	RecoverAuroraParams *RecoverAwsAuroraParams `json:"recoverAuroraParams,omitempty"`
+
+	// Specifies the parameters to recover AWS Dynamo DB.
+	RecoverDynamoDBParams *RecoverDynamoDBParams `json:"recoverDynamoDBParams,omitempty"`
 
 	// Specifies the parameters to recover files and folders.
 	RecoverFileAndFolderParams *RecoverAwsFileAndFolderParams `json:"recoverFileAndFolderParams,omitempty"`
@@ -70,6 +73,10 @@ func (m *RecoverAwsParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRecoverAuroraParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRecoverDynamoDBParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -129,7 +136,7 @@ var recoverAwsParamsTypeRecoveryActionPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["RecoverVMs","RecoverRDS","RecoverAurora","RecoverFiles","RecoverS3Buckets","RecoverRDSPostgres"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["RecoverVMs","RecoverRDS","RecoverAurora","RecoverFiles","RecoverS3Buckets","RecoverRDSPostgres","RecoverAwsDynamoDB"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -156,6 +163,9 @@ const (
 
 	// RecoverAwsParamsRecoveryActionRecoverRDSPostgres captures enum value "RecoverRDSPostgres"
 	RecoverAwsParamsRecoveryActionRecoverRDSPostgres string = "RecoverRDSPostgres"
+
+	// RecoverAwsParamsRecoveryActionRecoverAwsDynamoDB captures enum value "RecoverAwsDynamoDB"
+	RecoverAwsParamsRecoveryActionRecoverAwsDynamoDB string = "RecoverAwsDynamoDB"
 )
 
 // prop value enum
@@ -210,6 +220,25 @@ func (m *RecoverAwsParams) validateRecoverAuroraParams(formats strfmt.Registry) 
 				return ve.ValidateName("recoverAuroraParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("recoverAuroraParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *RecoverAwsParams) validateRecoverDynamoDBParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.RecoverDynamoDBParams) { // not required
+		return nil
+	}
+
+	if m.RecoverDynamoDBParams != nil {
+		if err := m.RecoverDynamoDBParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("recoverDynamoDBParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("recoverDynamoDBParams")
 			}
 			return err
 		}
@@ -329,6 +358,10 @@ func (m *RecoverAwsParams) ContextValidate(ctx context.Context, formats strfmt.R
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateRecoverDynamoDBParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateRecoverFileAndFolderParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -414,6 +447,27 @@ func (m *RecoverAwsParams) contextValidateRecoverAuroraParams(ctx context.Contex
 				return ve.ValidateName("recoverAuroraParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("recoverAuroraParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *RecoverAwsParams) contextValidateRecoverDynamoDBParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.RecoverDynamoDBParams != nil {
+
+		if swag.IsZero(m.RecoverDynamoDBParams) { // not required
+			return nil
+		}
+
+		if err := m.RecoverDynamoDBParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("recoverDynamoDBParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("recoverDynamoDBParams")
 			}
 			return err
 		}

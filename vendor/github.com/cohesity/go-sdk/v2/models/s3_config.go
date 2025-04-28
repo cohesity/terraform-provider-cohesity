@@ -44,12 +44,16 @@ type S3Config struct {
 	//
 	S3EfficientMpuMaxSubfiles *int32 `json:"s3EfficientMpuMaxSubfiles,omitempty"`
 
-	// Specifies the migration state for this view. A view can be under
-	// following migration states: Enabled, Paused, Complete,
-	// UnderMigration.
-	//
-	// Enum: ["Enabled","UnderMigration","Paused","Complete"]
+	// Specifies the current S3 migration state for this View.
+	// A View can be under following migration states:
+	// [Eligible, Enable, Pause, Complete, UnderMigration].
+	// Enum: ["Enabled","UnderMigration","Paused","Completed","Eligible"]
 	S3MigrationState *string `json:"s3MigrationState,omitempty"`
+
+	// Specifies the S3 migration action to be performed on this View.
+	// Supported migration actions are: [Enable, Cancel, Pause, Resume].
+	// Enum: ["Enable","Cancel","Pause","Resume"]
+	S3MigrationAction *string `json:"s3MigrationAction,omitempty"`
 
 	// Specifies the ACL config of the View as an S3 bucket.
 	ACLConfig *ACLConfig `json:"aclConfig,omitempty"`
@@ -73,6 +77,10 @@ func (m *S3Config) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateS3MigrationState(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateS3MigrationAction(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -147,7 +155,7 @@ var s3ConfigTypeS3MigrationStatePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Enabled","UnderMigration","Paused","Complete"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Enabled","UnderMigration","Paused","Completed","Eligible"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -166,8 +174,11 @@ const (
 	// S3ConfigS3MigrationStatePaused captures enum value "Paused"
 	S3ConfigS3MigrationStatePaused string = "Paused"
 
-	// S3ConfigS3MigrationStateComplete captures enum value "Complete"
-	S3ConfigS3MigrationStateComplete string = "Complete"
+	// S3ConfigS3MigrationStateCompleted captures enum value "Completed"
+	S3ConfigS3MigrationStateCompleted string = "Completed"
+
+	// S3ConfigS3MigrationStateEligible captures enum value "Eligible"
+	S3ConfigS3MigrationStateEligible string = "Eligible"
 )
 
 // prop value enum
@@ -185,6 +196,54 @@ func (m *S3Config) validateS3MigrationState(formats strfmt.Registry) error {
 
 	// value enum
 	if err := m.validateS3MigrationStateEnum("s3MigrationState", "body", *m.S3MigrationState); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var s3ConfigTypeS3MigrationActionPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["Enable","Cancel","Pause","Resume"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		s3ConfigTypeS3MigrationActionPropEnum = append(s3ConfigTypeS3MigrationActionPropEnum, v)
+	}
+}
+
+const (
+
+	// S3ConfigS3MigrationActionEnable captures enum value "Enable"
+	S3ConfigS3MigrationActionEnable string = "Enable"
+
+	// S3ConfigS3MigrationActionCancel captures enum value "Cancel"
+	S3ConfigS3MigrationActionCancel string = "Cancel"
+
+	// S3ConfigS3MigrationActionPause captures enum value "Pause"
+	S3ConfigS3MigrationActionPause string = "Pause"
+
+	// S3ConfigS3MigrationActionResume captures enum value "Resume"
+	S3ConfigS3MigrationActionResume string = "Resume"
+)
+
+// prop value enum
+func (m *S3Config) validateS3MigrationActionEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, s3ConfigTypeS3MigrationActionPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *S3Config) validateS3MigrationAction(formats strfmt.Registry) error {
+	if swag.IsZero(m.S3MigrationAction) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateS3MigrationActionEnum("s3MigrationAction", "body", *m.S3MigrationAction); err != nil {
 		return err
 	}
 

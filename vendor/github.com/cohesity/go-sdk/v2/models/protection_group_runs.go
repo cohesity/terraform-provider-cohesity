@@ -24,6 +24,12 @@ type ProtectionGroupRuns struct {
 
 	// Specifies the count of total runs exist for the given set of filters. The number of runs in single API call are limited and this count can be used to estimate query filter values to get next set of remaining runs. Please note that this field will only be populated if startTimeUsecs or endTimeUsecs or both are specified in query parameters.
 	TotalRuns *int32 `json:"totalRuns,omitempty"`
+
+	// Indicates whether the result is truncated due to hitting maximum size limit governed by magneto_http_rpc_response_size_limit_bytes
+	IsResponseTruncated *bool `json:"isResponseTruncated,omitempty"`
+
+	// Specifies the information needed in order to support pagination. This will not be included for the last page of results.
+	PaginationCookie *string `json:"paginationCookie,omitempty"`
 }
 
 // Validate validates this protection group runs

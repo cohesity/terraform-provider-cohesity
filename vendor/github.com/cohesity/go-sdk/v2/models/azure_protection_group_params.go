@@ -24,7 +24,7 @@ type AzureProtectionGroupParams struct {
 
 	// Specifies the Azure Protection Group type.
 	// Required: true
-	// Enum: ["kAgent","kNative","kSnapshotManager","kAzureSQL"]
+	// Enum: ["kAgent","kNative","kSnapshotManager","kAzureSQL","kAzureEntraID"]
 	ProtectionType *string `json:"protectionType"`
 
 	// Specifies the parameters which are specific to Azure related protection groups using cohesity protection-service installed on the instance. Objects must be specified.
@@ -67,7 +67,7 @@ var azureProtectionGroupParamsTypeProtectionTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kAzureSQL"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAgent","kNative","kSnapshotManager","kAzureSQL","kAzureEntraID"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -88,6 +88,9 @@ const (
 
 	// AzureProtectionGroupParamsProtectionTypeKAzureSQL captures enum value "kAzureSQL"
 	AzureProtectionGroupParamsProtectionTypeKAzureSQL string = "kAzureSQL"
+
+	// AzureProtectionGroupParamsProtectionTypeKAzureEntraID captures enum value "kAzureEntraID"
+	AzureProtectionGroupParamsProtectionTypeKAzureEntraID string = "kAzureEntraID"
 )
 
 // prop value enum
