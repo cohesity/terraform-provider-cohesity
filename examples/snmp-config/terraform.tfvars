@@ -5,8 +5,8 @@ support_password  = "Cohe$1tyCohe$1ty"
 
 server = "10.136.5.115"
 snmp_version = "V2C"
-agent_port = "161"
-trap_port = "162"
+agent_port = 161
+trap_port = 162
 read_user = {
   user_name = "user1"
   auth_password = ""
