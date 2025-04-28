@@ -36,6 +36,9 @@ type RecoverMailboxParams struct {
 	// Specifies whether to skip the recovery of the Archive Recoverable Items present in the selected snapshot. Default value is true
 	SkipRecoverArchiveRecoverableItems *bool `json:"skipRecoverArchiveRecoverableItems,omitempty"`
 
+	// Specifies whether to skip the recovery of items under Top of Information Store, aka the message folder root. Default value is false.
+	SkipRecoverPrimaryMailbox *bool `json:"skipRecoverPrimaryMailbox,omitempty"`
+
 	// Specifies the PST conversion specific parameters. This should always be specified when need to convert selected items to PST.
 	PstParams *PstParam `json:"pstParams,omitempty"`
 

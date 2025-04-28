@@ -51,10 +51,6 @@ type DataSourceConnector struct {
 	// Specifies connector's upgrade status information, for example when the upgrade started, current status of the upgrade, errors for upgrade failure etc.
 	// Read Only: true
 	UpgradeStatus *ConnectorUpgradeStatus `json:"upgradeStatus,omitempty"`
-
-	// Specifies connector's patch status information, for example when the patch started, current status of the patch, errors for patch failure etc.
-	// Read Only: true
-	PatchStatus *ConnectorPatchStatus `json:"patchStatus,omitempty"`
 }
 
 // Validate validates this data source connector
@@ -74,10 +70,6 @@ func (m *DataSourceConnector) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateUpgradeStatus(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePatchStatus(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -143,25 +135,6 @@ func (m *DataSourceConnector) validateUpgradeStatus(formats strfmt.Registry) err
 	return nil
 }
 
-func (m *DataSourceConnector) validatePatchStatus(formats strfmt.Registry) error {
-	if swag.IsZero(m.PatchStatus) { // not required
-		return nil
-	}
-
-	if m.PatchStatus != nil {
-		if err := m.PatchStatus.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("patchStatus")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("patchStatus")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 // ContextValidate validate this data source connector based on the context it is used
 func (m *DataSourceConnector) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -183,10 +156,6 @@ func (m *DataSourceConnector) ContextValidate(ctx context.Context, formats strfm
 	}
 
 	if err := m.contextValidateUpgradeStatus(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidatePatchStatus(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -257,27 +226,6 @@ func (m *DataSourceConnector) contextValidateUpgradeStatus(ctx context.Context, 
 				return ve.ValidateName("upgradeStatus")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("upgradeStatus")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *DataSourceConnector) contextValidatePatchStatus(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.PatchStatus != nil {
-
-		if swag.IsZero(m.PatchStatus) { // not required
-			return nil
-		}
-
-		if err := m.PatchStatus.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("patchStatus")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("patchStatus")
 			}
 			return err
 		}

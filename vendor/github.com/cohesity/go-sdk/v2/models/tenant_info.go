@@ -8,7 +8,6 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -56,13 +55,6 @@ type TenantInfo struct {
 
 	// external vendor metadata
 	ExternalVendorMetadata *ExternalVendorTenantMetadata `json:"externalVendorMetadata,omitempty"`
-
-	// Specifies info about the active deactivation of this tenant, if any.
-	// Enum: ["None","Success","Failure","InProgress"]
-	ActiveDeactivation *string `json:"activeDeactivation,omitempty"`
-
-	// Specifies a history of deactivations for this tenant. Only the latest 5 deactivations are preserved.
-	FinishedDeactivations []*string `json:"finishedDeactivations"`
 }
 
 // Validate validates this tenant info
@@ -78,14 +70,6 @@ func (m *TenantInfo) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateExternalVendorMetadata(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateActiveDeactivation(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateFinishedDeactivations(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -176,93 +160,6 @@ func (m *TenantInfo) validateExternalVendorMetadata(formats strfmt.Registry) err
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-var tenantInfoTypeActiveDeactivationPropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["None","Success","Failure","InProgress"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		tenantInfoTypeActiveDeactivationPropEnum = append(tenantInfoTypeActiveDeactivationPropEnum, v)
-	}
-}
-
-const (
-
-	// TenantInfoActiveDeactivationNone captures enum value "None"
-	TenantInfoActiveDeactivationNone string = "None"
-
-	// TenantInfoActiveDeactivationSuccess captures enum value "Success"
-	TenantInfoActiveDeactivationSuccess string = "Success"
-
-	// TenantInfoActiveDeactivationFailure captures enum value "Failure"
-	TenantInfoActiveDeactivationFailure string = "Failure"
-
-	// TenantInfoActiveDeactivationInProgress captures enum value "InProgress"
-	TenantInfoActiveDeactivationInProgress string = "InProgress"
-)
-
-// prop value enum
-func (m *TenantInfo) validateActiveDeactivationEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, tenantInfoTypeActiveDeactivationPropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *TenantInfo) validateActiveDeactivation(formats strfmt.Registry) error {
-	if swag.IsZero(m.ActiveDeactivation) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validateActiveDeactivationEnum("activeDeactivation", "body", *m.ActiveDeactivation); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-var tenantInfoFinishedDeactivationsItemsEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["None","Success","Failure","InProgress"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		tenantInfoFinishedDeactivationsItemsEnum = append(tenantInfoFinishedDeactivationsItemsEnum, v)
-	}
-}
-
-func (m *TenantInfo) validateFinishedDeactivationsItemsEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, tenantInfoFinishedDeactivationsItemsEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *TenantInfo) validateFinishedDeactivations(formats strfmt.Registry) error {
-	if swag.IsZero(m.FinishedDeactivations) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.FinishedDeactivations); i++ {
-		if swag.IsZero(m.FinishedDeactivations[i]) { // not required
-			continue
-		}
-
-		// value enum
-		if err := m.validateFinishedDeactivationsItemsEnum("finishedDeactivations"+"."+strconv.Itoa(i), "body", *m.FinishedDeactivations[i]); err != nil {
-			return err
-		}
-
 	}
 
 	return nil

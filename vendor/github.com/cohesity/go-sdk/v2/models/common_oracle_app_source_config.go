@@ -33,6 +33,9 @@ type CommonOracleAppSourceConfig struct {
 	// Specifies key value pairs of shell variables which defines the restore shell environment.
 	ShellEvironmentVars []*ShellKeyValuePair `json:"shellEvironmentVars"`
 
+	// Specifies whether database recovery performed should use scn value or not.
+	UseScnForRestore *bool `json:"useScnForRestore,omitempty"`
+
 	// Specifies information about list of objects (PDBs) to restore.
 	GranularRestoreInfo *RecoverOracleGranularRestoreInfo `json:"granularRestoreInfo,omitempty"`
 
@@ -44,9 +47,6 @@ type CommonOracleAppSourceConfig struct {
 
 	// Specifies parameters related to spfile/pfile restore.
 	RestoreSpfileOrPfileInfo *RestoreSpfileOrPfileInfo `json:"restoreSpfileOrPfileInfo,omitempty"`
-
-	// Specifies whether database recovery performed should use scn value or not.
-	UseScnForRestore *bool `json:"useScnForRestore,omitempty"`
 }
 
 // Validate validates this common oracle app source config

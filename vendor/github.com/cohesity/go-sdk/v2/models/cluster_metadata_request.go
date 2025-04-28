@@ -34,9 +34,6 @@ type ClusterMetadataRequest struct {
 
 	// Specifies the docs related metadata specific to the cluster. This metadata mainly consists of any external hyperlinks to service provider's documentation.
 	Docs []*ClusterDocsMetadata `json:"docs"`
-
-	// Specifies the list of service endpoints that can be configured based on the environnment. Each service configuration must be specified only once. If same service is specified multiple times, the API will return validation error.
-	ServiceEndpoints []*ServiceEndpointsMetadata `json:"serviceEndpoints"`
 }
 
 // Validate validates this cluster metadata request
@@ -56,10 +53,6 @@ func (m *ClusterMetadataRequest) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDocs(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateServiceEndpoints(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -160,32 +153,6 @@ func (m *ClusterMetadataRequest) validateDocs(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ClusterMetadataRequest) validateServiceEndpoints(formats strfmt.Registry) error {
-	if swag.IsZero(m.ServiceEndpoints) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.ServiceEndpoints); i++ {
-		if swag.IsZero(m.ServiceEndpoints[i]) { // not required
-			continue
-		}
-
-		if m.ServiceEndpoints[i] != nil {
-			if err := m.ServiceEndpoints[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("serviceEndpoints" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("serviceEndpoints" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
 // ContextValidate validate this cluster metadata request based on the context it is used
 func (m *ClusterMetadataRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -203,10 +170,6 @@ func (m *ClusterMetadataRequest) ContextValidate(ctx context.Context, formats st
 	}
 
 	if err := m.contextValidateDocs(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateServiceEndpoints(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -294,31 +257,6 @@ func (m *ClusterMetadataRequest) contextValidateDocs(ctx context.Context, format
 					return ve.ValidateName("docs" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
 					return ce.ValidateName("docs" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *ClusterMetadataRequest) contextValidateServiceEndpoints(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.ServiceEndpoints); i++ {
-
-		if m.ServiceEndpoints[i] != nil {
-
-			if swag.IsZero(m.ServiceEndpoints[i]) { // not required
-				return nil
-			}
-
-			if err := m.ServiceEndpoints[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("serviceEndpoints" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("serviceEndpoints" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

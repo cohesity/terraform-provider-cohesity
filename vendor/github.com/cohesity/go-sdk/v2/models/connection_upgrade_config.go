@@ -25,14 +25,6 @@ type ConnectionUpgradeConfig struct {
 	// Specifies the upgrade package url to be used for upgrading the
 	// connection.
 	ConnectionUpgradePackageURL *string `json:"connectionUpgradePackageUrl,omitempty"`
-
-	// "Specifies the patch package url to be used for patching a
-	// connection in specific. If this is provided, it will override the
-	// defaultPatchPackage and tenantPatchPackageUrl URLs. This URL
-	// will be used to download the package by connector. Can be http or https
-	// and must be IPv4 address or hostname (must be resolvable by the
-	// connector).
-	ConnectionPatchPackageURL *string `json:"connectionPatchPackageUrl,omitempty"`
 }
 
 // Validate validates this connection upgrade config

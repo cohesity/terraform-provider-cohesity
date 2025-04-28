@@ -53,7 +53,7 @@ CreateClusterCreated describes a response with status code 201, with default hea
 Success
 */
 type CreateClusterCreated struct {
-	Payload *models.Cluster
+	Payload *models.DeployClusterResult
 }
 
 // IsSuccess returns true when this create cluster created response has a 2xx status code
@@ -96,13 +96,13 @@ func (o *CreateClusterCreated) String() string {
 	return fmt.Sprintf("[POST /clusters][%d] createClusterCreated %s", 201, payload)
 }
 
-func (o *CreateClusterCreated) GetPayload() *models.Cluster {
+func (o *CreateClusterCreated) GetPayload() *models.DeployClusterResult {
 	return o.Payload
 }
 
 func (o *CreateClusterCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.Cluster)
+	o.Payload = new(models.DeployClusterResult)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

@@ -49,14 +49,8 @@ type RecoverOracleNewTargetDatabaseConfig struct {
 	// Specifies no. of tempfiles to be used for the recovered database.
 	NumTempfiles *int32 `json:"numTempfiles,omitempty"`
 
-	// Specifies redo log config.
-	RedoLogConfig *RedoLogGroupConfig `json:"redoLogConfig,omitempty"`
-
 	// Specifies whether this task is a multistage restore task. If set, we migrate the DB after clone completes.
 	IsMultiStageRestore *bool `json:"isMultiStageRestore,omitempty"`
-
-	// Specifies the parameters that are needed for updating oracle restore options.
-	OracleUpdateRestoreOptions *MigrateCloneParams `json:"oracleUpdateRestoreOptions,omitempty"`
 
 	// Whether or not to skip the nid step in Oracle Clone workflow. Applicable to both smart and old clone workflow.
 	SkipCloneNid *bool `json:"skipCloneNid,omitempty"`
@@ -74,6 +68,12 @@ type RecoverOracleNewTargetDatabaseConfig struct {
 
 	// Whether or not to restore to a RAC database.
 	RestoreToRac *bool `json:"restoreToRac,omitempty"`
+
+	// Specifies the parameters that are needed for updating oracle restore options.
+	OracleUpdateRestoreOptions *MigrateCloneParams `json:"oracleUpdateRestoreOptions,omitempty"`
+
+	// Specifies redo log config.
+	RedoLogConfig *RedoLogGroupConfig `json:"redoLogConfig,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -105,11 +105,7 @@ func (m *RecoverOracleNewTargetDatabaseConfig) UnmarshalJSON(raw []byte) error {
 
 		NumTempfiles *int32 `json:"numTempfiles,omitempty"`
 
-		RedoLogConfig *RedoLogGroupConfig `json:"redoLogConfig,omitempty"`
-
 		IsMultiStageRestore *bool `json:"isMultiStageRestore,omitempty"`
-
-		OracleUpdateRestoreOptions *MigrateCloneParams `json:"oracleUpdateRestoreOptions,omitempty"`
 
 		SkipCloneNid *bool `json:"skipCloneNid,omitempty"`
 
@@ -120,6 +116,10 @@ func (m *RecoverOracleNewTargetDatabaseConfig) UnmarshalJSON(raw []byte) error {
 		DisasterRecoveryOptions *DisasterRecoveryOptions `json:"disasterRecoveryOptions,omitempty"`
 
 		RestoreToRac *bool `json:"restoreToRac,omitempty"`
+
+		OracleUpdateRestoreOptions *MigrateCloneParams `json:"oracleUpdateRestoreOptions,omitempty"`
+
+		RedoLogConfig *RedoLogGroupConfig `json:"redoLogConfig,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &propsRecoverOracleNewTargetDatabaseConfig); err != nil {
 		return err
@@ -142,11 +142,7 @@ func (m *RecoverOracleNewTargetDatabaseConfig) UnmarshalJSON(raw []byte) error {
 
 	m.NumTempfiles = propsRecoverOracleNewTargetDatabaseConfig.NumTempfiles
 
-	m.RedoLogConfig = propsRecoverOracleNewTargetDatabaseConfig.RedoLogConfig
-
 	m.IsMultiStageRestore = propsRecoverOracleNewTargetDatabaseConfig.IsMultiStageRestore
-
-	m.OracleUpdateRestoreOptions = propsRecoverOracleNewTargetDatabaseConfig.OracleUpdateRestoreOptions
 
 	m.SkipCloneNid = propsRecoverOracleNewTargetDatabaseConfig.SkipCloneNid
 
@@ -157,6 +153,10 @@ func (m *RecoverOracleNewTargetDatabaseConfig) UnmarshalJSON(raw []byte) error {
 	m.DisasterRecoveryOptions = propsRecoverOracleNewTargetDatabaseConfig.DisasterRecoveryOptions
 
 	m.RestoreToRac = propsRecoverOracleNewTargetDatabaseConfig.RestoreToRac
+
+	m.OracleUpdateRestoreOptions = propsRecoverOracleNewTargetDatabaseConfig.OracleUpdateRestoreOptions
+
+	m.RedoLogConfig = propsRecoverOracleNewTargetDatabaseConfig.RedoLogConfig
 
 	return nil
 }
@@ -191,11 +191,7 @@ func (m RecoverOracleNewTargetDatabaseConfig) MarshalJSON() ([]byte, error) {
 
 		NumTempfiles *int32 `json:"numTempfiles,omitempty"`
 
-		RedoLogConfig *RedoLogGroupConfig `json:"redoLogConfig,omitempty"`
-
 		IsMultiStageRestore *bool `json:"isMultiStageRestore,omitempty"`
-
-		OracleUpdateRestoreOptions *MigrateCloneParams `json:"oracleUpdateRestoreOptions,omitempty"`
 
 		SkipCloneNid *bool `json:"skipCloneNid,omitempty"`
 
@@ -206,6 +202,10 @@ func (m RecoverOracleNewTargetDatabaseConfig) MarshalJSON() ([]byte, error) {
 		DisasterRecoveryOptions *DisasterRecoveryOptions `json:"disasterRecoveryOptions,omitempty"`
 
 		RestoreToRac *bool `json:"restoreToRac,omitempty"`
+
+		OracleUpdateRestoreOptions *MigrateCloneParams `json:"oracleUpdateRestoreOptions,omitempty"`
+
+		RedoLogConfig *RedoLogGroupConfig `json:"redoLogConfig,omitempty"`
 	}
 	propsRecoverOracleNewTargetDatabaseConfig.DatabaseName = m.DatabaseName
 
@@ -225,11 +225,7 @@ func (m RecoverOracleNewTargetDatabaseConfig) MarshalJSON() ([]byte, error) {
 
 	propsRecoverOracleNewTargetDatabaseConfig.NumTempfiles = m.NumTempfiles
 
-	propsRecoverOracleNewTargetDatabaseConfig.RedoLogConfig = m.RedoLogConfig
-
 	propsRecoverOracleNewTargetDatabaseConfig.IsMultiStageRestore = m.IsMultiStageRestore
-
-	propsRecoverOracleNewTargetDatabaseConfig.OracleUpdateRestoreOptions = m.OracleUpdateRestoreOptions
 
 	propsRecoverOracleNewTargetDatabaseConfig.SkipCloneNid = m.SkipCloneNid
 
@@ -240,6 +236,10 @@ func (m RecoverOracleNewTargetDatabaseConfig) MarshalJSON() ([]byte, error) {
 	propsRecoverOracleNewTargetDatabaseConfig.DisasterRecoveryOptions = m.DisasterRecoveryOptions
 
 	propsRecoverOracleNewTargetDatabaseConfig.RestoreToRac = m.RestoreToRac
+
+	propsRecoverOracleNewTargetDatabaseConfig.OracleUpdateRestoreOptions = m.OracleUpdateRestoreOptions
+
+	propsRecoverOracleNewTargetDatabaseConfig.RedoLogConfig = m.RedoLogConfig
 
 	jsonDataPropsRecoverOracleNewTargetDatabaseConfig, errRecoverOracleNewTargetDatabaseConfig := swag.WriteJSON(propsRecoverOracleNewTargetDatabaseConfig)
 	if errRecoverOracleNewTargetDatabaseConfig != nil {
@@ -262,7 +262,7 @@ func (m *RecoverOracleNewTargetDatabaseConfig) Validate(formats strfmt.Registry)
 		res = append(res, err)
 	}
 
-	if err := m.validateRedoLogConfig(formats); err != nil {
+	if err := m.validateDisasterRecoveryOptions(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -270,7 +270,7 @@ func (m *RecoverOracleNewTargetDatabaseConfig) Validate(formats strfmt.Registry)
 		res = append(res, err)
 	}
 
-	if err := m.validateDisasterRecoveryOptions(formats); err != nil {
+	if err := m.validateRedoLogConfig(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -306,17 +306,17 @@ func (m *RecoverOracleNewTargetDatabaseConfig) validatePfileParameterMap(formats
 	return nil
 }
 
-func (m *RecoverOracleNewTargetDatabaseConfig) validateRedoLogConfig(formats strfmt.Registry) error {
-	if swag.IsZero(m.RedoLogConfig) { // not required
+func (m *RecoverOracleNewTargetDatabaseConfig) validateDisasterRecoveryOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.DisasterRecoveryOptions) { // not required
 		return nil
 	}
 
-	if m.RedoLogConfig != nil {
-		if err := m.RedoLogConfig.Validate(formats); err != nil {
+	if m.DisasterRecoveryOptions != nil {
+		if err := m.DisasterRecoveryOptions.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("redoLogConfig")
+				return ve.ValidateName("disasterRecoveryOptions")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("redoLogConfig")
+				return ce.ValidateName("disasterRecoveryOptions")
 			}
 			return err
 		}
@@ -344,17 +344,17 @@ func (m *RecoverOracleNewTargetDatabaseConfig) validateOracleUpdateRestoreOption
 	return nil
 }
 
-func (m *RecoverOracleNewTargetDatabaseConfig) validateDisasterRecoveryOptions(formats strfmt.Registry) error {
-	if swag.IsZero(m.DisasterRecoveryOptions) { // not required
+func (m *RecoverOracleNewTargetDatabaseConfig) validateRedoLogConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.RedoLogConfig) { // not required
 		return nil
 	}
 
-	if m.DisasterRecoveryOptions != nil {
-		if err := m.DisasterRecoveryOptions.Validate(formats); err != nil {
+	if m.RedoLogConfig != nil {
+		if err := m.RedoLogConfig.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("disasterRecoveryOptions")
+				return ve.ValidateName("redoLogConfig")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("disasterRecoveryOptions")
+				return ce.ValidateName("redoLogConfig")
 			}
 			return err
 		}
@@ -376,7 +376,7 @@ func (m *RecoverOracleNewTargetDatabaseConfig) ContextValidate(ctx context.Conte
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateRedoLogConfig(ctx, formats); err != nil {
+	if err := m.contextValidateDisasterRecoveryOptions(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -384,7 +384,7 @@ func (m *RecoverOracleNewTargetDatabaseConfig) ContextValidate(ctx context.Conte
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateDisasterRecoveryOptions(ctx, formats); err != nil {
+	if err := m.contextValidateRedoLogConfig(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -419,19 +419,19 @@ func (m *RecoverOracleNewTargetDatabaseConfig) contextValidatePfileParameterMap(
 	return nil
 }
 
-func (m *RecoverOracleNewTargetDatabaseConfig) contextValidateRedoLogConfig(ctx context.Context, formats strfmt.Registry) error {
+func (m *RecoverOracleNewTargetDatabaseConfig) contextValidateDisasterRecoveryOptions(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.RedoLogConfig != nil {
+	if m.DisasterRecoveryOptions != nil {
 
-		if swag.IsZero(m.RedoLogConfig) { // not required
+		if swag.IsZero(m.DisasterRecoveryOptions) { // not required
 			return nil
 		}
 
-		if err := m.RedoLogConfig.ContextValidate(ctx, formats); err != nil {
+		if err := m.DisasterRecoveryOptions.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("redoLogConfig")
+				return ve.ValidateName("disasterRecoveryOptions")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("redoLogConfig")
+				return ce.ValidateName("disasterRecoveryOptions")
 			}
 			return err
 		}
@@ -461,19 +461,19 @@ func (m *RecoverOracleNewTargetDatabaseConfig) contextValidateOracleUpdateRestor
 	return nil
 }
 
-func (m *RecoverOracleNewTargetDatabaseConfig) contextValidateDisasterRecoveryOptions(ctx context.Context, formats strfmt.Registry) error {
+func (m *RecoverOracleNewTargetDatabaseConfig) contextValidateRedoLogConfig(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.DisasterRecoveryOptions != nil {
+	if m.RedoLogConfig != nil {
 
-		if swag.IsZero(m.DisasterRecoveryOptions) { // not required
+		if swag.IsZero(m.RedoLogConfig) { // not required
 			return nil
 		}
 
-		if err := m.DisasterRecoveryOptions.ContextValidate(ctx, formats); err != nil {
+		if err := m.RedoLogConfig.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("disasterRecoveryOptions")
+				return ve.ValidateName("redoLogConfig")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("disasterRecoveryOptions")
+				return ce.ValidateName("redoLogConfig")
 			}
 			return err
 		}

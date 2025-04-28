@@ -7,9 +7,7 @@ package models
 
 import (
 	"context"
-	"strconv"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -26,90 +24,15 @@ type KubernetesResourceMetaInfoResult struct {
 
 	// Specifies the resources to excluded during backup
 	ExcludedResources []string `json:"excludedResources"`
-
-	// Specifies the list of PVCs that were backed up
-	BackedUpPvcs []*KubernetesPvcInfo `json:"backedUpPvcs"`
-
-	// Specifies the count of resources that were backed up
-	BackedUpResourceCount *int64 `json:"backedUpResourceCount,omitempty"`
 }
 
 // Validate validates this kubernetes resource meta info result
 func (m *KubernetesResourceMetaInfoResult) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateBackedUpPvcs(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
 	return nil
 }
 
-func (m *KubernetesResourceMetaInfoResult) validateBackedUpPvcs(formats strfmt.Registry) error {
-	if swag.IsZero(m.BackedUpPvcs) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.BackedUpPvcs); i++ {
-		if swag.IsZero(m.BackedUpPvcs[i]) { // not required
-			continue
-		}
-
-		if m.BackedUpPvcs[i] != nil {
-			if err := m.BackedUpPvcs[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("backedUpPvcs" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("backedUpPvcs" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// ContextValidate validate this kubernetes resource meta info result based on the context it is used
+// ContextValidate validates this kubernetes resource meta info result based on context it is used
 func (m *KubernetesResourceMetaInfoResult) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateBackedUpPvcs(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *KubernetesResourceMetaInfoResult) contextValidateBackedUpPvcs(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.BackedUpPvcs); i++ {
-
-		if m.BackedUpPvcs[i] != nil {
-
-			if swag.IsZero(m.BackedUpPvcs[i]) { // not required
-				return nil
-			}
-
-			if err := m.BackedUpPvcs[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("backedUpPvcs" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("backedUpPvcs" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
 	return nil
 }
 
