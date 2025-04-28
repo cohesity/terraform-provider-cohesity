@@ -110,7 +110,7 @@ func resourceCohesityConfigureSnmpCreate(ctx context.Context, d *schema.Resource
 
 	snmpConfigParam := services.BuildSnmpConfigParam(d, true)
 
-	_, err = client.EnableSnmpConfig(snmpConfigParam)
+	_, err = client.UpdateSnmpConfig(snmpConfigParam)
 	if err != nil {
 		return diag.Errorf("Failed to configure SNMP on the cluster: %s", err.Error())
 	}
@@ -162,7 +162,7 @@ func resourceCohesityConfigureSnmpUpdate(ctx context.Context, d *schema.Resource
 
 		snmpConfigParam := services.BuildSnmpConfigParam(d, true)
 
-		_, err = client.DisableSnmpConfig(snmpConfigParam)
+		_, err = client.UpdateSnmpConfig(snmpConfigParam)
 		if err != nil {
 			return diag.Errorf("Failed to update Snmp Config for the cluster, %s", err.Error())
 		}
@@ -180,7 +180,7 @@ func resourceCohesityConfigureSnmpDelete(ctx context.Context, d *schema.Resource
 
 	snmpConfigParam := services.BuildSnmpConfigParam(d, false)
 
-	_, err = client.DisableSnmpConfig(snmpConfigParam)
+	_, err = client.UpdateSnmpConfig(snmpConfigParam)
 	if err != nil {
 		return diag.Errorf("Failed to disable Snmp Config for the cluster, %s", err.Error())
 	}

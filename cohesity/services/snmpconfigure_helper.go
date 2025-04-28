@@ -157,18 +157,7 @@ func (c *CohesityClientV2) GetSnmpConfig() (*SnmpConfig, error) {
 	return resp.Payload, nil
 }
 
-func (c *CohesityClientV2) EnableSnmpConfig(snmpConfigParam *modelsV2.SnmpConfig) (*SnmpConfig, error) {
-	params := snmpConfig.NewUpdateSnmpConfigParams().WithBody(snmpConfigParam)
-
-	resp, err := c.client.SnmpConfig.UpdateSnmpConfig(params, c.bearerToken)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.Payload, nil
-}
-
-func (c *CohesityClientV2) DisableSnmpConfig(snmpConfigParam *modelsV2.SnmpConfig) (*SnmpConfig, error) {
+func (c *CohesityClientV2) UpdateSnmpConfig(snmpConfigParam *modelsV2.SnmpConfig) (*SnmpConfig, error) {
 	params := snmpConfig.NewUpdateSnmpConfigParams().WithBody(snmpConfigParam)
 
 	resp, err := c.client.SnmpConfig.UpdateSnmpConfig(params, c.bearerToken)
