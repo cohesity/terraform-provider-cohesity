@@ -109,6 +109,7 @@ func resourceCohesityConfigureSmtpUpdate(ctx context.Context, d *schema.Resource
 		if err != nil {
 			return diag.Errorf("Failed to update Smtp Config for the cluster, %s", err.Error())
 		}
+		d.Set("password", smtpConfigParam.Password)
 		return resourceCohesityConfigureSmtpRead(ctx, d, m)
 	}
 	return nil
