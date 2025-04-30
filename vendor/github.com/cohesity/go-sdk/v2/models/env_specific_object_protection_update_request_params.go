@@ -72,9 +72,6 @@ type EnvSpecificObjectProtectionUpdateRequestParams struct {
 	// Specifies the parameters which are specific to SAP HANA related Object Backup.
 	SapHanaParams *SapHanaObjectProtectionUpdateRequestParams `json:"sapHanaParams,omitempty"`
 
-	// Specifies the parameters which are specific to Kubernetes source related Object Backup.
-	KubernetesParams *KubernetesObjectProtectionUpdateRequestParams `json:"kubernetesParams,omitempty"`
-
 	// Specifies the parameters which are specific to Azure related Object Backup.
 	AzureParams *AzureObjectProtectionUpdateRequestParams `json:"azureParams,omitempty"`
 
@@ -151,10 +148,6 @@ func (m *EnvSpecificObjectProtectionUpdateRequestParams) Validate(formats strfmt
 	}
 
 	if err := m.validateSapHanaParams(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -689,25 +682,6 @@ func (m *EnvSpecificObjectProtectionUpdateRequestParams) validateSapHanaParams(f
 	return nil
 }
 
-func (m *EnvSpecificObjectProtectionUpdateRequestParams) validateKubernetesParams(formats strfmt.Registry) error {
-	if swag.IsZero(m.KubernetesParams) { // not required
-		return nil
-	}
-
-	if m.KubernetesParams != nil {
-		if err := m.KubernetesParams.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("kubernetesParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("kubernetesParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *EnvSpecificObjectProtectionUpdateRequestParams) validateAzureParams(formats strfmt.Registry) error {
 	if swag.IsZero(m.AzureParams) { // not required
 		return nil
@@ -811,10 +785,6 @@ func (m *EnvSpecificObjectProtectionUpdateRequestParams) ContextValidate(ctx con
 	}
 
 	if err := m.contextValidateSapHanaParams(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1160,27 +1130,6 @@ func (m *EnvSpecificObjectProtectionUpdateRequestParams) contextValidateSapHanaP
 				return ve.ValidateName("sapHanaParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("sapHanaParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *EnvSpecificObjectProtectionUpdateRequestParams) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.KubernetesParams != nil {
-
-		if swag.IsZero(m.KubernetesParams) { // not required
-			return nil
-		}
-
-		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("kubernetesParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

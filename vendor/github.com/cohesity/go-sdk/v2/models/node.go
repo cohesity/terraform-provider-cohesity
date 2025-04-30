@@ -162,6 +162,9 @@ type Node struct {
 
 	// Specifies the pre-check validations results.
 	ValidationChecks []*PreCheckValidation `json:"validationChecks"`
+
+	// isUpgradeInProgress is used to mark a node being upgraded.
+	IsUpgradeInProgress *bool `json:"isUpgradeInProgress,omitempty"`
 }
 
 // Validate validates this node

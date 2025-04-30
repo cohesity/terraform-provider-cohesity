@@ -27,6 +27,9 @@ type SubnetInfo struct {
 
 	// Gateway.
 	Gateway *string `json:"gateway,omitempty"`
+
+	// Subnet ipv4 mask. This is used only for V4 subnet
+	SubnetIPV4Mask *string `json:"subnetIpv4Mask,omitempty"`
 }
 
 // Validate validates this subnet info

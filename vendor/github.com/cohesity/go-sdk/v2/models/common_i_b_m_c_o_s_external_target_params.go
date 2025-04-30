@@ -30,15 +30,9 @@ type CommonIBMCOSExternalTargetParams struct {
 	// Required: true
 	Location *string `json:"location"`
 
-	// Specifies the endpoint type to be used to access the external target. The endpoint used by the Cohesity cluster or data-source connectors is constructed using 'endpointType' and 'location' as follows, s3[.endpointType].[location].cloud-object-storage.appdomaincloud. Eg. s3.private.us-east.cloud-object-storage.appdomain.cloud
+	// Specifies the endpoint type to be used to access the external target.
 	// Enum: ["Private","Public","Direct"]
 	EndpointType *string `json:"endpointType,omitempty"`
-
-	// Specifies the complete endpoint to be used by the Cohesity cluster to access the external target. If specified, location and endpointType parameters are ignored. For example, an endpoint would look like s3.direct.us-east.cloud-object-storage.appdomain.cloud (direct endpoint) OR s3.us-east.cloud-object-storage.appdomain.cloud (public endpoint).
-	Endpoint *string `json:"endpoint,omitempty"`
-
-	// Specifies the complete endpoint to be used by the data-source connector(s) to access the external target. If not specified, 'endpoint' parameter is used. If 'endpoint' parameter is also not specified, endpoint constructed by 'location' and 'endpointType' would be used by the data-source connector(s) to access the external target.
-	EndpointForConnectors *string `json:"endpointForConnectors,omitempty"`
 
 	// authentication method
 	// Required: true

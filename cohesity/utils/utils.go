@@ -88,3 +88,7 @@ func Int32Ptr(i int32) *int32 {
 func StringPtr(s string) *string {
 	return &s
 }
+
+func BoolPtr(b bool) *bool {
+	return &b
+}

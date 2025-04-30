@@ -29,9 +29,6 @@ type CommonSourceConnectionRequestParams struct {
 
 	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user.
 	ConnectionID *int64 `json:"connectionId,omitempty"`
-
-	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. This is connectionId in string format to help UI preserve the precision for int values larger than 2^53 - 1
-	DataSourceConnectionID *string `json:"dataSourceConnectionId,omitempty"`
 }
 
 // Validate validates this common source connection request params

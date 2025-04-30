@@ -24,12 +24,9 @@ type UpgradeConfig struct {
 	// Specifies the default upgrade package url for the connections unless an override is specified for a tenant or connection. All connections will be upgraded using this URL if specified.
 	DefaultUpgradePackageURL *string `json:"defaultUpgradePackageUrl,omitempty"`
 
-	// Specifies the patch package url for the connections. If no overrides below are mentioned, this URL will be used. This URL will be used to download the package by connector. Can be http or https and must be IPv4 address or hostname (must be resolvable by the connector).
-	DefaultPatchPackageURL *string `json:"defaultPatchPackageUrl,omitempty"`
-
 	// Specifies the upgrade config of tenants for which the connections
 	// would be upgraded. If this is provided, it will override
-	// defaultUpgradePackageUrl for the tenant.
+	// upgradePackageUrl for the tenant.
 	TenantUpgradeConfigsOverride []*TenantUpgradeConfig `json:"tenantUpgradeConfigsOverride"`
 
 	// Specifies the upgrade config of connections to be upgraded. If the

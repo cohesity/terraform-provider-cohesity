@@ -31,14 +31,14 @@ variable "snmp_version" {
 
 variable "agent_port" {
   description = "AgentPort is the TCP port SNMP agent is using."
-  type        = string
-  default     = "161"
+  type        = number
+  default     = 161
 }
 
 variable "trap_port" {
   description = "TrapPort is the TCP port SNMP agent is using."
-  type        = string
-  default     = "162"
+  type        = number
+  default     = 162
 }
 
 variable "trap_user" {

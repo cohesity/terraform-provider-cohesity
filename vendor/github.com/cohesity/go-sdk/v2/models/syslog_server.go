@@ -57,6 +57,9 @@ type SyslogServer struct {
 
 	// TokenId used for filtering messages on a relay or collector
 	TokenID *string `json:"tokenId,omitempty"`
+
+	// Syslog server certificate common name.
+	PermittedPeer *string `json:"permittedPeer,omitempty"`
 }
 
 // Validate validates this syslog server

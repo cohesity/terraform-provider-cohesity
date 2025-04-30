@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -32,7 +31,6 @@ type MSSQLFileProtectionGroupObjectParams struct {
 
 	// Specifies the type of source being protected.
 	// Read Only: true
-	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	SourceType *string `json:"sourceType,omitempty"`
 }
 
@@ -41,10 +39,6 @@ func (m *MSSQLFileProtectionGroupObjectParams) Validate(formats strfmt.Registry)
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSourceType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,222 +51,6 @@ func (m *MSSQLFileProtectionGroupObjectParams) Validate(formats strfmt.Registry)
 func (m *MSSQLFileProtectionGroupObjectParams) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-var mSSqlFileProtectionGroupObjectParamsTypeSourceTypePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		mSSqlFileProtectionGroupObjectParamsTypeSourceTypePropEnum = append(mSSqlFileProtectionGroupObjectParamsTypeSourceTypePropEnum, v)
-	}
-}
-
-const (
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKVMware captures enum value "kVMware"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKVMware string = "kVMware"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKHyperV captures enum value "kHyperV"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKHyperV string = "kHyperV"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKVCD captures enum value "kVCD"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKVCD string = "kVCD"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKSQL captures enum value "kSQL"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKSQL string = "kSQL"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKView captures enum value "kView"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKView string = "kView"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKRemoteAdapter captures enum value "kRemoteAdapter"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKRemoteAdapter string = "kRemoteAdapter"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKPhysical captures enum value "kPhysical"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKPhysical string = "kPhysical"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKPure captures enum value "kPure"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKPure string = "kPure"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKIbmFlashSystem captures enum value "kIbmFlashSystem"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKIbmFlashSystem string = "kIbmFlashSystem"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAzure captures enum value "kAzure"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAzure string = "kAzure"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKNetapp captures enum value "kNetapp"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKNetapp string = "kNetapp"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKGenericNas captures enum value "kGenericNas"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKGenericNas string = "kGenericNas"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAcropolis captures enum value "kAcropolis"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAcropolis string = "kAcropolis"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKIsilon captures enum value "kIsilon"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKIsilon string = "kIsilon"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKKVM captures enum value "kKVM"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKKVM string = "kKVM"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAWS captures enum value "kAWS"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAWS string = "kAWS"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAWSNative captures enum value "kAWSNative"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAWSNative string = "kAWSNative"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsS3 captures enum value "kAwsS3"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsS3 string = "kAwsS3"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAWSSnapshotManager captures enum value "kAWSSnapshotManager"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAWSSnapshotManager string = "kAWSSnapshotManager"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKRDSSnapshotManager captures enum value "kRDSSnapshotManager"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKRDSSnapshotManager string = "kRDSSnapshotManager"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAuroraSnapshotManager captures enum value "kAuroraSnapshotManager"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAuroraSnapshotManager string = "kAuroraSnapshotManager"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsRDSPostgresBackup captures enum value "kAwsRDSPostgresBackup"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsRDSPostgresBackup string = "kAwsRDSPostgresBackup"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsAuroraPostgres string = "kAwsAuroraPostgres"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAwsDynamoDB string = "kAwsDynamoDB"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureNative captures enum value "kAzureNative"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureNative string = "kAzureNative"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureSQL captures enum value "kAzureSQL"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureSQL string = "kAzureSQL"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureEntraID captures enum value "kAzureEntraID"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureEntraID string = "kAzureEntraID"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAzureSnapshotManager string = "kAzureSnapshotManager"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKExchange captures enum value "kExchange"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKExchange string = "kExchange"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKOracle captures enum value "kOracle"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKOracle string = "kOracle"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKGCP captures enum value "kGCP"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKGCP string = "kGCP"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKFlashBlade captures enum value "kFlashBlade"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKFlashBlade string = "kFlashBlade"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365 captures enum value "kO365"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365 string = "kO365"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKHyperFlex captures enum value "kHyperFlex"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKHyperFlex string = "kHyperFlex"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKAD captures enum value "kAD"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKAD string = "kAD"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKGPFS captures enum value "kGPFS"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKGPFS string = "kGPFS"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKKubernetes captures enum value "kKubernetes"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKKubernetes string = "kKubernetes"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKNimble captures enum value "kNimble"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKNimble string = "kNimble"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKElastifile captures enum value "kElastifile"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKElastifile string = "kElastifile"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKCassandra captures enum value "kCassandra"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKCassandra string = "kCassandra"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKMongoDB captures enum value "kMongoDB"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKMongoDB string = "kMongoDB"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKCouchbase captures enum value "kCouchbase"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKCouchbase string = "kCouchbase"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKHdfs captures enum value "kHdfs"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKHdfs string = "kHdfs"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKHive captures enum value "kHive"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKHive string = "kHive"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKHBase captures enum value "kHBase"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKHBase string = "kHBase"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKUDA captures enum value "kUDA"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKUDA string = "kUDA"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKSAPHANA captures enum value "kSAPHANA"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKSAPHANA string = "kSAPHANA"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Sharepoint captures enum value "kO365Sharepoint"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Sharepoint string = "kO365Sharepoint"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365PublicFolders captures enum value "kO365PublicFolders"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365PublicFolders string = "kO365PublicFolders"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Teams captures enum value "kO365Teams"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Teams string = "kO365Teams"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Group captures enum value "kO365Group"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Group string = "kO365Group"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Exchange captures enum value "kO365Exchange"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365Exchange string = "kO365Exchange"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365OneDrive captures enum value "kO365OneDrive"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365OneDrive string = "kO365OneDrive"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKSfdc captures enum value "kSfdc"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKSfdc string = "kSfdc"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365ExchangeCSM captures enum value "kO365ExchangeCSM"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365ExchangeCSM string = "kO365ExchangeCSM"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365OneDriveCSM captures enum value "kO365OneDriveCSM"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365OneDriveCSM string = "kO365OneDriveCSM"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKO365SharepointCSM captures enum value "kO365SharepointCSM"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKO365SharepointCSM string = "kO365SharepointCSM"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKExperimentalAdapter captures enum value "kExperimentalAdapter"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKExperimentalAdapter string = "kExperimentalAdapter"
-
-	// MSSQLFileProtectionGroupObjectParamsSourceTypeKMongoDBPhysical captures enum value "kMongoDBPhysical"
-	MSSQLFileProtectionGroupObjectParamsSourceTypeKMongoDBPhysical string = "kMongoDBPhysical"
-)
-
-// prop value enum
-func (m *MSSQLFileProtectionGroupObjectParams) validateSourceTypeEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, mSSqlFileProtectionGroupObjectParamsTypeSourceTypePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *MSSQLFileProtectionGroupObjectParams) validateSourceType(formats strfmt.Registry) error {
-	if swag.IsZero(m.SourceType) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validateSourceTypeEnum("sourceType", "body", *m.SourceType); err != nil {
 		return err
 	}
 

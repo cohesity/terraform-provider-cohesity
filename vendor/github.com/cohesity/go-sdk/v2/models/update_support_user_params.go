@@ -25,6 +25,9 @@ type UpdateSupportUserParams struct {
 
 	// If set to true, sudo access will be enabled for the user. If null, the endpoint will not attempt to alter sudo access privilege for the support user.
 	EnableSudoAccess *bool `json:"enableSudoAccess,omitempty"`
+
+	// Sudo Access End Time in Milli seconds If null, the endpoint will try to use default behavior of 5 days.
+	SudoAccessEndTimestampMsecs *int64 `json:"sudoAccessEndTimestampMsecs,omitempty"`
 }
 
 // Validate validates this update support user params

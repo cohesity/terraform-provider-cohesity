@@ -17,7 +17,6 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/antivirus_service"
 	"github.com/cohesity/go-sdk/v2/client/athena_app_ops"
 	"github.com/cohesity/go-sdk/v2/client/audit_log"
-	"github.com/cohesity/go-sdk/v2/client/baseos_patch_management"
 	"github.com/cohesity/go-sdk/v2/client/cloud_domain"
 	"github.com/cohesity/go-sdk/v2/client/cloud_retrieve_task"
 	"github.com/cohesity/go-sdk/v2/client/data_accessor"
@@ -38,7 +37,6 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/node_group"
 	"github.com/cohesity/go-sdk/v2/client/object"
 	"github.com/cohesity/go-sdk/v2/client/one_helios"
-	"github.com/cohesity/go-sdk/v2/client/patch_management"
 	"github.com/cohesity/go-sdk/v2/client/platform"
 	"github.com/cohesity/go-sdk/v2/client/policy"
 	"github.com/cohesity/go-sdk/v2/client/privilege"
@@ -61,7 +59,6 @@ import (
 	"github.com/cohesity/go-sdk/v2/client/tag"
 	"github.com/cohesity/go-sdk/v2/client/templates"
 	"github.com/cohesity/go-sdk/v2/client/tenant"
-	"github.com/cohesity/go-sdk/v2/client/tenant_deactivation"
 	"github.com/cohesity/go-sdk/v2/client/user"
 	"github.com/cohesity/go-sdk/v2/client/view"
 )
@@ -115,7 +112,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.AntivirusService = antivirus_service.New(transport, formats)
 	cli.AthenaAppOps = athena_app_ops.New(transport, formats)
 	cli.AuditLog = audit_log.New(transport, formats)
-	cli.BaseosPatchManagement = baseos_patch_management.New(transport, formats)
 	cli.CloudDomain = cloud_domain.New(transport, formats)
 	cli.CloudRetrieveTask = cloud_retrieve_task.New(transport, formats)
 	cli.DataAccessor = data_accessor.New(transport, formats)
@@ -136,7 +132,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.NodeGroup = node_group.New(transport, formats)
 	cli.Object = object.New(transport, formats)
 	cli.OneHelios = one_helios.New(transport, formats)
-	cli.PatchManagement = patch_management.New(transport, formats)
 	cli.Platform = platform.New(transport, formats)
 	cli.Policy = policy.New(transport, formats)
 	cli.Privilege = privilege.New(transport, formats)
@@ -159,7 +154,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CohesityRE
 	cli.Tag = tag.New(transport, formats)
 	cli.Templates = templates.New(transport, formats)
 	cli.Tenant = tenant.New(transport, formats)
-	cli.TenantDeactivation = tenant_deactivation.New(transport, formats)
 	cli.User = user.New(transport, formats)
 	cli.View = view.New(transport, formats)
 	return cli
@@ -220,8 +214,6 @@ type CohesityRESTAPI struct {
 
 	AuditLog audit_log.ClientService
 
-	BaseosPatchManagement baseos_patch_management.ClientService
-
 	CloudDomain cloud_domain.ClientService
 
 	CloudRetrieveTask cloud_retrieve_task.ClientService
@@ -261,8 +253,6 @@ type CohesityRESTAPI struct {
 	Object object.ClientService
 
 	OneHelios one_helios.ClientService
-
-	PatchManagement patch_management.ClientService
 
 	Platform platform.ClientService
 
@@ -308,8 +298,6 @@ type CohesityRESTAPI struct {
 
 	Tenant tenant.ClientService
 
-	TenantDeactivation tenant_deactivation.ClientService
-
 	User user.ClientService
 
 	View view.ClientService
@@ -327,7 +315,6 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.AntivirusService.SetTransport(transport)
 	c.AthenaAppOps.SetTransport(transport)
 	c.AuditLog.SetTransport(transport)
-	c.BaseosPatchManagement.SetTransport(transport)
 	c.CloudDomain.SetTransport(transport)
 	c.CloudRetrieveTask.SetTransport(transport)
 	c.DataAccessor.SetTransport(transport)
@@ -348,7 +335,6 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.NodeGroup.SetTransport(transport)
 	c.Object.SetTransport(transport)
 	c.OneHelios.SetTransport(transport)
-	c.PatchManagement.SetTransport(transport)
 	c.Platform.SetTransport(transport)
 	c.Policy.SetTransport(transport)
 	c.Privilege.SetTransport(transport)
@@ -371,7 +357,6 @@ func (c *CohesityRESTAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Tag.SetTransport(transport)
 	c.Templates.SetTransport(transport)
 	c.Tenant.SetTransport(transport)
-	c.TenantDeactivation.SetTransport(transport)
 	c.User.SetTransport(transport)
 	c.View.SetTransport(transport)
 }
