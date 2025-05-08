@@ -39,10 +39,10 @@ type CommonSourceRegistrationReponseParams struct {
 	// The user specified name for this source.
 	Name *string `json:"name,omitempty"`
 
-	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. This field will be depricated in future. Use connections field.
+	// Specifies the id of the connection from where this source is reachable. This should only be set for a source being registered by a tenant user. This field will be deprecated in future. Use connections field.
 	ConnectionID *int64 `json:"connectionId,omitempty"`
 
-	// Specfies the list of connections for the source.
+	// Specifies the list of connections for the source.
 	Connections []*ConnectionConfig `json:"connections"`
 
 	// Specifies the connector group id of connector groups.

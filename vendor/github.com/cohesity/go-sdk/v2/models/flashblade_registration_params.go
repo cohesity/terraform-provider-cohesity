@@ -37,9 +37,6 @@ type FlashbladeRegistrationParams struct {
 
 	// Specifies the source throttling parameters to be used during registration of the NAS source.
 	ThrottlingConfig *NasThrottlingConfig `json:"throttlingConfig,omitempty"`
-
-	// Specifies the list of IP addresses that are allowed or denied at the job level. Allowed IPs and Denied IPs cannot be used together.
-	FilterIPConfig *FilterIPConfig `json:"filterIpConfig,omitempty"`
 }
 
 // Validate validates this flashblade registration params
@@ -59,10 +56,6 @@ func (m *FlashbladeRegistrationParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateThrottlingConfig(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateFilterIPConfig(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -128,25 +121,6 @@ func (m *FlashbladeRegistrationParams) validateThrottlingConfig(formats strfmt.R
 	return nil
 }
 
-func (m *FlashbladeRegistrationParams) validateFilterIPConfig(formats strfmt.Registry) error {
-	if swag.IsZero(m.FilterIPConfig) { // not required
-		return nil
-	}
-
-	if m.FilterIPConfig != nil {
-		if err := m.FilterIPConfig.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("filterIpConfig")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("filterIpConfig")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 // ContextValidate validate this flashblade registration params based on the context it is used
 func (m *FlashbladeRegistrationParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -156,10 +130,6 @@ func (m *FlashbladeRegistrationParams) ContextValidate(ctx context.Context, form
 	}
 
 	if err := m.contextValidateThrottlingConfig(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateFilterIPConfig(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -203,27 +173,6 @@ func (m *FlashbladeRegistrationParams) contextValidateThrottlingConfig(ctx conte
 				return ve.ValidateName("throttlingConfig")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("throttlingConfig")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *FlashbladeRegistrationParams) contextValidateFilterIPConfig(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.FilterIPConfig != nil {
-
-		if swag.IsZero(m.FilterIPConfig) { // not required
-			return nil
-		}
-
-		if err := m.FilterIPConfig.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("filterIpConfig")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("filterIpConfig")
 			}
 			return err
 		}

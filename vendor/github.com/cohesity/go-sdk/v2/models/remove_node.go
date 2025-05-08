@@ -32,9 +32,6 @@ type RemoveNode struct {
 
 	// Specifies the last run time of the pre-checks execution in Unix epoch timestamp (in seconds).
 	TimestampSecs *int64 `json:"timestampSecs,omitempty"`
-
-	// If true, pre check results have been cleared.
-	ClearedPreCheckResult *bool `json:"clearedPreCheckResult,omitempty"`
 }
 
 // Validate validates this remove node

@@ -88,7 +88,7 @@ func resourceCohesityConfigureSmtpRead(ctx context.Context, d *schema.ResourceDa
 
 	d.Set("smtp_server", smtpConfig.Hostname)
 	d.Set("port", smtpConfig.Port)
-	d.Set("sender_email_address", smtpConfig.SenderEmailAddress)
+	// d.Set("sender_email_address", smtpConfig.SenderEmailAddress)
 	d.Set("username", smtpConfig.Username)
 	d.Set("use_ssl", smtpConfig.UseSSL)
 

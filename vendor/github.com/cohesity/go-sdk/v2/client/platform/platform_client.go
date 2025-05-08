@@ -6,8 +6,6 @@ package platform
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"fmt"
-
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -90,8 +88,6 @@ type ClientService interface {
 
 	ClusterUpdateIpmiUsers(params *ClusterUpdateIpmiUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ClusterUpdateIpmiUsersOK, error)
 
-	CreateBond(params *CreateBondParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateBondCreated, error)
-
 	CreateCluster(params *CreateClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterCreated, error)
 
 	CreateClusterVlan(params *CreateClusterVlanParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterVlanCreated, error)
@@ -127,6 +123,8 @@ type ClientService interface {
 	GetClusterIpmiUsers(params *GetClusterIpmiUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterIpmiUsersOK, error)
 
 	GetClusterLocalDomainSID(params *GetClusterLocalDomainSIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterLocalDomainSIDOK, error)
+
+	GetClusterMetadata(params *GetClusterMetadataParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterMetadataOK, error)
 
 	GetClusterOperationStatusList(params *GetClusterOperationStatusListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterOperationStatusListOK, error)
 
@@ -216,13 +214,9 @@ type ClientService interface {
 
 	UpdateCluster(params *UpdateClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterOK, error)
 
-	UpdateClusterIpmiLanInfo(params *UpdateClusterIpmiLanInfoParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterIpmiLanInfoOK, error)
-
 	UpdateClusterSnapshotPolicy(params *UpdateClusterSnapshotPolicyParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterSnapshotPolicyOK, error)
 
 	UpdateClusterSoftware(params *UpdateClusterSoftwareParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterSoftwareAccepted, error)
-
-	UpdateClusterSubnets(params *UpdateClusterSubnetsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterSubnetsOK, error)
 
 	UpdateFeatureFlag(params *UpdateFeatureFlagParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateFeatureFlagOK, error)
 
@@ -245,8 +239,6 @@ type ClientService interface {
 	UpgradeCheckGetResults(params *UpgradeCheckGetResultsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpgradeCheckGetResultsOK, error)
 
 	UpgradeCheckRunTests(params *UpgradeCheckRunTestsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpgradeCheckRunTestsOK, error)
-
-	UpgradeNodes(params *UpgradeNodesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpgradeNodesAccepted, error)
 
 	UploadFilePackage(params *UploadFilePackageParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UploadFilePackageNoContent, error)
 
@@ -454,46 +446,6 @@ func (a *Client) ClusterUpdateIpmiUsers(params *ClusterUpdateIpmiUsersParams, au
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ClusterUpdateIpmiUsersDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-CreateBond creates a new network bond
-
-**Privileges:** ```CLUSTER_MODIFY``` <br><br>Sends a request to create a new network bond on the Cluster. This can only be performed on a Node before it is part of a Cluster.
-*/
-func (a *Client) CreateBond(params *CreateBondParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateBondCreated, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewCreateBondParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "CreateBond",
-		Method:             "POST",
-		PathPattern:        "/network/bonds",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &CreateBondReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*CreateBondCreated)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*CreateBondDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -1214,6 +1166,46 @@ func (a *Client) GetClusterLocalDomainSID(params *GetClusterLocalDomainSIDParams
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetClusterLocalDomainSIDDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetClusterMetadata gets cluster metadata
+
+```No Privileges Required``` <br><br>Get Cluster Metadata.
+*/
+func (a *Client) GetClusterMetadata(params *GetClusterMetadataParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterMetadataOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetClusterMetadataParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetClusterMetadata",
+		Method:             "GET",
+		PathPattern:        "/clusters/metadata",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetClusterMetadataReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetClusterMetadataOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetClusterMetadataDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -2978,46 +2970,6 @@ func (a *Client) UpdateCluster(params *UpdateClusterParams, authInfo runtime.Cli
 }
 
 /*
-UpdateClusterIpmiLanInfo tos update IP m i l a n info for the cluster
-
-**Privileges:** ```CLUSTER_MODIFY``` <br><br>Updates the information about LAN for the cluster in which current node is present.
-*/
-func (a *Client) UpdateClusterIpmiLanInfo(params *UpdateClusterIpmiLanInfoParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterIpmiLanInfoOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewUpdateClusterIpmiLanInfoParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "UpdateClusterIpmiLanInfo",
-		Method:             "PUT",
-		PathPattern:        "/ipmi/cluster-update-lan-info",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &UpdateClusterIpmiLanInfoReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*UpdateClusterIpmiLanInfoOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*UpdateClusterIpmiLanInfoDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 UpdateClusterSnapshotPolicy updates cluster snapshot policy
 
 **Privileges:** ```CLUSTER_MODIFY``` <br><br>Update cluster snapshot policy.
@@ -3095,47 +3047,6 @@ func (a *Client) UpdateClusterSoftware(params *UpdateClusterSoftwareParams, auth
 	// unexpected success response
 	unexpectedSuccess := result.(*UpdateClusterSoftwareDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-UpdateClusterSubnets updates the cluster subnets
-
-**Privileges:** ```CLUSTER_MODIFY``` <br><br>Update the cluster subnet Info
-*/
-func (a *Client) UpdateClusterSubnets(params *UpdateClusterSubnetsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterSubnetsOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewUpdateClusterSubnetsParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "UpdateClusterSubnets",
-		Method:             "PUT",
-		PathPattern:        "/clusters/subnets",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &UpdateClusterSubnetsReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*UpdateClusterSubnetsOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for UpdateClusterSubnets: API contract not enforced by server. Client expected to get an error, but got: %T", result)
-	panic(msg)
 }
 
 /*
@@ -3581,46 +3492,6 @@ func (a *Client) UpgradeCheckRunTests(params *UpgradeCheckRunTestsParams, authIn
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*UpgradeCheckRunTestsDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-UpgradeNodes upgrades a free node
-
-**Privileges:** ```CLUSTER_CREATE``` <br><br>Upgrade a free Node.
-*/
-func (a *Client) UpgradeNodes(params *UpgradeNodesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpgradeNodesAccepted, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewUpgradeNodesParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "UpgradeNodes",
-		Method:             "PUT",
-		PathPattern:        "/nodes/software",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &UpgradeNodesReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*UpgradeNodesAccepted)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*UpgradeNodesDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

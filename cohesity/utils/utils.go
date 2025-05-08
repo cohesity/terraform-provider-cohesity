@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"log"
+	"reflect"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -84,6 +86,9 @@ func SuppressNetworkNameDiff(k, old, new string, d *schema.ResourceData) bool {
 func Int32Ptr(i int32) *int32 {
 	return &i
 }
+func Int64Ptr(i int64) *int64 {
+	return &i
+}
 
 func StringPtr(s string) *string {
 	return &s
@@ -91,4 +96,36 @@ func StringPtr(s string) *string {
 
 func BoolPtr(b bool) *bool {
 	return &b
+}
+
+func InterfaceSliceToStringSlice(input []interface{}) ([]string, error) {
+    result := make([]string, len(input))
+    for i, v := range input {
+        str, ok := v.(string)
+        if !ok {
+            return nil, fmt.Errorf("element at index %d is not a string: %v", i, v)
+        }
+        result[i] = str
+    }
+    return result, nil
+}
+
+func InterfaceSliceToInt32Slice(input []interface{}) ([]int32, error) {
+    output := make([]int32, len(input))
+	for i, v := range input {
+		val := reflect.ValueOf(v)
+
+		// Only handle numeric kinds
+		switch val.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			output[i] = int32(val.Int())
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			output[i] = int32(val.Uint())
+		case reflect.Float32, reflect.Float64:
+			output[i] = int32(val.Float())
+		default:
+			return nil, fmt.Errorf("unsupported type at index %d: %T", i, v)
+		}
+	}
+	return output, nil
 }

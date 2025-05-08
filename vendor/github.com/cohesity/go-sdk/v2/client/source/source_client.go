@@ -102,6 +102,8 @@ type ClientService interface {
 
 	UnregisterM365BackupController(params *UnregisterM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnregisterM365BackupControllerNoContent, error)
 
+	UpdateApplicationServersRegistration(params *UpdateApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationServersRegistrationOK, error)
+
 	UpdateM365BackupController(params *UpdateM365BackupControllerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateM365BackupControllerOK, error)
 
 	UpdateM365SelfServiceConfig(params *UpdateM365SelfServiceConfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateM365SelfServiceConfigOK, *UpdateM365SelfServiceConfigCreated, error)
@@ -194,7 +196,7 @@ func (a *Client) CreateOrUpdateAzureApplications(params *CreateOrUpdateAzureAppl
 /*
 DeleteApplicationServersRegistration deletes an application server registration
 
-**Privileges:** ```PROTECTION_MODIFY``` <br><br>Delete an application server registration.
+**Privileges:** ```PROTECTION_SOURCE_MODIFY``` <br><br>Delete an application server registration.
 */
 func (a *Client) DeleteApplicationServersRegistration(params *DeleteApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationServersRegistrationNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1068,6 +1070,46 @@ func (a *Client) UnregisterM365BackupController(params *UnregisterM365BackupCont
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*UnregisterM365BackupControllerDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateApplicationServersRegistration registers or update owner entity with applications
+
+**Privileges:** ```PROTECTION_SOURCE_MODIFY``` <br><br>Register or update applications on an owner entity
+*/
+func (a *Client) UpdateApplicationServersRegistration(params *UpdateApplicationServersRegistrationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationServersRegistrationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateApplicationServersRegistrationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdateApplicationServersRegistration",
+		Method:             "PUT",
+		PathPattern:        "/data-protect/sources/application-servers/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateApplicationServersRegistrationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateApplicationServersRegistrationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateApplicationServersRegistrationDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

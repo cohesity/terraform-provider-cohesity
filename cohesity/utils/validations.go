@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"net"
+	"net/mail"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -53,6 +54,14 @@ func IsValidNetappSourceType(val interface{}, key string) (warns []string, errs 
 	v := val.(string)
 	if v != "kCluster" && v != "kVserver" {
 		errs = append(errs, fmt.Errorf("%q must be either 'kCluster' or 'kVserver', got: %s", key, v))
+	}
+	return
+}
+func IsValidEmail(val interface{}, key string) (warns []string, errs []error) {
+	v := val.(string)
+	_, err := mail.ParseAddress(v)
+	if err != nil {
+		errs = append(errs, fmt.Errorf("%q must be a valid email address: %s", key, err))
 	}
 	return
 }

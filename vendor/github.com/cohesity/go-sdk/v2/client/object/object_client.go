@@ -6,8 +6,6 @@ package object
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"io"
-
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -54,30 +52,6 @@ type Client struct {
 // ClientOption may be used to customize the behavior of Client methods.
 type ClientOption func(*runtime.ClientOperation)
 
-// This client is generated with a few options you might find useful for your swagger spec.
-//
-// Feel free to add you own set of options.
-
-// WithAccept allows the client to force the Accept header
-// to negotiate a specific Producer from the server.
-//
-// You may use this option to set arbitrary extensions to your MIME media type.
-func WithAccept(mime string) ClientOption {
-	return func(r *runtime.ClientOperation) {
-		r.ProducesMediaTypes = []string{mime}
-	}
-}
-
-// WithAcceptApplicationJSON sets the Accept header to "application/json".
-func WithAcceptApplicationJSON(r *runtime.ClientOperation) {
-	r.ProducesMediaTypes = []string{"application/json"}
-}
-
-// WithAcceptApplicationOctetStream sets the Accept header to "application/octet-stream".
-func WithAcceptApplicationOctetStream(r *runtime.ClientOperation) {
-	r.ProducesMediaTypes = []string{"application/octet-stream"}
-}
-
 // ClientService is the interface for Client methods
 type ClientService interface {
 	AssociateEntityMetadata(params *AssociateEntityMetadataParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AssociateEntityMetadataMultiStatus, error)
@@ -99,8 +73,6 @@ type ClientService interface {
 	GetIndexedObjectSnapshots(params *GetIndexedObjectSnapshotsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetIndexedObjectSnapshotsOK, error)
 
 	GetObjectRunByRunID(params *GetObjectRunByRunIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetObjectRunByRunIDOK, error)
-
-	GetObjectRunMessagesReport(params *GetObjectRunMessagesReportParams, authInfo runtime.ClientAuthInfoWriter, writer io.Writer, opts ...ClientOption) (*GetObjectRunMessagesReportOK, error)
 
 	GetObjectRuns(params *GetObjectRunsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetObjectRunsOK, error)
 
@@ -532,46 +504,6 @@ func (a *Client) GetObjectRunByRunID(params *GetObjectRunByRunIDParams, authInfo
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetObjectRunByRunIDDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-GetObjectRunMessagesReport gets the c s v of various messages for a given run
-
-```Unknown Privileges``` <br><br>Get an CSV report for given run id and object id. Each row in CSV report contains all errors and warnings during run. File format: error_<objectId>_<runStartTime>.csv
-*/
-func (a *Client) GetObjectRunMessagesReport(params *GetObjectRunMessagesReportParams, authInfo runtime.ClientAuthInfoWriter, writer io.Writer, opts ...ClientOption) (*GetObjectRunMessagesReportOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetObjectRunMessagesReportParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "GetObjectRunMessagesReport",
-		Method:             "GET",
-		PathPattern:        "/data-protect/objects/{id}/runs/{runId}/messages",
-		ProducesMediaTypes: []string{"application/octet-stream"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &GetObjectRunMessagesReportReader{formats: a.formats, writer: writer},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetObjectRunMessagesReportOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*GetObjectRunMessagesReportDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

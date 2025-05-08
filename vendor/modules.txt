@@ -73,7 +73,7 @@ github.com/cloudflare/circl/math/mlsbset
 github.com/cloudflare/circl/sign
 github.com/cloudflare/circl/sign/ed25519
 github.com/cloudflare/circl/sign/ed448
-# github.com/cohesity/go-sdk v0.72.2101
+# github.com/cohesity/go-sdk v0.72.14003
 ## explicit; go 1.20
 github.com/cohesity/go-sdk/v2/client
 github.com/cohesity/go-sdk/v2/client/access_token
@@ -83,6 +83,7 @@ github.com/cohesity/go-sdk/v2/client/alert
 github.com/cohesity/go-sdk/v2/client/antivirus_service
 github.com/cohesity/go-sdk/v2/client/athena_app_ops
 github.com/cohesity/go-sdk/v2/client/audit_log
+github.com/cohesity/go-sdk/v2/client/baseos_patch_management
 github.com/cohesity/go-sdk/v2/client/cloud_domain
 github.com/cohesity/go-sdk/v2/client/cloud_retrieve_task
 github.com/cohesity/go-sdk/v2/client/data_accessor
@@ -103,6 +104,7 @@ github.com/cohesity/go-sdk/v2/client/m_f_a
 github.com/cohesity/go-sdk/v2/client/node_group
 github.com/cohesity/go-sdk/v2/client/object
 github.com/cohesity/go-sdk/v2/client/one_helios
+github.com/cohesity/go-sdk/v2/client/patch_management
 github.com/cohesity/go-sdk/v2/client/platform
 github.com/cohesity/go-sdk/v2/client/policy
 github.com/cohesity/go-sdk/v2/client/privilege
@@ -125,6 +127,7 @@ github.com/cohesity/go-sdk/v2/client/syslog
 github.com/cohesity/go-sdk/v2/client/tag
 github.com/cohesity/go-sdk/v2/client/templates
 github.com/cohesity/go-sdk/v2/client/tenant
+github.com/cohesity/go-sdk/v2/client/tenant_deactivation
 github.com/cohesity/go-sdk/v2/client/user
 github.com/cohesity/go-sdk/v2/client/view
 github.com/cohesity/go-sdk/v2/models

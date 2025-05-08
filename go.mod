@@ -3,7 +3,7 @@ module github.com/terraform-providers/terraform-provider-cohesity
 go 1.22.0
 
 require (
-	github.com/cohesity/go-sdk v0.72.2101
+	github.com/cohesity/go-sdk v0.72.14003
 	github.com/cohesity/management-sdk-go v1.1.2
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/strfmt v0.23.0

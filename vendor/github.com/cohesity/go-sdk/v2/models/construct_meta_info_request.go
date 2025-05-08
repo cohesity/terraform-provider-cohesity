@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -23,6 +24,7 @@ type ConstructMetaInfoRequest struct {
 
 	// Specifies the environment type of the Protection group
 	// Required: true
+	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	Environment *string `json:"environment"`
 
 	// Specifies object params for kubernetes object
@@ -61,9 +63,217 @@ func (m *ConstructMetaInfoRequest) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+var constructMetaInfoRequestTypeEnvironmentPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		constructMetaInfoRequestTypeEnvironmentPropEnum = append(constructMetaInfoRequestTypeEnvironmentPropEnum, v)
+	}
+}
+
+const (
+
+	// ConstructMetaInfoRequestEnvironmentKVMware captures enum value "kVMware"
+	ConstructMetaInfoRequestEnvironmentKVMware string = "kVMware"
+
+	// ConstructMetaInfoRequestEnvironmentKHyperV captures enum value "kHyperV"
+	ConstructMetaInfoRequestEnvironmentKHyperV string = "kHyperV"
+
+	// ConstructMetaInfoRequestEnvironmentKVCD captures enum value "kVCD"
+	ConstructMetaInfoRequestEnvironmentKVCD string = "kVCD"
+
+	// ConstructMetaInfoRequestEnvironmentKSQL captures enum value "kSQL"
+	ConstructMetaInfoRequestEnvironmentKSQL string = "kSQL"
+
+	// ConstructMetaInfoRequestEnvironmentKView captures enum value "kView"
+	ConstructMetaInfoRequestEnvironmentKView string = "kView"
+
+	// ConstructMetaInfoRequestEnvironmentKRemoteAdapter captures enum value "kRemoteAdapter"
+	ConstructMetaInfoRequestEnvironmentKRemoteAdapter string = "kRemoteAdapter"
+
+	// ConstructMetaInfoRequestEnvironmentKPhysical captures enum value "kPhysical"
+	ConstructMetaInfoRequestEnvironmentKPhysical string = "kPhysical"
+
+	// ConstructMetaInfoRequestEnvironmentKPure captures enum value "kPure"
+	ConstructMetaInfoRequestEnvironmentKPure string = "kPure"
+
+	// ConstructMetaInfoRequestEnvironmentKIbmFlashSystem captures enum value "kIbmFlashSystem"
+	ConstructMetaInfoRequestEnvironmentKIbmFlashSystem string = "kIbmFlashSystem"
+
+	// ConstructMetaInfoRequestEnvironmentKAzure captures enum value "kAzure"
+	ConstructMetaInfoRequestEnvironmentKAzure string = "kAzure"
+
+	// ConstructMetaInfoRequestEnvironmentKNetapp captures enum value "kNetapp"
+	ConstructMetaInfoRequestEnvironmentKNetapp string = "kNetapp"
+
+	// ConstructMetaInfoRequestEnvironmentKGenericNas captures enum value "kGenericNas"
+	ConstructMetaInfoRequestEnvironmentKGenericNas string = "kGenericNas"
+
+	// ConstructMetaInfoRequestEnvironmentKAcropolis captures enum value "kAcropolis"
+	ConstructMetaInfoRequestEnvironmentKAcropolis string = "kAcropolis"
+
+	// ConstructMetaInfoRequestEnvironmentKIsilon captures enum value "kIsilon"
+	ConstructMetaInfoRequestEnvironmentKIsilon string = "kIsilon"
+
+	// ConstructMetaInfoRequestEnvironmentKKVM captures enum value "kKVM"
+	ConstructMetaInfoRequestEnvironmentKKVM string = "kKVM"
+
+	// ConstructMetaInfoRequestEnvironmentKAWS captures enum value "kAWS"
+	ConstructMetaInfoRequestEnvironmentKAWS string = "kAWS"
+
+	// ConstructMetaInfoRequestEnvironmentKAWSNative captures enum value "kAWSNative"
+	ConstructMetaInfoRequestEnvironmentKAWSNative string = "kAWSNative"
+
+	// ConstructMetaInfoRequestEnvironmentKAwsS3 captures enum value "kAwsS3"
+	ConstructMetaInfoRequestEnvironmentKAwsS3 string = "kAwsS3"
+
+	// ConstructMetaInfoRequestEnvironmentKAWSSnapshotManager captures enum value "kAWSSnapshotManager"
+	ConstructMetaInfoRequestEnvironmentKAWSSnapshotManager string = "kAWSSnapshotManager"
+
+	// ConstructMetaInfoRequestEnvironmentKRDSSnapshotManager captures enum value "kRDSSnapshotManager"
+	ConstructMetaInfoRequestEnvironmentKRDSSnapshotManager string = "kRDSSnapshotManager"
+
+	// ConstructMetaInfoRequestEnvironmentKAuroraSnapshotManager captures enum value "kAuroraSnapshotManager"
+	ConstructMetaInfoRequestEnvironmentKAuroraSnapshotManager string = "kAuroraSnapshotManager"
+
+	// ConstructMetaInfoRequestEnvironmentKAwsRDSPostgresBackup captures enum value "kAwsRDSPostgresBackup"
+	ConstructMetaInfoRequestEnvironmentKAwsRDSPostgresBackup string = "kAwsRDSPostgresBackup"
+
+	// ConstructMetaInfoRequestEnvironmentKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
+	ConstructMetaInfoRequestEnvironmentKAwsRDSPostgres string = "kAwsRDSPostgres"
+
+	// ConstructMetaInfoRequestEnvironmentKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
+	ConstructMetaInfoRequestEnvironmentKAwsAuroraPostgres string = "kAwsAuroraPostgres"
+
+	// ConstructMetaInfoRequestEnvironmentKAwsDynamoDB captures enum value "kAwsDynamoDB"
+	ConstructMetaInfoRequestEnvironmentKAwsDynamoDB string = "kAwsDynamoDB"
+
+	// ConstructMetaInfoRequestEnvironmentKAzureNative captures enum value "kAzureNative"
+	ConstructMetaInfoRequestEnvironmentKAzureNative string = "kAzureNative"
+
+	// ConstructMetaInfoRequestEnvironmentKAzureSQL captures enum value "kAzureSQL"
+	ConstructMetaInfoRequestEnvironmentKAzureSQL string = "kAzureSQL"
+
+	// ConstructMetaInfoRequestEnvironmentKAzureEntraID captures enum value "kAzureEntraID"
+	ConstructMetaInfoRequestEnvironmentKAzureEntraID string = "kAzureEntraID"
+
+	// ConstructMetaInfoRequestEnvironmentKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
+	ConstructMetaInfoRequestEnvironmentKAzureSnapshotManager string = "kAzureSnapshotManager"
+
+	// ConstructMetaInfoRequestEnvironmentKExchange captures enum value "kExchange"
+	ConstructMetaInfoRequestEnvironmentKExchange string = "kExchange"
+
+	// ConstructMetaInfoRequestEnvironmentKOracle captures enum value "kOracle"
+	ConstructMetaInfoRequestEnvironmentKOracle string = "kOracle"
+
+	// ConstructMetaInfoRequestEnvironmentKGCP captures enum value "kGCP"
+	ConstructMetaInfoRequestEnvironmentKGCP string = "kGCP"
+
+	// ConstructMetaInfoRequestEnvironmentKFlashBlade captures enum value "kFlashBlade"
+	ConstructMetaInfoRequestEnvironmentKFlashBlade string = "kFlashBlade"
+
+	// ConstructMetaInfoRequestEnvironmentKO365 captures enum value "kO365"
+	ConstructMetaInfoRequestEnvironmentKO365 string = "kO365"
+
+	// ConstructMetaInfoRequestEnvironmentKHyperFlex captures enum value "kHyperFlex"
+	ConstructMetaInfoRequestEnvironmentKHyperFlex string = "kHyperFlex"
+
+	// ConstructMetaInfoRequestEnvironmentKAD captures enum value "kAD"
+	ConstructMetaInfoRequestEnvironmentKAD string = "kAD"
+
+	// ConstructMetaInfoRequestEnvironmentKGPFS captures enum value "kGPFS"
+	ConstructMetaInfoRequestEnvironmentKGPFS string = "kGPFS"
+
+	// ConstructMetaInfoRequestEnvironmentKKubernetes captures enum value "kKubernetes"
+	ConstructMetaInfoRequestEnvironmentKKubernetes string = "kKubernetes"
+
+	// ConstructMetaInfoRequestEnvironmentKNimble captures enum value "kNimble"
+	ConstructMetaInfoRequestEnvironmentKNimble string = "kNimble"
+
+	// ConstructMetaInfoRequestEnvironmentKElastifile captures enum value "kElastifile"
+	ConstructMetaInfoRequestEnvironmentKElastifile string = "kElastifile"
+
+	// ConstructMetaInfoRequestEnvironmentKCassandra captures enum value "kCassandra"
+	ConstructMetaInfoRequestEnvironmentKCassandra string = "kCassandra"
+
+	// ConstructMetaInfoRequestEnvironmentKMongoDB captures enum value "kMongoDB"
+	ConstructMetaInfoRequestEnvironmentKMongoDB string = "kMongoDB"
+
+	// ConstructMetaInfoRequestEnvironmentKCouchbase captures enum value "kCouchbase"
+	ConstructMetaInfoRequestEnvironmentKCouchbase string = "kCouchbase"
+
+	// ConstructMetaInfoRequestEnvironmentKHdfs captures enum value "kHdfs"
+	ConstructMetaInfoRequestEnvironmentKHdfs string = "kHdfs"
+
+	// ConstructMetaInfoRequestEnvironmentKHive captures enum value "kHive"
+	ConstructMetaInfoRequestEnvironmentKHive string = "kHive"
+
+	// ConstructMetaInfoRequestEnvironmentKHBase captures enum value "kHBase"
+	ConstructMetaInfoRequestEnvironmentKHBase string = "kHBase"
+
+	// ConstructMetaInfoRequestEnvironmentKUDA captures enum value "kUDA"
+	ConstructMetaInfoRequestEnvironmentKUDA string = "kUDA"
+
+	// ConstructMetaInfoRequestEnvironmentKSAPHANA captures enum value "kSAPHANA"
+	ConstructMetaInfoRequestEnvironmentKSAPHANA string = "kSAPHANA"
+
+	// ConstructMetaInfoRequestEnvironmentKO365Sharepoint captures enum value "kO365Sharepoint"
+	ConstructMetaInfoRequestEnvironmentKO365Sharepoint string = "kO365Sharepoint"
+
+	// ConstructMetaInfoRequestEnvironmentKO365PublicFolders captures enum value "kO365PublicFolders"
+	ConstructMetaInfoRequestEnvironmentKO365PublicFolders string = "kO365PublicFolders"
+
+	// ConstructMetaInfoRequestEnvironmentKO365Teams captures enum value "kO365Teams"
+	ConstructMetaInfoRequestEnvironmentKO365Teams string = "kO365Teams"
+
+	// ConstructMetaInfoRequestEnvironmentKO365Group captures enum value "kO365Group"
+	ConstructMetaInfoRequestEnvironmentKO365Group string = "kO365Group"
+
+	// ConstructMetaInfoRequestEnvironmentKO365Exchange captures enum value "kO365Exchange"
+	ConstructMetaInfoRequestEnvironmentKO365Exchange string = "kO365Exchange"
+
+	// ConstructMetaInfoRequestEnvironmentKO365OneDrive captures enum value "kO365OneDrive"
+	ConstructMetaInfoRequestEnvironmentKO365OneDrive string = "kO365OneDrive"
+
+	// ConstructMetaInfoRequestEnvironmentKSfdc captures enum value "kSfdc"
+	ConstructMetaInfoRequestEnvironmentKSfdc string = "kSfdc"
+
+	// ConstructMetaInfoRequestEnvironmentKO365ExchangeCSM captures enum value "kO365ExchangeCSM"
+	ConstructMetaInfoRequestEnvironmentKO365ExchangeCSM string = "kO365ExchangeCSM"
+
+	// ConstructMetaInfoRequestEnvironmentKO365OneDriveCSM captures enum value "kO365OneDriveCSM"
+	ConstructMetaInfoRequestEnvironmentKO365OneDriveCSM string = "kO365OneDriveCSM"
+
+	// ConstructMetaInfoRequestEnvironmentKO365SharepointCSM captures enum value "kO365SharepointCSM"
+	ConstructMetaInfoRequestEnvironmentKO365SharepointCSM string = "kO365SharepointCSM"
+
+	// ConstructMetaInfoRequestEnvironmentKExperimentalAdapter captures enum value "kExperimentalAdapter"
+	ConstructMetaInfoRequestEnvironmentKExperimentalAdapter string = "kExperimentalAdapter"
+
+	// ConstructMetaInfoRequestEnvironmentKMongoDBPhysical captures enum value "kMongoDBPhysical"
+	ConstructMetaInfoRequestEnvironmentKMongoDBPhysical string = "kMongoDBPhysical"
+)
+
+// prop value enum
+func (m *ConstructMetaInfoRequest) validateEnvironmentEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, constructMetaInfoRequestTypeEnvironmentPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *ConstructMetaInfoRequest) validateEnvironment(formats strfmt.Registry) error {
 
 	if err := validate.Required("environment", "body", m.Environment); err != nil {
+		return err
+	}
+
+	// value enum
+	if err := m.validateEnvironmentEnum("environment", "body", *m.Environment); err != nil {
 		return err
 	}
 

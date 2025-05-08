@@ -26,15 +26,6 @@ type IbmKmsConfiguration struct {
 	// Specifies the authentication method for IBMCOS APIs. target.
 	AuthenticationMethod *AuthenticationMethod `json:"authenticationMethod,omitempty"`
 
-	// API key, will be set iff authentication type is APIKey.
-	APIKey *string `json:"apiKey,omitempty"`
-
-	// Specifies the trusted profile ID if the authentication type is TrustedProfile.
-	TrustedProfileID *string `json:"trustedProfileId,omitempty"`
-
-	// Specifies the tenant CRN if the authentication type is TrustedProfileWithS2SPolicy.
-	TenantCRN *string `json:"tenantCRN,omitempty"`
-
 	// Specifies the unique IBM cloud instance ID.
 	InstanceID *string `json:"instanceId,omitempty"`
 
@@ -50,6 +41,9 @@ type IbmKmsConfiguration struct {
 	// Specifies the IBM KMS type used - Key Protect or HPCS.
 	// Enum: ["KeyProtect","HPCS"]
 	KmsType string `json:"kmsType,omitempty"`
+
+	// Specifies the Key protect or HPCS endpoint URL.
+	EndpointURL *string `json:"endpointURL,omitempty"`
 }
 
 // Validate validates this ibm kms configuration

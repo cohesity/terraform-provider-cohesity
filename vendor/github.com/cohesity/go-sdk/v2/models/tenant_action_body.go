@@ -22,7 +22,7 @@ type TenantActionBody struct {
 
 	// Specifies the action which will be performed on the Tenant.
 	// Required: true
-	// Enum: ["Activate","Deactivate"]
+	// Enum: ["Activate","Deactivate","Suspend"]
 	Action *string `json:"action"`
 }
 
@@ -44,7 +44,7 @@ var tenantActionBodyTypeActionPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Activate","Deactivate"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Activate","Deactivate","Suspend"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -59,6 +59,9 @@ const (
 
 	// TenantActionBodyActionDeactivate captures enum value "Deactivate"
 	TenantActionBodyActionDeactivate string = "Deactivate"
+
+	// TenantActionBodyActionSuspend captures enum value "Suspend"
+	TenantActionBodyActionSuspend string = "Suspend"
 )
 
 // prop value enum

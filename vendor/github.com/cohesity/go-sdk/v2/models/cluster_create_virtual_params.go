@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ClusterCreateVirtualParams Virtual Cluster Params.
@@ -21,52 +22,17 @@ import (
 // swagger:model ClusterCreateVirtualParams
 type ClusterCreateVirtualParams struct {
 
-	// Specifies if API based GET should be enabled for cluster destroy params
-	AllowAPIBasedFetch *bool `json:"allowApiBasedFetch,omitempty"`
-
-	// Specifies the IP for apps subnet
-	AppsSubnetIP *string `json:"appsSubnetIp,omitempty"`
-
-	// Specifies the IPv6 for apps subnet
-	AppsSubnetIPV6 *string `json:"appsSubnetIpV6,omitempty"`
-
-	// Specifies the Mask for apps subnet
-	AppsSubnetMask *string `json:"appsSubnetMask,omitempty"`
-
-	// Specifies the MaskV6 for apps subnet
-	AppsSubnetMaskV6 *string `json:"appsSubnetMaskV6,omitempty"`
-
-	// Specifies HMAC secret key that will be used to validate OTP used for destroy request
-	ClusterDestroyHmacKey *string `json:"clusterDestroyHmacKey,omitempty"`
-
-	// Specifies if cluster destroy op is enabled on this cluster
-	EnableClusterDestroy *bool `json:"enableClusterDestroy,omitempty"`
-
-	// Specifies the encryption configuration parameters
-	EncryptionConfig *EncryptionConfigurationParams `json:"encryptionConfig,omitempty"`
-
-	// Specifies IP preference
-	IPPreference *int32 `json:"ipPreference,omitempty"`
-
-	// Specifies the metadata fault tolerance.
-	MetadataFaultTolerance *int32 `json:"metadataFaultTolerance,omitempty"`
-
-	// Configuration of the nodes.
-	NodeConfigs []*NodeConfigParams `json:"nodeConfigs,omitempty"`
-
-	// Specifies Trust Domain used for Service Identity
-	TrustDomain *string `json:"trustDomain,omitempty"`
+	// nodes
+	// Min Items: 1
+	// Unique: true
+	Nodes []*ClusterCreateNodeParams `json:"nodes"`
 }
 
 // Validate validates this cluster create virtual params
 func (m *ClusterCreateVirtualParams) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateEncryptionConfig(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateNodeConfigs(formats); err != nil {
+	if err := m.validateNodes(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -76,41 +42,32 @@ func (m *ClusterCreateVirtualParams) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ClusterCreateVirtualParams) validateEncryptionConfig(formats strfmt.Registry) error {
-	if swag.IsZero(m.EncryptionConfig) { // not required
+func (m *ClusterCreateVirtualParams) validateNodes(formats strfmt.Registry) error {
+	if swag.IsZero(m.Nodes) { // not required
 		return nil
 	}
 
-	if m.EncryptionConfig != nil {
-		if err := m.EncryptionConfig.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("encryptionConfig")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("encryptionConfig")
-			}
-			return err
-		}
+	iNodesSize := int64(len(m.Nodes))
+
+	if err := validate.MinItems("nodes", "body", iNodesSize, 1); err != nil {
+		return err
 	}
 
-	return nil
-}
-
-func (m *ClusterCreateVirtualParams) validateNodeConfigs(formats strfmt.Registry) error {
-	if swag.IsZero(m.NodeConfigs) { // not required
-		return nil
+	if err := validate.UniqueItems("nodes", "body", m.Nodes); err != nil {
+		return err
 	}
 
-	for i := 0; i < len(m.NodeConfigs); i++ {
-		if swag.IsZero(m.NodeConfigs[i]) { // not required
+	for i := 0; i < len(m.Nodes); i++ {
+		if swag.IsZero(m.Nodes[i]) { // not required
 			continue
 		}
 
-		if m.NodeConfigs[i] != nil {
-			if err := m.NodeConfigs[i].Validate(formats); err != nil {
+		if m.Nodes[i] != nil {
+			if err := m.Nodes[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+					return ve.ValidateName("nodes" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+					return ce.ValidateName("nodes" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -125,11 +82,7 @@ func (m *ClusterCreateVirtualParams) validateNodeConfigs(formats strfmt.Registry
 func (m *ClusterCreateVirtualParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateEncryptionConfig(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateNodeConfigs(ctx, formats); err != nil {
+	if err := m.contextValidateNodes(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -139,42 +92,21 @@ func (m *ClusterCreateVirtualParams) ContextValidate(ctx context.Context, format
 	return nil
 }
 
-func (m *ClusterCreateVirtualParams) contextValidateEncryptionConfig(ctx context.Context, formats strfmt.Registry) error {
+func (m *ClusterCreateVirtualParams) contextValidateNodes(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.EncryptionConfig != nil {
+	for i := 0; i < len(m.Nodes); i++ {
 
-		if swag.IsZero(m.EncryptionConfig) { // not required
-			return nil
-		}
+		if m.Nodes[i] != nil {
 
-		if err := m.EncryptionConfig.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("encryptionConfig")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("encryptionConfig")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *ClusterCreateVirtualParams) contextValidateNodeConfigs(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.NodeConfigs); i++ {
-
-		if m.NodeConfigs[i] != nil {
-
-			if swag.IsZero(m.NodeConfigs[i]) { // not required
+			if swag.IsZero(m.Nodes[i]) { // not required
 				return nil
 			}
 
-			if err := m.NodeConfigs[i].ContextValidate(ctx, formats); err != nil {
+			if err := m.Nodes[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+					return ve.ValidateName("nodes" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+					return ce.ValidateName("nodes" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

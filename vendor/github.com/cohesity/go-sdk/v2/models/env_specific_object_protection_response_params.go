@@ -72,6 +72,9 @@ type EnvSpecificObjectProtectionResponseParams struct {
 	// Specifies the parameters which are specific to SAP HANA related Object Backup.
 	SapHanaParams *SapHanaObjectProtectionResponseParams `json:"sapHanaParams,omitempty"`
 
+	// Specifies the parameters which are specific to Kubernetes source related Object Backup.
+	KubernetesParams *KubernetesObjectProtectionResponseParams `json:"kubernetesParams,omitempty"`
+
 	// Specifies the parameters which are specific to Azure related Object Backup.
 	AzureParams *AzureObjectProtectionResponseParams `json:"azureParams,omitempty"`
 
@@ -148,6 +151,10 @@ func (m *EnvSpecificObjectProtectionResponseParams) Validate(formats strfmt.Regi
 	}
 
 	if err := m.validateSapHanaParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -682,6 +689,25 @@ func (m *EnvSpecificObjectProtectionResponseParams) validateSapHanaParams(format
 	return nil
 }
 
+func (m *EnvSpecificObjectProtectionResponseParams) validateKubernetesParams(formats strfmt.Registry) error {
+	if swag.IsZero(m.KubernetesParams) { // not required
+		return nil
+	}
+
+	if m.KubernetesParams != nil {
+		if err := m.KubernetesParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *EnvSpecificObjectProtectionResponseParams) validateAzureParams(formats strfmt.Registry) error {
 	if swag.IsZero(m.AzureParams) { // not required
 		return nil
@@ -785,6 +811,10 @@ func (m *EnvSpecificObjectProtectionResponseParams) ContextValidate(ctx context.
 	}
 
 	if err := m.contextValidateSapHanaParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1130,6 +1160,27 @@ func (m *EnvSpecificObjectProtectionResponseParams) contextValidateSapHanaParams
 				return ve.ValidateName("sapHanaParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("sapHanaParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *EnvSpecificObjectProtectionResponseParams) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.KubernetesParams != nil {
+
+		if swag.IsZero(m.KubernetesParams) { // not required
+			return nil
+		}
+
+		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

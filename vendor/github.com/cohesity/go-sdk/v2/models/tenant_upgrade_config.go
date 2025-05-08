@@ -25,6 +25,13 @@ type TenantUpgradeConfig struct {
 	// Specifies the upgrade package url to be used for upgrading the
 	// connections in the tenant.
 	TenantUpgradePackageURL *string `json:"tenantUpgradePackageUrl,omitempty"`
+
+	// "Specifies the patch package url to be used for patching the
+	// connections for a specific tenant. If this is provided, it will
+	// override the defaultPatchPackage URL. This URL will be used to
+	// download the package by connector. Can be http or https and must be
+	// IPv4 address or hostname (must be resolvable by the connector).
+	TenantPatchPackageURL *string `json:"tenantPatchPackageUrl,omitempty"`
 }
 
 // Validate validates this tenant upgrade config

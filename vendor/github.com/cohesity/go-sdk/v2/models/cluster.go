@@ -16,22 +16,22 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// Cluster Create Details.
+// Cluster Create Cluster Response.
 //
 // Specifies the cluster details.
 //
 // swagger:model Cluster
 type Cluster struct {
 
-	// Specifies the cluster id of the cluster.
+	// Specifies the cluster id of the new cluster.
 	// Read Only: true
 	ID *int64 `json:"id,omitempty"`
 
-	// Specifies the incarnation id of the cluster.
+	// Specifies the incarnation id of the new cluster.
 	// Read Only: true
 	IncarnationID *int64 `json:"incarnationId,omitempty"`
 
-	// Name of the cluster.
+	// Name of the new cluster.
 	Name *string `json:"name,omitempty"`
 
 	// Description of the cluster.
@@ -41,15 +41,10 @@ type Cluster struct {
 	// Enum: ["kStandAlone","kCDC","kIBMBaaS"]
 	ClusterDeploymentType *string `json:"clusterDeploymentType,omitempty"`
 
-	// Specifies the type of the cluster.
+	// Specifies the type of the new cluster.
 	// Read Only: true
 	// Enum: ["Physical","Virtual","Cloud","Rigel","Cohesion","Unknown","HeliosOnPremVM"]
 	Type *string `json:"type,omitempty"`
-
-	// Specifies the environment type of the cluster.
-	// Read Only: true
-	// Enum: ["kPhysical","kVirtualRobo","kMicrosoftCloud","kAmazonCloud","kGoogleCloud","kIBMCloud"]
-	ClusterType *string `json:"clusterType,omitempty"`
 
 	// Specifies the size of the cloud platforms.
 	// Read Only: true
@@ -74,11 +69,11 @@ type Cluster struct {
 	// cohesion cluster params
 	CohesionClusterParams *CohesionClusterConfigParams `json:"cohesionClusterParams,omitempty"`
 
-	// Software version of the cluster.
+	// Software version of the new cluster.
 	// Read Only: true
 	SwVersion *string `json:"swVersion,omitempty"`
 
-	// Network config of the cluster.
+	// Network config of the new cluster.
 	NetworkConfig *ClusterCreateNetworkConfig `json:"networkConfig,omitempty"`
 
 	// Specifies the proxy to use for external HTTP traffic.
@@ -354,10 +349,6 @@ func (m *Cluster) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateClusterType(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateClusterSize(formats); err != nil {
 		res = append(res, err)
 	}
@@ -560,60 +551,6 @@ func (m *Cluster) validateType(formats strfmt.Registry) error {
 
 	// value enum
 	if err := m.validateTypeEnum("type", "body", *m.Type); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-var clusterTypeClusterTypePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["kPhysical","kVirtualRobo","kMicrosoftCloud","kAmazonCloud","kGoogleCloud","kIBMCloud"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		clusterTypeClusterTypePropEnum = append(clusterTypeClusterTypePropEnum, v)
-	}
-}
-
-const (
-
-	// ClusterClusterTypeKPhysical captures enum value "kPhysical"
-	ClusterClusterTypeKPhysical string = "kPhysical"
-
-	// ClusterClusterTypeKVirtualRobo captures enum value "kVirtualRobo"
-	ClusterClusterTypeKVirtualRobo string = "kVirtualRobo"
-
-	// ClusterClusterTypeKMicrosoftCloud captures enum value "kMicrosoftCloud"
-	ClusterClusterTypeKMicrosoftCloud string = "kMicrosoftCloud"
-
-	// ClusterClusterTypeKAmazonCloud captures enum value "kAmazonCloud"
-	ClusterClusterTypeKAmazonCloud string = "kAmazonCloud"
-
-	// ClusterClusterTypeKGoogleCloud captures enum value "kGoogleCloud"
-	ClusterClusterTypeKGoogleCloud string = "kGoogleCloud"
-
-	// ClusterClusterTypeKIBMCloud captures enum value "kIBMCloud"
-	ClusterClusterTypeKIBMCloud string = "kIBMCloud"
-)
-
-// prop value enum
-func (m *Cluster) validateClusterTypeEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, clusterTypeClusterTypePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Cluster) validateClusterType(formats strfmt.Registry) error {
-	if swag.IsZero(m.ClusterType) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validateClusterTypeEnum("clusterType", "body", *m.ClusterType); err != nil {
 		return err
 	}
 
@@ -1288,10 +1225,6 @@ func (m *Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateClusterType(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateClusterSize(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -1423,15 +1356,6 @@ func (m *Cluster) contextValidateIncarnationID(ctx context.Context, formats strf
 func (m *Cluster) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "type", "body", m.Type); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Cluster) contextValidateClusterType(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "clusterType", "body", m.ClusterType); err != nil {
 		return err
 	}
 

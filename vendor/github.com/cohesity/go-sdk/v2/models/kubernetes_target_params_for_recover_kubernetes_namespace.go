@@ -43,6 +43,9 @@ type KubernetesTargetParamsForRecoverKubernetesNamespace struct {
 	// Specifies the storage class parameters for recovery of namespace.
 	StorageClass *KubernetesStorageClassParams `json:"storageClass,omitempty"`
 
+	// Specifies whether to skip checking if the target cluster, to restore to, is compatible or not. By default restore allowed to compatible cluster only
+	SkipClusterCompatibilityCheck *bool `json:"skipClusterCompatibilityCheck,omitempty"`
+
 	// Specifies the recovery target configuration of the Namespace recovery.
 	// Required: true
 	RecoveryTargetConfig *KubernetesNamespaceRecoveryTargetConfig `json:"recoveryTargetConfig"`

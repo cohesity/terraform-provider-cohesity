@@ -35,13 +35,6 @@ type SMTPConfiguration struct {
 
 	// Specifies if the SMTP configuration is active.
 	IsActive *bool `json:"isActive,omitempty"`
-
-	// This is used for setting "Sender" field in SMTP header.
-	// This has to be in valid email format, and could be different from
-	// username, and it's a required field if the username is not of valid
-	// email address.
-	//
-	SenderEmailAddress *string `json:"senderEmailAddress,omitempty"`
 }
 
 // Validate validates this SMTP configuration

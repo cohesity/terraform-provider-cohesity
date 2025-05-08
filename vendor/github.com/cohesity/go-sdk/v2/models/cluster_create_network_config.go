@@ -52,9 +52,6 @@ type ClusterCreateNetworkConfig struct {
 
 	// Specifies the parameters needed for manual secondary network configuration.
 	SecondaryManualNetworkConfig *ClusterManualNetworkConfig `json:"secondaryManualNetworkConfig,omitempty"`
-
-	// Virtual IPs to add to the cluster.
-	Vips []string `json:"vips,omitempty"`
 }
 
 // Validate validates this cluster create network config

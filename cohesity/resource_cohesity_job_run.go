@@ -1,23 +1,27 @@
 package cohesity
 
 import (
-	"errors"
+	"context"
 	"log"
 	"strconv"
 	"time"
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 func resourceCohesityJobRun() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceCohesityJobRunCreate,
-		Read:   resourceCohesityJobRunRead,
-		Delete: resourceCohesityJobRunDelete,
-		Update: resourceCohesityJobRunUpdate,
+		CreateContext: resourceCohesityJobRunCreate,
+		ReadContext:   resourceCohesityJobRunRead,
+		DeleteContext: resourceCohesityJobRunDelete,
+		UpdateContext: resourceCohesityJobRunUpdate,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -53,7 +57,7 @@ func resourceCohesityJobRun() *schema.Resource {
 	}
 }
 
-func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interface{}) (*int64, error) {
+func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interface{}) (*int64, diag.Diagnostics) {
 	var cohesityConfig = configMetaData.(utils.Config)
 	// authenticate with Cohesity cluster
 	log.Printf("[INFO] Authenticate with Cohesity cluster")
@@ -61,7 +65,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return nil, errors.New("Failed to authenticate with Cohesity")
+		return nil, diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	jobName := resourceData.Get("name").(string)
 	timeout := resourceData.Get("operation_timeout").(int) * utils.WaitTimeToSeconds
@@ -71,7 +75,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		log.Printf(err.Error())
-		return nil, errors.New("Failed to find the protection job")
+		return nil, diag.Errorf("Failed to find the protection job")
 	}
 	jobID := *protectionJob[0].Id
 	//get the protection runs to check the the status of recent job run
@@ -80,7 +84,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 		GetProtectionRuns(&jobID, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		log.Printf(err.Error())
-		return nil, errors.New("Failed to get the protection job runs")
+		return nil, diag.Errorf("Failed to get the protection job runs")
 	}
 	//start or stop the job run and wait for completion or operation timeout
 	if resourceData.Get("state").(string) == "start" {
@@ -102,7 +106,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 			time.Sleep(5 * time.Second)
 			if err != nil {
 				log.Printf(err.Error())
-				return nil, errors.New("Failed to run the protection job")
+				return nil, diag.Errorf("Failed to run the protection job")
 			}
 		}
 		for timeout > 0 {
@@ -113,9 +117,9 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 				log.Printf("[INFO] The protection job (%s) run is successfull", jobName)
 				break
 			} else if err == nil && result[0].BackupRun.Status == models.StatusBackupRun_KCANCELED {
-				return nil, errors.New("The protection job run is canceled")
+				return nil, diag.Errorf("The protection job run is canceled")
 			} else if err == nil && result[0].BackupRun.Status == models.StatusBackupRun_KFAILURE {
-				return nil, errors.New("The protection job run failed")
+				return nil, diag.Errorf("The protection job run failed")
 			}
 			time.Sleep(30 * time.Second)
 			timeout -= 30
@@ -129,7 +133,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 		err = client.ProtectionRuns().CreateCancelProtectionJobRun(jobID, &cancelJobRunParams)
 		if err != nil {
 			log.Printf(err.Error())
-			return nil, errors.New("Failed to stop the protection job run")
+			return nil, diag.Errorf("Failed to stop the protection job run")
 		}
 		for timeout > 0 {
 			log.Printf("[INFO] Wait for the protection job (%s) run to be stopped", jobName)
@@ -146,7 +150,7 @@ func jobStartStopUtil(resourceData *schema.ResourceData, configMetaData interfac
 	return &jobID, nil
 }
 
-func resourceCohesityJobRunCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobRunCreate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	jobID, err := jobStartStopUtil(resourceData, configMetaData)
 	if err != nil {
 		return err
@@ -155,15 +159,15 @@ func resourceCohesityJobRunCreate(resourceData *schema.ResourceData, configMetaD
 	return nil
 }
 
-func resourceCohesityJobRunRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobRunRead(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	return nil
 }
 
-func resourceCohesityJobRunDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobRunDelete(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	return nil
 }
 
-func resourceCohesityJobRunUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobRunUpdate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	_, err := jobStartStopUtil(resourceData, configMetaData)
 	if err != nil {
 		return err

@@ -36,10 +36,6 @@ type NetappObjectProtectionParams struct {
 
 	// Specifies the source snapshots to be taken even if there is a pending run in a protection group.
 	ContinuousSnapshots *ContinuousSnapshotParams `json:"continuousSnapshots,omitempty"`
-
-	// Specifies the preference of NFS version to be backed up
-	// Enum: ["kNfs3","kNfs4_1"]
-	NfsVersionPreference *string `json:"nfsVersionPreference,omitempty"`
 }
 
 // Validate validates this netapp object protection params
@@ -59,10 +55,6 @@ func (m *NetappObjectProtectionParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateContinuousSnapshots(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateNfsVersionPreference(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -171,48 +163,6 @@ func (m *NetappObjectProtectionParams) validateContinuousSnapshots(formats strfm
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-var netappObjectProtectionParamsTypeNfsVersionPreferencePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["kNfs3","kNfs4_1"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		netappObjectProtectionParamsTypeNfsVersionPreferencePropEnum = append(netappObjectProtectionParamsTypeNfsVersionPreferencePropEnum, v)
-	}
-}
-
-const (
-
-	// NetappObjectProtectionParamsNfsVersionPreferenceKNfs3 captures enum value "kNfs3"
-	NetappObjectProtectionParamsNfsVersionPreferenceKNfs3 string = "kNfs3"
-
-	// NetappObjectProtectionParamsNfsVersionPreferenceKNfs41 captures enum value "kNfs4_1"
-	NetappObjectProtectionParamsNfsVersionPreferenceKNfs41 string = "kNfs4_1"
-)
-
-// prop value enum
-func (m *NetappObjectProtectionParams) validateNfsVersionPreferenceEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, netappObjectProtectionParamsTypeNfsVersionPreferencePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *NetappObjectProtectionParams) validateNfsVersionPreference(formats strfmt.Registry) error {
-	if swag.IsZero(m.NfsVersionPreference) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validateNfsVersionPreferenceEnum("nfsVersionPreference", "body", *m.NfsVersionPreference); err != nil {
-		return err
 	}
 
 	return nil

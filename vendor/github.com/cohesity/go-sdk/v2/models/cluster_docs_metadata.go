@@ -23,7 +23,7 @@ import (
 type ClusterDocsMetadata struct {
 
 	// Specifies the purpose for having external hyperlink to documentation.
-	// Enum: ["APIDocs","BackupServiceConnectionDocs"]
+	// Enum: ["APIDocs","BackupServiceConnectionDocs","HelpDocs","SupportDocs","LicenseDocs","CreateVPEGateway"]
 	Purpose *string `json:"purpose,omitempty"`
 
 	// Specifies the URL to access the endpoint for the given documentation purpose.
@@ -48,7 +48,7 @@ var clusterDocsMetadataTypePurposePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["APIDocs","BackupServiceConnectionDocs"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["APIDocs","BackupServiceConnectionDocs","HelpDocs","SupportDocs","LicenseDocs","CreateVPEGateway"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -63,6 +63,18 @@ const (
 
 	// ClusterDocsMetadataPurposeBackupServiceConnectionDocs captures enum value "BackupServiceConnectionDocs"
 	ClusterDocsMetadataPurposeBackupServiceConnectionDocs string = "BackupServiceConnectionDocs"
+
+	// ClusterDocsMetadataPurposeHelpDocs captures enum value "HelpDocs"
+	ClusterDocsMetadataPurposeHelpDocs string = "HelpDocs"
+
+	// ClusterDocsMetadataPurposeSupportDocs captures enum value "SupportDocs"
+	ClusterDocsMetadataPurposeSupportDocs string = "SupportDocs"
+
+	// ClusterDocsMetadataPurposeLicenseDocs captures enum value "LicenseDocs"
+	ClusterDocsMetadataPurposeLicenseDocs string = "LicenseDocs"
+
+	// ClusterDocsMetadataPurposeCreateVPEGateway captures enum value "CreateVPEGateway"
+	ClusterDocsMetadataPurposeCreateVPEGateway string = "CreateVPEGateway"
 )
 
 // prop value enum

@@ -67,6 +67,9 @@ type EnvSpecificObjectProtectionRequestParams struct {
 	// Specifies the parameters which are specific to SAP HANA related Object Backup.
 	SapHanaParams *SapHanaObjectProtectionRequestParams `json:"sapHanaParams,omitempty"`
 
+	// Specifies the parameters which are specific to Kubernetes related Object Backup.
+	KubernetesParams *KubernetesObjectProtectionRequestParams `json:"kubernetesParams,omitempty"`
+
 	// Specifies the parameters which are specific to Azure related Object Backup.
 	AzureParams *AzureObjectProtectionRequestParams `json:"azureParams,omitempty"`
 
@@ -117,6 +120,8 @@ func (m *EnvSpecificObjectProtectionRequestParams) UnmarshalJSON(raw []byte) err
 
 		SapHanaParams *SapHanaObjectProtectionRequestParams `json:"sapHanaParams,omitempty"`
 
+		KubernetesParams *KubernetesObjectProtectionRequestParams `json:"kubernetesParams,omitempty"`
+
 		AzureParams *AzureObjectProtectionRequestParams `json:"azureParams,omitempty"`
 
 		ExperimentalAdapterParams *ExperimentalAdapterObjectProtectionRequestParams `json:"experimentalAdapterParams,omitempty"`
@@ -156,6 +161,8 @@ func (m *EnvSpecificObjectProtectionRequestParams) UnmarshalJSON(raw []byte) err
 	m.UdaParams = dataAO1.UdaParams
 
 	m.SapHanaParams = dataAO1.SapHanaParams
+
+	m.KubernetesParams = dataAO1.KubernetesParams
 
 	m.AzureParams = dataAO1.AzureParams
 
@@ -206,6 +213,8 @@ func (m EnvSpecificObjectProtectionRequestParams) MarshalJSON() ([]byte, error) 
 
 		SapHanaParams *SapHanaObjectProtectionRequestParams `json:"sapHanaParams,omitempty"`
 
+		KubernetesParams *KubernetesObjectProtectionRequestParams `json:"kubernetesParams,omitempty"`
+
 		AzureParams *AzureObjectProtectionRequestParams `json:"azureParams,omitempty"`
 
 		ExperimentalAdapterParams *ExperimentalAdapterObjectProtectionRequestParams `json:"experimentalAdapterParams,omitempty"`
@@ -242,6 +251,8 @@ func (m EnvSpecificObjectProtectionRequestParams) MarshalJSON() ([]byte, error) 
 	dataAO1.UdaParams = m.UdaParams
 
 	dataAO1.SapHanaParams = m.SapHanaParams
+
+	dataAO1.KubernetesParams = m.KubernetesParams
 
 	dataAO1.AzureParams = m.AzureParams
 
@@ -325,6 +336,10 @@ func (m *EnvSpecificObjectProtectionRequestParams) Validate(formats strfmt.Regis
 	}
 
 	if err := m.validateSapHanaParams(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -662,6 +677,26 @@ func (m *EnvSpecificObjectProtectionRequestParams) validateSapHanaParams(formats
 	return nil
 }
 
+func (m *EnvSpecificObjectProtectionRequestParams) validateKubernetesParams(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.KubernetesParams) { // not required
+		return nil
+	}
+
+	if m.KubernetesParams != nil {
+		if err := m.KubernetesParams.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *EnvSpecificObjectProtectionRequestParams) validateAzureParams(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.AzureParams) { // not required
@@ -772,6 +807,10 @@ func (m *EnvSpecificObjectProtectionRequestParams) ContextValidate(ctx context.C
 	}
 
 	if err := m.contextValidateSapHanaParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1117,6 +1156,27 @@ func (m *EnvSpecificObjectProtectionRequestParams) contextValidateSapHanaParams(
 				return ve.ValidateName("sapHanaParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("sapHanaParams")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *EnvSpecificObjectProtectionRequestParams) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.KubernetesParams != nil {
+
+		if swag.IsZero(m.KubernetesParams) { // not required
+			return nil
+		}
+
+		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubernetesParams")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

@@ -14,7 +14,7 @@ func BuildSmtpConfigParam(d *schema.ResourceData, enable bool) *modelsV2.UpdateS
 		SMTPConfiguration: modelsV2.SMTPConfiguration{
 			Hostname:           d.Get("smtp_server").(string),
 			Port:               int32(d.Get("port").(int)),
-			SenderEmailAddress: utils.StringPtr(d.Get("sender_email_address").(string)),
+			// SenderEmailAddress: utils.StringPtr(d.Get("sender_email_address").(string)),
 			Username:           utils.StringPtr(d.Get("username").(string)),
 			UseSSL:             utils.BoolPtr(d.Get("use_ssl").(bool)),
 		},
