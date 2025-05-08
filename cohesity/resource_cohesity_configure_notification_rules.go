@@ -12,13 +12,13 @@ import (
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
-func resourceCohesityConfigureNotifications() *schema.Resource {
+func resourceCohesityConfigureNotificationRules() *schema.Resource {
 
 	return &schema.Resource{
-		CreateContext: resourceCohesityConfigureNotificationsCreate,
-		ReadContext:   resourceCohesityConfigureNotificationsRead,
-		UpdateContext: resourceCohesityConfigureNotificationsUpdate,
-		DeleteContext: resourceCohesityConfigureNotificationsDelete,
+		CreateContext: resourceCohesityConfigureNotificationRulesCreate,
+		ReadContext:   resourceCohesityConfigureNotificationRulesRead,
+		UpdateContext: resourceCohesityConfigureNotificationRulesUpdate,
+		DeleteContext: resourceCohesityConfigureNotificationRulesDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -154,7 +154,7 @@ var categories = []string{
 	"kAgent",
 }
 
-func resourceCohesityConfigureNotificationsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityConfigureNotificationRulesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
 	// Build the notification configuration parameters
 	notificationRule, err := services.BuildNotificationRule(d, true)
@@ -183,7 +183,7 @@ func resourceCohesityConfigureNotificationsCreate(ctx context.Context, d *schema
 	return nil
 }
 
-func resourceCohesityConfigureNotificationsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityConfigureNotificationRulesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
 	token, err := services.GetAccessToken(config)
 	if err != nil {
@@ -214,7 +214,7 @@ func resourceCohesityConfigureNotificationsRead(ctx context.Context, d *schema.R
 	return nil
 }
 
-func resourceCohesityConfigureNotificationsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityConfigureNotificationRulesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
 	token, err := services.GetAccessToken(config)
 	if err != nil {
@@ -238,7 +238,7 @@ func resourceCohesityConfigureNotificationsUpdate(ctx context.Context, d *schema
 	return nil
 }
 
-func resourceCohesityConfigureNotificationsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCohesityConfigureNotificationRulesDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(utils.Config)
 	token, err := services.GetAccessToken(config)
 	if err != nil {

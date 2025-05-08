@@ -55,7 +55,7 @@ func Provider() *schema.Provider {
 			"cohesity_configure_snmp":      resourceCohesityConfigureSnmp(),
 			"cohesity_configure_smtp":      resourceCohesityConfigureSmtp(),
 			"cohesity_syslog_server": 		resourceCohesitySyslogServer(),
-			"cohesity_configure_notification_rules": resourceCohesityConfigureNotifications(),
+			"cohesity_configure_notification_rules": resourceCohesityConfigureNotificationRules(),
 			"cohesity_backup_policy":      resourceCohesityBackupPolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
