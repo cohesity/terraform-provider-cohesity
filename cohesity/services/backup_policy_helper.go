@@ -116,8 +116,7 @@ func expandBackupPolicy(l []interface{}) *modelsV2.BackupPolicy {
 
 	return result
 }
-
-func expandRegularBackup(v interface{}) *modelsV2.RegularBackupPolicy {
+func getMapInterface(v interface{}) map[string]interface{} {
 	if v == nil {
 		return nil
 	}
@@ -129,6 +128,14 @@ func expandRegularBackup(v interface{}) *modelsV2.RegularBackupPolicy {
 
 	data, ok := list[0].(map[string]interface{})
 	if !ok {
+		return nil
+	}
+	return data
+}
+
+func expandRegularBackup(v interface{}) *modelsV2.RegularBackupPolicy {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 
@@ -191,17 +198,8 @@ func expandFullBackups(v interface{}) []*modelsV2.FullScheduleAndRetention {
 }
 
 func expandLogBackup(v interface{}) *modelsV2.LogBackupPolicy {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.LogBackupPolicy{
@@ -211,17 +209,8 @@ func expandLogBackup(v interface{}) *modelsV2.LogBackupPolicy {
 }
 
 func expandBMRBackup(v interface{}) *modelsV2.BmrBackupPolicy {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.BmrBackupPolicy{
@@ -231,17 +220,8 @@ func expandBMRBackup(v interface{}) *modelsV2.BmrBackupPolicy {
 }
 
 func expandCDPBackup(v interface{}) *modelsV2.CdpBackupPolicy {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.CdpBackupPolicy{
@@ -250,17 +230,8 @@ func expandCDPBackup(v interface{}) *modelsV2.CdpBackupPolicy {
 }
 
 func expandStorageArraySnapshotBackup(v interface{}) *modelsV2.StorageArraySnapshotBackupPolicy {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.StorageArraySnapshotBackupPolicy{
@@ -269,17 +240,8 @@ func expandStorageArraySnapshotBackup(v interface{}) *modelsV2.StorageArraySnaps
 	}
 }
 func expandStorageArraySnapshotSchedule(v interface{}) *modelsV2.StorageArraySnapshotSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 
@@ -324,17 +286,8 @@ func expandStorageArraySnapshotSchedule(v interface{}) *modelsV2.StorageArraySna
 	return result
 }
 func expandIncrementalSchedule(v interface{}) *modelsV2.IncrementalSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 
@@ -394,17 +347,8 @@ func expandRunTimeouts(v interface{}) []*modelsV2.CancellationTimeoutParams {
 	return result
 }
 func expandFullSchedule(v interface{}) *modelsV2.FullSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	result := &modelsV2.FullSchedule{}
@@ -437,17 +381,8 @@ func expandFullSchedule(v interface{}) *modelsV2.FullSchedule {
 
 }
 func expandBmrSchedule(v interface{}) *modelsV2.BmrSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	result := &modelsV2.BmrSchedule{}
@@ -479,17 +414,8 @@ func expandBmrSchedule(v interface{}) *modelsV2.BmrSchedule {
 	return result
 }
 func expandLogSchedule(v interface{}) *modelsV2.LogSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	// Initialize the StorageArraySnapshotSchedule
@@ -513,17 +439,8 @@ func expandLogSchedule(v interface{}) *modelsV2.LogSchedule {
 }
 
 func expandMinuteSchedule(v interface{}) *modelsV2.MinuteSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.MinuteSchedule{
@@ -533,17 +450,8 @@ func expandMinuteSchedule(v interface{}) *modelsV2.MinuteSchedule {
 	}
 }
 func expandDaySchedule(v interface{}) *modelsV2.DaySchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.DaySchedule{
@@ -553,17 +461,8 @@ func expandDaySchedule(v interface{}) *modelsV2.DaySchedule {
 	}
 }
 func expandHourSchedule(v interface{}) *modelsV2.HourSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 
@@ -574,17 +473,8 @@ func expandHourSchedule(v interface{}) *modelsV2.HourSchedule {
 	}
 }
 func expandWeekSchedule(v interface{}) *modelsV2.WeekSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.WeekSchedule{
@@ -593,17 +483,8 @@ func expandWeekSchedule(v interface{}) *modelsV2.WeekSchedule {
 }
 
 func expandMonthSchedule(v interface{}) *modelsV2.MonthSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.MonthSchedule{
@@ -614,17 +495,8 @@ func expandMonthSchedule(v interface{}) *modelsV2.MonthSchedule {
 }
 
 func expandYearSchedule(v interface{}) *modelsV2.YearSchedule {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.YearSchedule{
@@ -633,17 +505,8 @@ func expandYearSchedule(v interface{}) *modelsV2.YearSchedule {
 }
 
 func expandRetention(v interface{}) *modelsV2.Retention {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.Retention{
@@ -654,17 +517,8 @@ func expandRetention(v interface{}) *modelsV2.Retention {
 }
 
 func expandCDPRetention(v interface{}) *modelsV2.CdpRetention {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.CdpRetention{
@@ -675,17 +529,8 @@ func expandCDPRetention(v interface{}) *modelsV2.CdpRetention {
 }
 
 func expandDataLockConfig(v interface{}) *modelsV2.DataLockConfig {
-	if v == nil {
-		return nil
-	}
-
-	list, ok := v.([]interface{})
-	if !ok || len(list) == 0 || list[0] == nil {
-		return nil
-	}
-
-	data, ok := list[0].(map[string]interface{})
-	if !ok {
+	data := getMapInterface(v)
+	if data==nil {
 		return nil
 	}
 	return &modelsV2.DataLockConfig{
