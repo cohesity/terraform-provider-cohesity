@@ -116,3 +116,130 @@ func initHttpClientInstance() *http.Client {
 		},
 	}
 }
+
+
+
+// PostWithModel performs a POST request using any struct as the request body.
+// It returns status code, response body bytes, and error (if any).
+func PostWithModel[T any](url string, token string, model T) ([]byte, int, error) {
+	payload, err := json.Marshal(model)
+	if err != nil {
+		return nil, -1, fmt.Errorf("failed to marshal request body: %w", err)
+	}
+
+	client := initHttpClientInstance()
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, -1, fmt.Errorf("failed to create request: %w", err)
+	}
+	// Add headers.
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, -1, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("failed to read response body: %v", err)
+		return nil, -1, err
+	}
+
+	return body, resp.StatusCode, nil
+}
+
+// PutWithModel performs a PUT request using any struct as the request body.
+// It returns status code, response body bytes, and error (if any).
+func PutWithModel[T any](url string, token string, model T) ([]byte, int, error) {
+	payload, err := json.Marshal(model)
+	if err != nil {
+		return nil, -1, fmt.Errorf("failed to marshal request body: %w", err)
+	}
+
+	client := initHttpClientInstance()
+
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, -1, fmt.Errorf("failed to create request: %w", err)
+	}
+	// Add headers.
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, -1, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("failed to read response body: %v", err)
+		return nil, resp.StatusCode, err
+	}
+	return body, resp.StatusCode, nil
+}
+
+func GetWithModel(url string, token string) ([]byte,int, error) {
+
+	client := initHttpClientInstance()
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, -1, fmt.Errorf("failed to create request: %w", err)
+	}
+	// Add headers.
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, -1, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("failed to read response body: %v", err)
+		return nil, resp.StatusCode, err
+	}
+
+	return body, resp.StatusCode, nil
+}
+func DeleteWithModel(url string, token string) ([]byte,int, error) {
+
+	client := initHttpClientInstance()
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return nil, -1, fmt.Errorf("failed to create request: %w", err)
+	}
+	// Add headers.
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, -1, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("failed to read response body: %v", err)
+		return nil, resp.StatusCode, err
+	}
+
+	return body, resp.StatusCode, nil
+}

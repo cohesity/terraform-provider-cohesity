@@ -1,23 +1,28 @@
 package cohesity
 
 import (
-	"errors"
+	"context"
 	"log"
 	"strconv"
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
 	"github.com/golang-collections/collections/queue"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/services"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 func resourceCohesityJobVMware() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceCohesityJobVMwareCreate,
-		Read:   resourceCohesityJobVMwareRead,
-		Delete: resourceCohesityJobVMwareDelete,
-		Update: resourceCohesityJobVMwareUpdate,
+		CreateContext: resourceCohesityJobVMwareCreate,
+		ReadContext:   resourceCohesityJobVMwareRead,
+		DeleteContext: resourceCohesityJobVMwareDelete,
+		UpdateContext: resourceCohesityJobVMwareUpdate,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -146,15 +151,18 @@ func parseGetSourceIDs(sources map[string]empty, sourceNode []interface{}) []int
 	}
 	return sourceIDs
 }
+type ProtectionJobRequestBody struct {
+	SourceIds                            *[]int64                                `json:"sourceIds,omitempty" form:"sourceIds,omitempty"`                                                       //Array of Protected Source Objects.
 
-func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+}
+func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	// authenticate with Cohesity cluster
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	var requestBody models.ProtectionJobRequestBody
 	var name = resourceData.Get("name").(string)
@@ -163,30 +171,34 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 	var incrementalSLA = int64(resourceData.Get("incremental_sla").(int))
 	var timezone = resourceData.Get("timezone").(string)
 	var protectionSourceID int64
+	clientV2, err := services.NewCohesityClientV2(cohesityConfig)
+
 
 	//get the policy id
 	log.Printf("[INFO] Get the protection policy id")
-	policy, err := client.ProtectionPolicies().GetProtectionPolicies(nil,
-		[]string{resourceData.Get("policy").(string)}, nil, nil, nil, nil)
+	policy, err := clientV2.GetProtectionPolicy(resourceData.Get("policy").(string))
+	// policy, err := client.ProtectionPolicies().GetProtectionPolicies(nil,
+		// []string{resourceData.Get("policy").(string)}, nil, nil, nil, nil)
 	if err != nil {
-		log.Printf(err.Error())
-		return errors.New("Error in getting the protection policy")
+		log.Printf("%s", err.Error())
+		return diag.Errorf("Error in getting the protection policy")
 	} else if err == nil && len(policy) == 0 {
-		return errors.New("Failed to find the protection policy on Cohesity cluster")
+		return diag.Errorf("Failed to find the protection policy on Cohesity cluster")
 	}
-	policyID := *policy[0].Id
+	policyID := *policy[0].ID
 
 	//get the storage domain id
 	log.Printf("[INFO] Get the storage domain id")
-	storageDomain, err := client.ViewBoxes().GetViewBoxes(nil, nil, nil,
-		[]string{resourceData.Get("storage_domain").(string)}, nil, nil, nil)
+	storageDomain, err := clientV2.GetStorageDomains(resourceData.Get("storage_domain").(string))
+	// storageDomain, err := client.ViewBoxes().GetViewBoxes(nil, nil, nil,
+	// 	[]string{resourceData.Get("storage_domain").(string)}, nil, nil, nil)
 	if err != nil {
-		log.Printf(err.Error())
-		return errors.New("Error in getting the storage domain")
+		log.Printf("%s", err.Error())
+		return diag.Errorf("Error in getting the storage domain")
 	} else if err == nil && len(storageDomain) == 0 {
-		return errors.New("Failed to find the storage domain on Cohesity cluster")
+		return diag.Errorf("Failed to find the storage domain on Cohesity cluster")
 	}
-	storageDomainID := *storageDomain[0].Id
+	storageDomainID := *storageDomain[0].ID
 
 	//get the protection source id
 	log.Printf("[INFO] Get the protection source id")
@@ -195,7 +207,7 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 			EnvironmentListProtectionSourcesRootNodes_KVMWARE}, nil)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Error in getting the protection source")
+		return diag.Errorf("Error in getting the protection source")
 	}
 	for _, source := range sources {
 		if *source.ProtectionSource.Name == protectionSource ||
@@ -204,7 +216,7 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 		}
 	}
 	if protectionSourceID == 0 {
-		return errors.New("Failed to find the protection source on Cohesity cluster")
+		return diag.Errorf("Failed to find the protection source on Cohesity cluster")
 	}
 
 	//backup specified vm's or enter vCenter
@@ -212,7 +224,7 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 		ListProtectionSources(&protectionSourceID, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to get the protection source")
+		return diag.Errorf("Failed to get the protection source")
 	}
 	log.Printf("[INFO] Set the source id's for the protection job")
 	if len(resourceData.Get("include").(*schema.Set).List()) == 0 {
@@ -228,7 +240,7 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 			Nodes)[0].(map[string]interface{})["nodes"].([]interface{})
 		includeSourceIDs := parseGetSourceIDs(includeSourceSet, n)
 		if len(resourceData.Get("include").(*schema.Set).List()) != len(includeSourceIDs) {
-			return errors.New("Failed to find all the included protection source objects")
+			return diag.Errorf("Failed to find all the included protection source objects")
 		}
 		requestBody.SourceIds = &includeSourceIDs
 	}
@@ -245,7 +257,7 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 			Nodes)[0].(map[string]interface{})["nodes"].([]interface{})
 		excludeSourceIDs := parseGetSourceIDs(excludeSourceSet, n)
 		if len(resourceData.Get("exclude").(*schema.Set).List()) != len(excludeSourceIDs) {
-			return errors.New("Failed to find all the excluded protection source objects")
+			return diag.Errorf("Failed to find all the excluded protection source objects")
 		}
 		requestBody.ExcludeSourceIds = &excludeSourceIDs
 	}
@@ -284,21 +296,21 @@ func resourceCohesityJobVMwareCreate(resourceData *schema.ResourceData, configMe
 
 	result, err := client.ProtectionJobs().CreateProtectionJob(&requestBody)
 	if err != nil {
-		log.Printf(err.Error())
-		return errors.New("Failed to create the protection job")
+		log.Printf("%s", err.Error())
+		return diag.Errorf("Failed to create the protection job")
 	}
 	resourceData.SetId(strconv.FormatInt(*result.Id, 10))
 	log.Printf("[INFO] Successfully created the protection job %s", name)
-	return resourceCohesityJobVMwareRead(resourceData, configMetaData)
+	return resourceCohesityJobVMwareRead(ctx,resourceData,configMetaData)
 }
 
-func resourceCohesityJobVMwareRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobVMwareRead(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		log.Printf("%s", err.Error())
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	//parse a decimal string of base 10 and converts into int64
 	sourceID, _ := strconv.ParseInt(resourceData.Id(), 10, 64)
@@ -312,13 +324,13 @@ func resourceCohesityJobVMwareRead(resourceData *schema.ResourceData, configMeta
 	return nil
 }
 
-func resourceCohesityJobVMwareDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobVMwareDelete(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
 	//parse a decimal string of base 10 and converts into int64
@@ -331,19 +343,19 @@ func resourceCohesityJobVMwareDelete(resourceData *schema.ResourceData, configMe
 	err = client.ProtectionJobs().DeleteProtectionJob(jobID, &deleteProtectionJobParam)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to delete the protection job")
+		return diag.Errorf("Failed to delete the protection job")
 	}
 	return nil
 }
 
-func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesityJobVMwareUpdate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	resourceData.Partial(true)
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	log.Printf("[INFO] Update VMware protection job")
 	var requestBody models.ProtectionJobRequestBody
@@ -364,7 +376,7 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 	requestBody.IncrementalProtectionSlaTimeMins = &incrementalSLA
 
 	if resourceData.HasChange("protection_source") {
-		return errors.New("Can't update the protection source in VMware protection job")
+		return diag.Errorf("Can't update the protection source in VMware protection job")
 	}
 	requestBody.ParentSourceId = result[0].ParentSourceId
 
@@ -390,9 +402,9 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 			[]string{resourceData.Get("policy").(string)}, nil, nil, nil, nil)
 		if err != nil {
 			log.Printf(err.Error())
-			return errors.New("Error in getting the protection policy")
+			return diag.Errorf("Error in getting the protection policy")
 		} else if err == nil && len(policy) == 0 {
-			return errors.New("Failed to find the protection policy on Cohesity cluster")
+			return diag.Errorf("Failed to find the protection policy on Cohesity cluster")
 		}
 		policyID := *policy[0].Id
 		requestBody.PolicyId = policyID
@@ -407,9 +419,9 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 			[]string{resourceData.Get("storage_domain").(string)}, nil, nil, nil)
 		if err != nil {
 			log.Printf(err.Error())
-			return errors.New("Error in getting the storage domain")
+			return diag.Errorf("Error in getting the storage domain")
 		} else if err == nil && len(storageDomain) == 0 {
-			return errors.New("Failed to find the storage domain on Cohesity cluster")
+			return diag.Errorf("Failed to find the storage domain on Cohesity cluster")
 		}
 		storageDomainID := *storageDomain[0].Id
 		requestBody.ViewBoxId = storageDomainID
@@ -421,7 +433,7 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 		ParentSourceId, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to get the protection source")
+		return diag.Errorf("Failed to get the protection source")
 	}
 
 	if resourceData.HasChange("include") {
@@ -439,7 +451,7 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 				Nodes)[0].(map[string]interface{})["nodes"].([]interface{})
 			includeSourceIDs := parseGetSourceIDs(includeSourceSet, n)
 			if len(resourceData.Get("include").(*schema.Set).List()) != len(includeSourceIDs) {
-				return errors.New("Failed to find all the included protection source objects")
+				return diag.Errorf("Failed to find all the included protection source objects")
 			}
 			requestBody.SourceIds = &includeSourceIDs
 		}
@@ -459,7 +471,7 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 				Nodes)[0].(map[string]interface{})["nodes"].([]interface{})
 			excludeSourceIDs := parseGetSourceIDs(excludeSourceSet, n)
 			if len(resourceData.Get("exclude").(*schema.Set).List()) != len(excludeSourceIDs) {
-				return errors.New("Failed to find all the excluded protection source objects")
+				return diag.Errorf("Failed to find all the excluded protection source objects")
 			}
 			requestBody.ExcludeSourceIds = &excludeSourceIDs
 		} else {
@@ -471,7 +483,7 @@ func resourceCohesityJobVMwareUpdate(resourceData *schema.ResourceData, configMe
 	_, err = client.ProtectionJobs().UpdateProtectionJob(&requestBody, *result[0].Id)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to update the VMware protection job")
+		return diag.Errorf("Failed to update the VMware protection job")
 	}
 	resourceData.Partial(false)
 	return nil

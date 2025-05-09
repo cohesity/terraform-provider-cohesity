@@ -1,6 +1,10 @@
 package services
 
 import (
+	"fmt"
+	"net/url"
+	"strings"
+
 	apiClientV2 "github.com/cohesity/go-sdk/v2/client"
 	"github.com/cohesity/go-sdk/v2/client/access_token"
 	"github.com/cohesity/go-sdk/v2/client/platform"
@@ -20,13 +24,13 @@ type CohesityClientV2 struct {
 
 func NewCohesityClientV2(config utils.Config) (*CohesityClientV2, error) {
 	client := GetClientV2(config.ClusterVIP)
-	bearerToken, err := GetAccessToken(config)
+	bearerTokenString, err := GetAccessToken(config)
 	if err != nil {
 		return nil, err
 	}
 	return &CohesityClientV2{
 		client:      client,
-		bearerToken: httptransport.BearerToken(bearerToken),
+		bearerToken: httptransport.BearerToken(bearerTokenString),
 	}, nil
 }
 func GetClientV2(clusterVip string) *apiClientV2.CohesityRESTAPI {
@@ -62,4 +66,31 @@ func GetAccessTokenV2(client *apiClientV2.CohesityRESTAPI, username, password, d
 
 func toStrPtr(variable string) *string {
 	return &variable
+}
+
+
+// NormalizeHTTPSAddress ensures the VIP has an https:// prefix and proper formatting
+func NormalizeHTTPSAddress(vip string) (string, error) {
+	original := vip
+
+	// If scheme is missing, prepend "//" to parse host and port correctly
+	if !strings.Contains(vip, "://") {
+		vip = "//" + vip
+	}
+
+	parsed, err := url.Parse(vip)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse VIP %q: %w", original, err)
+	}
+
+	host := parsed.Hostname()
+	port := parsed.Port()
+
+	// Default port is 443 for https
+	address := host
+	if port != "" && port != "443" {
+		address = fmt.Sprintf("%s:%s", host, port)
+	}
+
+	return fmt.Sprintf("https://%s", address), nil
 }

@@ -1,22 +1,26 @@
 package cohesity
 
 import (
-	"errors"
+	"context"
 	"log"
 	"strconv"
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
 func resourceCohesitySourceVMware() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceCohesitySourceVMwareCreate,
-		Read:   resourceCohesitySourceVMwareRead,
-		Delete: resourceCohesitySourceVMwareDelete,
-		Update: resourceCohesitySourceVMwareUpdate,
+		CreateContext: resourceCohesitySourceVMwareCreate,
+		ReadContext:   resourceCohesitySourceVMwareRead,
+		DeleteContext: resourceCohesitySourceVMwareDelete,
+		UpdateContext: resourceCohesitySourceVMwareUpdate,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"endpoint": {
 				Type:     schema.TypeString,
@@ -102,13 +106,13 @@ func resourceCohesitySourceVMware() *schema.Resource {
 	}
 }
 
-func resourceCohesitySourceVMwareCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesitySourceVMwareCreate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
 	var endpoint = resourceData.Get("endpoint").(string)
@@ -166,20 +170,20 @@ func resourceCohesitySourceVMwareCreate(resourceData *schema.ResourceData, confi
 
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to register Cohesity protection source")
+		return diag.Errorf("Failed to register Cohesity protection source")
 	}
 	resourceData.SetId(strconv.FormatInt(*result.Id, 10))
 	log.Printf("[INFO] Successfully registered VMware protection source %s", endpoint)
-	return resourceCohesitySourceVMwareRead(resourceData, configMetaData)
+	return resourceCohesitySourceVMwareRead(ctx, resourceData, configMetaData)
 }
 
-func resourceCohesitySourceVMwareRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesitySourceVMwareRead(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	var environmentType = []models.EnvironmentListProtectionSourcesEnum{models.
 		EnvironmentListProtectionSources_KVMWARE}
@@ -202,13 +206,13 @@ func resourceCohesitySourceVMwareRead(resourceData *schema.ResourceData, configM
 	return nil
 }
 
-func resourceCohesitySourceVMwareDelete(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesitySourceVMwareDelete(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
 	//parse a decimal string of base 10 and converts into int64
@@ -220,25 +224,25 @@ func resourceCohesitySourceVMwareDelete(resourceData *schema.ResourceData, confi
 	err = client.ProtectionSources().DeleteUnregisterProtectionSource(sourceID)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to unregister VMware protection source")
+		return diag.Errorf("Failed to unregister VMware protection source")
 	}
 	log.Printf("[INFO] Successfully unregistered the VMware protection source %s",
 		resourceData.Get("endpoint").(string))
 	return nil
 }
 
-func resourceCohesitySourceVMwareUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
+func resourceCohesitySourceVMwareUpdate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	resourceData.Partial(true)
 	var cohesityConfig = configMetaData.(utils.Config)
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to authenticate with Cohesity")
+		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
 	if resourceData.HasChange("vmwareType") {
-		return errors.New("Can't update vmware type of the protection source")
+		return diag.Errorf("Can't update vmware type of the protection source")
 	}
 
 	var updatedParameters models.UpdateProtectionSourceParameters
@@ -295,7 +299,7 @@ func resourceCohesitySourceVMwareUpdate(resourceData *schema.ResourceData, confi
 
 	if err != nil {
 		log.Printf(err.Error())
-		return errors.New("Failed to update VMware protection source")
+		return diag.Errorf("Failed to update VMware protection source")
 	}
 	resourceData.Partial(false)
 	return nil
