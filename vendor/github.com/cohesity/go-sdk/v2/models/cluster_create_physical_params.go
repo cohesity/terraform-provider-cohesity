@@ -22,15 +22,73 @@ import (
 // swagger:model ClusterCreatePhysicalParams
 type ClusterCreatePhysicalParams struct {
 
+	// Specifies if API based GET should be enabled for cluster destroy params
+	AllowAPIBasedFetch *bool `json:"allowApiBasedFetch,omitempty"`
+
+	// Specifies the IP for apps subnet
+	AppsSubnetIP *string `json:"appsSubnetIp,omitempty"`
+
+	// Specifies the IPv6 for apps subnet
+	AppsSubnetIPV6 *string `json:"appsSubnetIpV6,omitempty"`
+
+	// Specifies the Mask for apps subnet
+	AppsSubnetMask *string `json:"appsSubnetMask,omitempty"`
+
+	// Specifies the MaskV6 for apps subnet
+	AppsSubnetMaskV6 *string `json:"appsSubnetMaskV6,omitempty"`
+
+	// Specifies HMAC secret key that will be used to validate OTP used for destroy request
+	ClusterDestroyHmacKey *string `json:"clusterDestroyHmacKey,omitempty"`
+
+	// List of cluster subnet groups this cluster should be configured with
+	ClusterSubnetGroups []*NodeGroup `json:"clusterSubnetGroups"`
+
+	// Specifies if cluster destroy op is enabled on this cluster
+	EnableClusterDestroy *bool `json:"enableClusterDestroy,omitempty"`
+
+	// Specifies the encryption configuration parameters
+	EncryptionConfig *EncryptionConfigurationParams `json:"encryptionConfig,omitempty"`
+
+	// Specifies IP preference
+	IPPreference *int32 `json:"ipPreference,omitempty"`
+
+	// Specifies the IPMI configuration parameters
+	IpmiConfig *IpmiConfigurationParams `json:"ipmiConfig,omitempty"`
+
+	// Specifies the metadata fault tolerance.
+	MetadataFaultTolerance *int32 `json:"metadataFaultTolerance,omitempty"`
+
+	// Configuration of the nodes.
+	NodeConfigs []*NodeConfigParams `json:"nodeConfigs,omitempty"`
+
 	// nodes
 	// Min Items: 1
 	// Unique: true
 	Nodes []*ClusterCreateNodeParams `json:"nodes"`
+
+	// Specifies Trust Domain used for Service Identity
+	TrustDomain *string `json:"trustDomain,omitempty"`
 }
 
 // Validate validates this cluster create physical params
 func (m *ClusterCreatePhysicalParams) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateClusterSubnetGroups(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateEncryptionConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateIpmiConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNodeConfigs(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateNodes(formats); err != nil {
 		res = append(res, err)
@@ -39,6 +97,96 @@ func (m *ClusterCreatePhysicalParams) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) validateClusterSubnetGroups(formats strfmt.Registry) error {
+	if swag.IsZero(m.ClusterSubnetGroups) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.ClusterSubnetGroups); i++ {
+		if swag.IsZero(m.ClusterSubnetGroups[i]) { // not required
+			continue
+		}
+
+		if m.ClusterSubnetGroups[i] != nil {
+			if err := m.ClusterSubnetGroups[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("clusterSubnetGroups" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("clusterSubnetGroups" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) validateEncryptionConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.EncryptionConfig) { // not required
+		return nil
+	}
+
+	if m.EncryptionConfig != nil {
+		if err := m.EncryptionConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("encryptionConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("encryptionConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) validateIpmiConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.IpmiConfig) { // not required
+		return nil
+	}
+
+	if m.IpmiConfig != nil {
+		if err := m.IpmiConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ipmiConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ipmiConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) validateNodeConfigs(formats strfmt.Registry) error {
+	if swag.IsZero(m.NodeConfigs) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.NodeConfigs); i++ {
+		if swag.IsZero(m.NodeConfigs[i]) { // not required
+			continue
+		}
+
+		if m.NodeConfigs[i] != nil {
+			if err := m.NodeConfigs[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 
@@ -82,6 +230,22 @@ func (m *ClusterCreatePhysicalParams) validateNodes(formats strfmt.Registry) err
 func (m *ClusterCreatePhysicalParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateClusterSubnetGroups(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateEncryptionConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateIpmiConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNodeConfigs(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateNodes(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -89,6 +253,98 @@ func (m *ClusterCreatePhysicalParams) ContextValidate(ctx context.Context, forma
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) contextValidateClusterSubnetGroups(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.ClusterSubnetGroups); i++ {
+
+		if m.ClusterSubnetGroups[i] != nil {
+
+			if swag.IsZero(m.ClusterSubnetGroups[i]) { // not required
+				return nil
+			}
+
+			if err := m.ClusterSubnetGroups[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("clusterSubnetGroups" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("clusterSubnetGroups" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) contextValidateEncryptionConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.EncryptionConfig != nil {
+
+		if swag.IsZero(m.EncryptionConfig) { // not required
+			return nil
+		}
+
+		if err := m.EncryptionConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("encryptionConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("encryptionConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) contextValidateIpmiConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.IpmiConfig != nil {
+
+		if swag.IsZero(m.IpmiConfig) { // not required
+			return nil
+		}
+
+		if err := m.IpmiConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("ipmiConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("ipmiConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterCreatePhysicalParams) contextValidateNodeConfigs(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.NodeConfigs); i++ {
+
+		if m.NodeConfigs[i] != nil {
+
+			if swag.IsZero(m.NodeConfigs[i]) { // not required
+				return nil
+			}
+
+			if err := m.NodeConfigs[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("nodeConfigs" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

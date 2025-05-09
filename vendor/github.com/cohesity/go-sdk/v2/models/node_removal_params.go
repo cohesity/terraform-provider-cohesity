@@ -30,6 +30,9 @@ type NodeRemovalParams struct {
 
 	// Specifies whether request is for pre-check validations only
 	IsValidateOnly *bool `json:"isValidateOnly,omitempty"`
+
+	// Specifies whether request is for clearing pre-check result only
+	IsClearPreCheckResultOnly *bool `json:"isClearPreCheckResultOnly,omitempty"`
 }
 
 // Validate validates this node removal params

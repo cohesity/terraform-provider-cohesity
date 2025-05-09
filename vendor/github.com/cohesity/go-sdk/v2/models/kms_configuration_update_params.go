@@ -21,9 +21,6 @@ type KmsConfigurationUpdateParams struct {
 	// AWS KMS configuration.
 	AwsKmsParams *AwsKmsConfigurationUpdateParams `json:"awsKmsParams,omitempty"`
 
-	// IBM KMS configuration.
-	IbmKmsParams *IbmKmsConfigurationUpdateParams `json:"ibmKmsParams,omitempty"`
-
 	KmsConfigurationAddUpdateParams
 }
 
@@ -32,16 +29,12 @@ func (m *KmsConfigurationUpdateParams) UnmarshalJSON(raw []byte) error {
 	// AO0
 	var dataAO0 struct {
 		AwsKmsParams *AwsKmsConfigurationUpdateParams `json:"awsKmsParams,omitempty"`
-
-		IbmKmsParams *IbmKmsConfigurationUpdateParams `json:"ibmKmsParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO0); err != nil {
 		return err
 	}
 
 	m.AwsKmsParams = dataAO0.AwsKmsParams
-
-	m.IbmKmsParams = dataAO0.IbmKmsParams
 
 	// AO1
 	var aO1 KmsConfigurationAddUpdateParams
@@ -59,13 +52,9 @@ func (m KmsConfigurationUpdateParams) MarshalJSON() ([]byte, error) {
 
 	var dataAO0 struct {
 		AwsKmsParams *AwsKmsConfigurationUpdateParams `json:"awsKmsParams,omitempty"`
-
-		IbmKmsParams *IbmKmsConfigurationUpdateParams `json:"ibmKmsParams,omitempty"`
 	}
 
 	dataAO0.AwsKmsParams = m.AwsKmsParams
-
-	dataAO0.IbmKmsParams = m.IbmKmsParams
 
 	jsonDataAO0, errAO0 := swag.WriteJSON(dataAO0)
 	if errAO0 != nil {
@@ -86,10 +75,6 @@ func (m *KmsConfigurationUpdateParams) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAwsKmsParams(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateIbmKmsParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -124,35 +109,11 @@ func (m *KmsConfigurationUpdateParams) validateAwsKmsParams(formats strfmt.Regis
 	return nil
 }
 
-func (m *KmsConfigurationUpdateParams) validateIbmKmsParams(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.IbmKmsParams) { // not required
-		return nil
-	}
-
-	if m.IbmKmsParams != nil {
-		if err := m.IbmKmsParams.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("ibmKmsParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("ibmKmsParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 // ContextValidate validate this kms configuration update params based on the context it is used
 func (m *KmsConfigurationUpdateParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateAwsKmsParams(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateIbmKmsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -180,27 +141,6 @@ func (m *KmsConfigurationUpdateParams) contextValidateAwsKmsParams(ctx context.C
 				return ve.ValidateName("awsKmsParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("awsKmsParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *KmsConfigurationUpdateParams) contextValidateIbmKmsParams(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.IbmKmsParams != nil {
-
-		if swag.IsZero(m.IbmKmsParams) { // not required
-			return nil
-		}
-
-		if err := m.IbmKmsParams.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("ibmKmsParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("ibmKmsParams")
 			}
 			return err
 		}

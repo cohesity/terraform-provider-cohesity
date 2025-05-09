@@ -62,8 +62,6 @@ type ClientService interface {
 
 	GetConnectionsUpgradeConfig(params *GetConnectionsUpgradeConfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetConnectionsUpgradeConfigOK, error)
 
-	GetDataSourceConnectionConnectivityEndpoints(params *GetDataSourceConnectionConnectivityEndpointsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetDataSourceConnectionConnectivityEndpointsOK, error)
-
 	GetDataSourceConnections(params *GetDataSourceConnectionsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetDataSourceConnectionsOK, error)
 
 	PatchDataSourceConnection(params *PatchDataSourceConnectionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchDataSourceConnectionOK, error)
@@ -232,46 +230,6 @@ func (a *Client) GetConnectionsUpgradeConfig(params *GetConnectionsUpgradeConfig
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetConnectionsUpgradeConfigDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-GetDataSourceConnectionConnectivityEndpoints returns connectivity endpoints for data source connections
-
-**Privileges:** ```DATA_SOURCE_CONNECTION_VIEW``` <br><br>Returns the set of endpoints that a data-source connector, connected to the cluster using the connection needs connectivity to. If no port is specified for an endpoint then default HTTPS port is used.
-*/
-func (a *Client) GetDataSourceConnectionConnectivityEndpoints(params *GetDataSourceConnectionConnectivityEndpointsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetDataSourceConnectionConnectivityEndpointsOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDataSourceConnectionConnectivityEndpointsParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "GetDataSourceConnectionConnectivityEndpoints",
-		Method:             "GET",
-		PathPattern:        "/data-source-connections/connectivity-endpoints",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &GetDataSourceConnectionConnectivityEndpointsReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetDataSourceConnectionConnectivityEndpointsOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*GetDataSourceConnectionConnectivityEndpointsDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

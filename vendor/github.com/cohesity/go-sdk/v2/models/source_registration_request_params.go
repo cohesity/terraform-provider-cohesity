@@ -89,9 +89,6 @@ type SourceRegistrationRequestParams struct {
 
 	// Specifies the parameters to register a MongoDB Ops Manager Source.
 	MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
-
-	// Specifies the parameters to register an Kubernetes source.
-	KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -150,8 +147,6 @@ func (m *SourceRegistrationRequestParams) UnmarshalJSON(raw []byte) error {
 		ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
 
 		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
-
-		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -202,8 +197,6 @@ func (m *SourceRegistrationRequestParams) UnmarshalJSON(raw []byte) error {
 	m.ExperimentalAdapterParams = dataAO1.ExperimentalAdapterParams
 
 	m.MongodbOpsParams = dataAO1.MongodbOpsParams
-
-	m.KubernetesParams = dataAO1.KubernetesParams
 
 	return nil
 }
@@ -263,8 +256,6 @@ func (m SourceRegistrationRequestParams) MarshalJSON() ([]byte, error) {
 		ExperimentalAdapterParams *ExperimentalAdapterSourceRegistrationParams `json:"experimentalAdapterParams,omitempty"`
 
 		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
-
-		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 
 	dataAO1.VmwareParams = m.VmwareParams
@@ -312,8 +303,6 @@ func (m SourceRegistrationRequestParams) MarshalJSON() ([]byte, error) {
 	dataAO1.ExperimentalAdapterParams = m.ExperimentalAdapterParams
 
 	dataAO1.MongodbOpsParams = m.MongodbOpsParams
-
-	dataAO1.KubernetesParams = m.KubernetesParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -421,10 +410,6 @@ func (m *SourceRegistrationRequestParams) Validate(formats strfmt.Registry) erro
 	}
 
 	if err := m.validateMongodbOpsParams(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -894,26 +879,6 @@ func (m *SourceRegistrationRequestParams) validateMongodbOpsParams(formats strfm
 	return nil
 }
 
-func (m *SourceRegistrationRequestParams) validateKubernetesParams(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.KubernetesParams) { // not required
-		return nil
-	}
-
-	if m.KubernetesParams != nil {
-		if err := m.KubernetesParams.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("kubernetesParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("kubernetesParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 // ContextValidate validate this source registration request params based on the context it is used
 func (m *SourceRegistrationRequestParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -1012,10 +977,6 @@ func (m *SourceRegistrationRequestParams) ContextValidate(ctx context.Context, f
 	}
 
 	if err := m.contextValidateMongodbOpsParams(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1500,27 +1461,6 @@ func (m *SourceRegistrationRequestParams) contextValidateMongodbOpsParams(ctx co
 				return ve.ValidateName("mongodbOpsParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("mongodbOpsParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *SourceRegistrationRequestParams) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.KubernetesParams != nil {
-
-		if swag.IsZero(m.KubernetesParams) { // not required
-			return nil
-		}
-
-		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("kubernetesParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

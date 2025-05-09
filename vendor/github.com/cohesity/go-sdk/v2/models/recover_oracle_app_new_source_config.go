@@ -22,13 +22,13 @@ import (
 // swagger:model RecoverOracleAppNewSourceConfig
 type RecoverOracleAppNewSourceConfig struct {
 
-	// Specifies the source id of target host where databases will be recovered. This source id can be a physical host or virtual machine.
-	// Required: true
-	Host *RecoveryObjectIdentifier `json:"host"`
-
 	// Specifies if recovery target is a database or a view.
 	// Enum: ["RecoverDatabase","RecoverView"]
 	RecoveryTarget *string `json:"recoveryTarget,omitempty"`
+
+	// Specifies the source id of target host where databases will be recovered. This source id can be a physical host or virtual machine.
+	// Required: true
+	Host *RecoveryObjectIdentifier `json:"host"`
 
 	// Specifies recovery parameters when recovering to a database
 	RecoverDatabaseParams *RecoverOracleNewTargetDatabaseConfig `json:"recoverDatabaseParams,omitempty"`
@@ -41,11 +41,11 @@ type RecoverOracleAppNewSourceConfig struct {
 func (m *RecoverOracleAppNewSourceConfig) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateHost(formats); err != nil {
+	if err := m.validateRecoveryTarget(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateRecoveryTarget(formats); err != nil {
+	if err := m.validateHost(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -60,26 +60,6 @@ func (m *RecoverOracleAppNewSourceConfig) Validate(formats strfmt.Registry) erro
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *RecoverOracleAppNewSourceConfig) validateHost(formats strfmt.Registry) error {
-
-	if err := validate.Required("host", "body", m.Host); err != nil {
-		return err
-	}
-
-	if m.Host != nil {
-		if err := m.Host.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("host")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("host")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -120,6 +100,26 @@ func (m *RecoverOracleAppNewSourceConfig) validateRecoveryTarget(formats strfmt.
 	// value enum
 	if err := m.validateRecoveryTargetEnum("recoveryTarget", "body", *m.RecoveryTarget); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *RecoverOracleAppNewSourceConfig) validateHost(formats strfmt.Registry) error {
+
+	if err := validate.Required("host", "body", m.Host); err != nil {
+		return err
+	}
+
+	if m.Host != nil {
+		if err := m.Host.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("host")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("host")
+			}
+			return err
+		}
 	}
 
 	return nil

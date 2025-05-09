@@ -92,9 +92,6 @@ type SourceRegistration struct {
 
 	// Specifies the parameters to register a MongoDB Ops Manager Source.
 	MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
-
-	// Specifies the parameters to register an Kubernetes source.
-	KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -155,8 +152,6 @@ func (m *SourceRegistration) UnmarshalJSON(raw []byte) error {
 		ExternalMetadata *EntityExternalMetadata `json:"externalMetadata,omitempty"`
 
 		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
-
-		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -209,8 +204,6 @@ func (m *SourceRegistration) UnmarshalJSON(raw []byte) error {
 	m.ExternalMetadata = dataAO1.ExternalMetadata
 
 	m.MongodbOpsParams = dataAO1.MongodbOpsParams
-
-	m.KubernetesParams = dataAO1.KubernetesParams
 
 	return nil
 }
@@ -272,8 +265,6 @@ func (m SourceRegistration) MarshalJSON() ([]byte, error) {
 		ExternalMetadata *EntityExternalMetadata `json:"externalMetadata,omitempty"`
 
 		MongodbOpsParams *MongoDBOpsManagerRegistrationParams `json:"mongodbOpsParams,omitempty"`
-
-		KubernetesParams *KubernetesSourceRegistrationParams `json:"kubernetesParams,omitempty"`
 	}
 
 	dataAO1.VmwareParams = m.VmwareParams
@@ -323,8 +314,6 @@ func (m SourceRegistration) MarshalJSON() ([]byte, error) {
 	dataAO1.ExternalMetadata = m.ExternalMetadata
 
 	dataAO1.MongodbOpsParams = m.MongodbOpsParams
-
-	dataAO1.KubernetesParams = m.KubernetesParams
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {
@@ -436,10 +425,6 @@ func (m *SourceRegistration) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateMongodbOpsParams(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateKubernetesParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -929,26 +914,6 @@ func (m *SourceRegistration) validateMongodbOpsParams(formats strfmt.Registry) e
 	return nil
 }
 
-func (m *SourceRegistration) validateKubernetesParams(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.KubernetesParams) { // not required
-		return nil
-	}
-
-	if m.KubernetesParams != nil {
-		if err := m.KubernetesParams.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("kubernetesParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("kubernetesParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 // ContextValidate validate this source registration based on the context it is used
 func (m *SourceRegistration) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -1051,10 +1016,6 @@ func (m *SourceRegistration) ContextValidate(ctx context.Context, formats strfmt
 	}
 
 	if err := m.contextValidateMongodbOpsParams(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateKubernetesParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -1560,27 +1521,6 @@ func (m *SourceRegistration) contextValidateMongodbOpsParams(ctx context.Context
 				return ve.ValidateName("mongodbOpsParams")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("mongodbOpsParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *SourceRegistration) contextValidateKubernetesParams(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.KubernetesParams != nil {
-
-		if swag.IsZero(m.KubernetesParams) { // not required
-			return nil
-		}
-
-		if err := m.KubernetesParams.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("kubernetesParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("kubernetesParams")
 			}
 			return err
 		}

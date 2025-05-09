@@ -28,7 +28,10 @@ type NodeGroup struct {
 	// Node Ids
 	//
 	// List of Node Ids that are part of this node group.
-	NodeIds []int64 `json:"node-ids"`
+	NodeIds []int64 `json:"nodeIds"`
+
+	// Node ips for node group
+	NodeIps []string `json:"nodeIps"`
 
 	// Id of the node group.
 	ID *int32 `json:"id,omitempty"`

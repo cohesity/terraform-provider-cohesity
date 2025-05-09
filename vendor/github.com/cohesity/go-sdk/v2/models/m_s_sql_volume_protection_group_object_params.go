@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -32,7 +31,6 @@ type MSSQLVolumeProtectionGroupObjectParams struct {
 
 	// Specifies the type of source being protected.
 	// Read Only: true
-	// Enum: ["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]
 	SourceType *string `json:"sourceType,omitempty"`
 }
 
@@ -41,10 +39,6 @@ func (m *MSSQLVolumeProtectionGroupObjectParams) Validate(formats strfmt.Registr
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSourceType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,222 +51,6 @@ func (m *MSSQLVolumeProtectionGroupObjectParams) Validate(formats strfmt.Registr
 func (m *MSSQLVolumeProtectionGroupObjectParams) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-var mSSqlVolumeProtectionGroupObjectParamsTypeSourceTypePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["kVMware","kHyperV","kVCD","kSQL","kView","kRemoteAdapter","kPhysical","kPure","kIbmFlashSystem","kAzure","kNetapp","kGenericNas","kAcropolis","kIsilon","kKVM","kAWS","kAWSNative","kAwsS3","kAWSSnapshotManager","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsRDSPostgresBackup","kAwsRDSPostgres","kAwsAuroraPostgres","kAwsDynamoDB","kAzureNative","kAzureSQL","kAzureEntraID","kAzureSnapshotManager","kExchange","kOracle","kGCP","kFlashBlade","kO365","kHyperFlex","kAD","kGPFS","kKubernetes","kNimble","kElastifile","kCassandra","kMongoDB","kCouchbase","kHdfs","kHive","kHBase","kUDA","kSAPHANA","kO365Sharepoint","kO365PublicFolders","kO365Teams","kO365Group","kO365Exchange","kO365OneDrive","kSfdc","kO365ExchangeCSM","kO365OneDriveCSM","kO365SharepointCSM","kExperimentalAdapter","kMongoDBPhysical"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		mSSqlVolumeProtectionGroupObjectParamsTypeSourceTypePropEnum = append(mSSqlVolumeProtectionGroupObjectParamsTypeSourceTypePropEnum, v)
-	}
-}
-
-const (
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKVMware captures enum value "kVMware"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKVMware string = "kVMware"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHyperV captures enum value "kHyperV"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHyperV string = "kHyperV"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKVCD captures enum value "kVCD"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKVCD string = "kVCD"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKSQL captures enum value "kSQL"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKSQL string = "kSQL"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKView captures enum value "kView"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKView string = "kView"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKRemoteAdapter captures enum value "kRemoteAdapter"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKRemoteAdapter string = "kRemoteAdapter"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKPhysical captures enum value "kPhysical"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKPhysical string = "kPhysical"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKPure captures enum value "kPure"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKPure string = "kPure"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKIbmFlashSystem captures enum value "kIbmFlashSystem"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKIbmFlashSystem string = "kIbmFlashSystem"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzure captures enum value "kAzure"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzure string = "kAzure"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKNetapp captures enum value "kNetapp"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKNetapp string = "kNetapp"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKGenericNas captures enum value "kGenericNas"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKGenericNas string = "kGenericNas"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAcropolis captures enum value "kAcropolis"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAcropolis string = "kAcropolis"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKIsilon captures enum value "kIsilon"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKIsilon string = "kIsilon"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKKVM captures enum value "kKVM"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKKVM string = "kKVM"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAWS captures enum value "kAWS"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAWS string = "kAWS"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAWSNative captures enum value "kAWSNative"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAWSNative string = "kAWSNative"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsS3 captures enum value "kAwsS3"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsS3 string = "kAwsS3"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAWSSnapshotManager captures enum value "kAWSSnapshotManager"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAWSSnapshotManager string = "kAWSSnapshotManager"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKRDSSnapshotManager captures enum value "kRDSSnapshotManager"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKRDSSnapshotManager string = "kRDSSnapshotManager"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAuroraSnapshotManager captures enum value "kAuroraSnapshotManager"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAuroraSnapshotManager string = "kAuroraSnapshotManager"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgresBackup captures enum value "kAwsRDSPostgresBackup"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgresBackup string = "kAwsRDSPostgresBackup"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgres captures enum value "kAwsRDSPostgres"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsRDSPostgres string = "kAwsRDSPostgres"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsAuroraPostgres captures enum value "kAwsAuroraPostgres"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsAuroraPostgres string = "kAwsAuroraPostgres"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsDynamoDB captures enum value "kAwsDynamoDB"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAwsDynamoDB string = "kAwsDynamoDB"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureNative captures enum value "kAzureNative"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureNative string = "kAzureNative"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureSQL captures enum value "kAzureSQL"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureSQL string = "kAzureSQL"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureEntraID captures enum value "kAzureEntraID"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureEntraID string = "kAzureEntraID"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureSnapshotManager captures enum value "kAzureSnapshotManager"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAzureSnapshotManager string = "kAzureSnapshotManager"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKExchange captures enum value "kExchange"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKExchange string = "kExchange"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKOracle captures enum value "kOracle"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKOracle string = "kOracle"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKGCP captures enum value "kGCP"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKGCP string = "kGCP"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKFlashBlade captures enum value "kFlashBlade"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKFlashBlade string = "kFlashBlade"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365 captures enum value "kO365"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365 string = "kO365"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHyperFlex captures enum value "kHyperFlex"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHyperFlex string = "kHyperFlex"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAD captures enum value "kAD"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKAD string = "kAD"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKGPFS captures enum value "kGPFS"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKGPFS string = "kGPFS"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKKubernetes captures enum value "kKubernetes"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKKubernetes string = "kKubernetes"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKNimble captures enum value "kNimble"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKNimble string = "kNimble"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKElastifile captures enum value "kElastifile"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKElastifile string = "kElastifile"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKCassandra captures enum value "kCassandra"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKCassandra string = "kCassandra"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKMongoDB captures enum value "kMongoDB"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKMongoDB string = "kMongoDB"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKCouchbase captures enum value "kCouchbase"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKCouchbase string = "kCouchbase"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHdfs captures enum value "kHdfs"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHdfs string = "kHdfs"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHive captures enum value "kHive"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHive string = "kHive"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHBase captures enum value "kHBase"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKHBase string = "kHBase"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKUDA captures enum value "kUDA"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKUDA string = "kUDA"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKSAPHANA captures enum value "kSAPHANA"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKSAPHANA string = "kSAPHANA"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Sharepoint captures enum value "kO365Sharepoint"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Sharepoint string = "kO365Sharepoint"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365PublicFolders captures enum value "kO365PublicFolders"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365PublicFolders string = "kO365PublicFolders"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Teams captures enum value "kO365Teams"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Teams string = "kO365Teams"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Group captures enum value "kO365Group"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Group string = "kO365Group"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Exchange captures enum value "kO365Exchange"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365Exchange string = "kO365Exchange"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365OneDrive captures enum value "kO365OneDrive"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365OneDrive string = "kO365OneDrive"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKSfdc captures enum value "kSfdc"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKSfdc string = "kSfdc"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365ExchangeCSM captures enum value "kO365ExchangeCSM"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365ExchangeCSM string = "kO365ExchangeCSM"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365OneDriveCSM captures enum value "kO365OneDriveCSM"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365OneDriveCSM string = "kO365OneDriveCSM"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365SharepointCSM captures enum value "kO365SharepointCSM"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKO365SharepointCSM string = "kO365SharepointCSM"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKExperimentalAdapter captures enum value "kExperimentalAdapter"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKExperimentalAdapter string = "kExperimentalAdapter"
-
-	// MSSQLVolumeProtectionGroupObjectParamsSourceTypeKMongoDBPhysical captures enum value "kMongoDBPhysical"
-	MSSQLVolumeProtectionGroupObjectParamsSourceTypeKMongoDBPhysical string = "kMongoDBPhysical"
-)
-
-// prop value enum
-func (m *MSSQLVolumeProtectionGroupObjectParams) validateSourceTypeEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, mSSqlVolumeProtectionGroupObjectParamsTypeSourceTypePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *MSSQLVolumeProtectionGroupObjectParams) validateSourceType(formats strfmt.Registry) error {
-	if swag.IsZero(m.SourceType) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validateSourceTypeEnum("sourceType", "body", *m.SourceType); err != nil {
 		return err
 	}
 

@@ -115,6 +115,10 @@ type Email struct {
 	// Enum: ["NotStarted","InProgress","Completed","WaitingOnOthers","Deferred"]
 	TaskStatus *string `json:"taskStatus,omitempty"`
 
+	// Specifies which folder root the email belongs to.
+	// Enum: ["MsgFolderRoot","ArchiveMsgFolderRoot","RecoverableItemsFolderRoot","ArchiveRecoverableItemsFolderRoot"]
+	FolderRootType *string `json:"folderRootType,omitempty"`
+
 	// "Specifies the Protection Group id protecting the mailbox."
 	ProtectionGroupID *string `json:"protectionGroupId,omitempty"`
 
@@ -190,6 +194,8 @@ func (m *Email) UnmarshalJSON(raw []byte) error {
 
 		TaskStatus *string `json:"taskStatus,omitempty"`
 
+		FolderRootType *string `json:"folderRootType,omitempty"`
+
 		ProtectionGroupID *string `json:"protectionGroupId,omitempty"`
 
 		ProtectionGroupName *string `json:"protectionGroupName,omitempty"`
@@ -255,6 +261,8 @@ func (m *Email) UnmarshalJSON(raw []byte) error {
 	m.TaskCompletionDateTimeSecs = dataAO0.TaskCompletionDateTimeSecs
 
 	m.TaskStatus = dataAO0.TaskStatus
+
+	m.FolderRootType = dataAO0.FolderRootType
 
 	m.ProtectionGroupID = dataAO0.ProtectionGroupID
 
@@ -333,6 +341,8 @@ func (m Email) MarshalJSON() ([]byte, error) {
 
 		TaskStatus *string `json:"taskStatus,omitempty"`
 
+		FolderRootType *string `json:"folderRootType,omitempty"`
+
 		ProtectionGroupID *string `json:"protectionGroupId,omitempty"`
 
 		ProtectionGroupName *string `json:"protectionGroupName,omitempty"`
@@ -396,6 +406,8 @@ func (m Email) MarshalJSON() ([]byte, error) {
 
 	dataAO0.TaskStatus = m.TaskStatus
 
+	dataAO0.FolderRootType = m.FolderRootType
+
 	dataAO0.ProtectionGroupID = m.ProtectionGroupID
 
 	dataAO0.ProtectionGroupName = m.ProtectionGroupName
@@ -431,6 +443,10 @@ func (m *Email) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateTaskStatus(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFolderRootType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -527,6 +543,40 @@ func (m *Email) validateTaskStatus(formats strfmt.Registry) error {
 
 	// value enum
 	if err := m.validateTaskStatusEnum("taskStatus", "body", *m.TaskStatus); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var emailTypeFolderRootTypePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["MsgFolderRoot","ArchiveMsgFolderRoot","RecoverableItemsFolderRoot","ArchiveRecoverableItemsFolderRoot"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		emailTypeFolderRootTypePropEnum = append(emailTypeFolderRootTypePropEnum, v)
+	}
+}
+
+// property enum
+func (m *Email) validateFolderRootTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, emailTypeFolderRootTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Email) validateFolderRootType(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.FolderRootType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateFolderRootTypeEnum("folderRootType", "body", *m.FolderRootType); err != nil {
 		return err
 	}
 

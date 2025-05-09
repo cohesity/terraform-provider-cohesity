@@ -7,12 +7,10 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
 // OracleObjectEntityParams Object details for Oracle.
@@ -25,11 +23,6 @@ type OracleObjectEntityParams struct {
 
 	// Specifies the host information for the Oracle object.
 	HostInfo *HostInformation `json:"hostInfo,omitempty"`
-
-	// Specifies the type of Oracle RMAN backup type.
-	// Read Only: true
-	// Enum: ["kImageCopy","kBackupSets","kSbt"]
-	RmanBackupType *string `json:"rmanBackupType,omitempty"`
 }
 
 // Validate validates this oracle object entity params
@@ -41,10 +34,6 @@ func (m *OracleObjectEntityParams) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateHostInfo(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateRmanBackupType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -92,51 +81,6 @@ func (m *OracleObjectEntityParams) validateHostInfo(formats strfmt.Registry) err
 	return nil
 }
 
-var oracleObjectEntityParamsTypeRmanBackupTypePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["kImageCopy","kBackupSets","kSbt"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		oracleObjectEntityParamsTypeRmanBackupTypePropEnum = append(oracleObjectEntityParamsTypeRmanBackupTypePropEnum, v)
-	}
-}
-
-const (
-
-	// OracleObjectEntityParamsRmanBackupTypeKImageCopy captures enum value "kImageCopy"
-	OracleObjectEntityParamsRmanBackupTypeKImageCopy string = "kImageCopy"
-
-	// OracleObjectEntityParamsRmanBackupTypeKBackupSets captures enum value "kBackupSets"
-	OracleObjectEntityParamsRmanBackupTypeKBackupSets string = "kBackupSets"
-
-	// OracleObjectEntityParamsRmanBackupTypeKSbt captures enum value "kSbt"
-	OracleObjectEntityParamsRmanBackupTypeKSbt string = "kSbt"
-)
-
-// prop value enum
-func (m *OracleObjectEntityParams) validateRmanBackupTypeEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, oracleObjectEntityParamsTypeRmanBackupTypePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *OracleObjectEntityParams) validateRmanBackupType(formats strfmt.Registry) error {
-	if swag.IsZero(m.RmanBackupType) { // not required
-		return nil
-	}
-
-	// value enum
-	if err := m.validateRmanBackupTypeEnum("rmanBackupType", "body", *m.RmanBackupType); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // ContextValidate validate this oracle object entity params based on the context it is used
 func (m *OracleObjectEntityParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -146,10 +90,6 @@ func (m *OracleObjectEntityParams) ContextValidate(ctx context.Context, formats 
 	}
 
 	if err := m.contextValidateHostInfo(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateRmanBackupType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -196,15 +136,6 @@ func (m *OracleObjectEntityParams) contextValidateHostInfo(ctx context.Context, 
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (m *OracleObjectEntityParams) contextValidateRmanBackupType(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "rmanBackupType", "body", m.RmanBackupType); err != nil {
-		return err
 	}
 
 	return nil

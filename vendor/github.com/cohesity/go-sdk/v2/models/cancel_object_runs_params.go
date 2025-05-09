@@ -94,7 +94,7 @@ var cancelObjectRunsParamsSnapshotBackendTypesItemsEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["kAWSNative","kAWSSnapshotManager","kPhysical","kSQL","kOracle","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAzureNative","kAzureSnapshotManager","kAzureSQL","kAwsAuroraPostgres","kAwsRDSPostgres","kAzureEntraID","kAwsDynamoDB"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kAWSNative","kAWSSnapshotManager","kPhysical","kSQL","kOracle","kRDSSnapshotManager","kAuroraSnapshotManager","kAwsS3","kAwsRDSPostgresBackup","kAzureNative","kAzureSnapshotManager","kAzureSQL","kAwsAuroraPostgres","kAwsRDSPostgres","kAzureEntraID","kAwsDynamoDB","kO365Exchange","kO365OneDrive"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

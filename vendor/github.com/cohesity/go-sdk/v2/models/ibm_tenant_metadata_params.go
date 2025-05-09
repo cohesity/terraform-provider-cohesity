@@ -27,7 +27,7 @@ type IbmTenantMetadataParams struct {
 	AccountID *string `json:"accountId,omitempty"`
 
 	// Specifies the current liveness mode of the tenant. This mode may change based on AZ failures when vendor chooses to failover or failback the tenants to other AZs.
-	// Enum: ["Active","Standby","Suspend"]
+	// Enum: ["Active","Standby"]
 	LivenessMode *string `json:"livenessMode,omitempty"`
 
 	// Specifies the current ownership mode for the tenant. The ownership of the tenant represents the active role for functioning of the tenant.
@@ -39,15 +39,6 @@ type IbmTenantMetadataParams struct {
 
 	// Specifies the Resource Group ID associated with the tenant.
 	ResourceGroupID *string `json:"resourceGroupId,omitempty"`
-
-	// Specifies the metadata for metrics configuration. The metadata defined here will be used by cluster to send the usgae metrics to IBM cloud metering service for calculating the tenant billing.
-	MetricsConfig *IbmTenantMetricsConfig `json:"metricsConfig,omitempty"`
-
-	// Specifies the Plan Id associated with the tenant. This field is introduced for tracking purposes inside IBM enviournment.
-	PlanID *string `json:"planId,omitempty"`
-
-	// Specifies the Resource Instance ID associated with the tenant. This field is introduced for tracking purposes inside IBM enviournment.
-	ResourceInstanceID *string `json:"resourceInstanceId,omitempty"`
 
 	// Specifies the list of custom properties associated with the tenant. External vendors can choose to set any properties inside following list. Note that the fields set inside the following will not be available for direct filtering. API callers should make sure that no sensitive information such as passwords is sent in these fields.
 	CustomProperties []*ExternalVendorCustomProperties `json:"customProperties"`
@@ -65,10 +56,6 @@ func (m *IbmTenantMetadataParams) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateMetricsConfig(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateCustomProperties(formats); err != nil {
 		res = append(res, err)
 	}
@@ -83,7 +70,7 @@ var ibmTenantMetadataParamsTypeLivenessModePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Active","Standby","Suspend"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Active","Standby"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -98,9 +85,6 @@ const (
 
 	// IbmTenantMetadataParamsLivenessModeStandby captures enum value "Standby"
 	IbmTenantMetadataParamsLivenessModeStandby string = "Standby"
-
-	// IbmTenantMetadataParamsLivenessModeSuspend captures enum value "Suspend"
-	IbmTenantMetadataParamsLivenessModeSuspend string = "Suspend"
 )
 
 // prop value enum
@@ -166,25 +150,6 @@ func (m *IbmTenantMetadataParams) validateOwnershipMode(formats strfmt.Registry)
 	return nil
 }
 
-func (m *IbmTenantMetadataParams) validateMetricsConfig(formats strfmt.Registry) error {
-	if swag.IsZero(m.MetricsConfig) { // not required
-		return nil
-	}
-
-	if m.MetricsConfig != nil {
-		if err := m.MetricsConfig.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("metricsConfig")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("metricsConfig")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *IbmTenantMetadataParams) validateCustomProperties(formats strfmt.Registry) error {
 	if swag.IsZero(m.CustomProperties) { // not required
 		return nil
@@ -215,10 +180,6 @@ func (m *IbmTenantMetadataParams) validateCustomProperties(formats strfmt.Regist
 func (m *IbmTenantMetadataParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateMetricsConfig(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCustomProperties(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -226,27 +187,6 @@ func (m *IbmTenantMetadataParams) ContextValidate(ctx context.Context, formats s
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *IbmTenantMetadataParams) contextValidateMetricsConfig(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.MetricsConfig != nil {
-
-		if swag.IsZero(m.MetricsConfig) { // not required
-			return nil
-		}
-
-		if err := m.MetricsConfig.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("metricsConfig")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("metricsConfig")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 

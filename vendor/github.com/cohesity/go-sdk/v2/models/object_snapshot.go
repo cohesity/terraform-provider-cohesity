@@ -98,9 +98,6 @@ type ObjectSnapshot struct {
 	// Specifies the cluster incarnation id where this snapshot belongs to.
 	ClusterIncarnationID *int64 `json:"clusterIncarnationId,omitempty"`
 
-	// Specifies the parameters specific to Oracle database snapshot.
-	OracleParams *OracleObjectParams `json:"oracleParams,omitempty"`
-
 	// Specifies the parameters specific to AWS type snapshot.
 	AwsParams *AwsSnapshotParams `json:"awsParams,omitempty"`
 
@@ -170,10 +167,6 @@ func (m *ObjectSnapshot) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateEnvironment(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateOracleParams(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -604,25 +597,6 @@ func (m *ObjectSnapshot) validateEnvironment(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ObjectSnapshot) validateOracleParams(formats strfmt.Registry) error {
-	if swag.IsZero(m.OracleParams) { // not required
-		return nil
-	}
-
-	if m.OracleParams != nil {
-		if err := m.OracleParams.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("oracleParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("oracleParams")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *ObjectSnapshot) validateAwsParams(formats strfmt.Registry) error {
 	if swag.IsZero(m.AwsParams) { // not required
 		return nil
@@ -874,10 +848,6 @@ func (m *ObjectSnapshot) validateSfdcParams(formats strfmt.Registry) error {
 func (m *ObjectSnapshot) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateOracleParams(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateAwsParams(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -933,27 +903,6 @@ func (m *ObjectSnapshot) ContextValidate(ctx context.Context, formats strfmt.Reg
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *ObjectSnapshot) contextValidateOracleParams(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.OracleParams != nil {
-
-		if swag.IsZero(m.OracleParams) { // not required
-			return nil
-		}
-
-		if err := m.OracleParams.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("oracleParams")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("oracleParams")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 
