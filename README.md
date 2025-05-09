@@ -71,6 +71,11 @@ In order to run a specific acceptance test, change the variables in acceptance_t
 ```sh
 $ make testacc TEST=./cohesity TESTARGS='-run=TestAccVirtualEditionCluster_basic'
 ```
+To generate docs for the provider, add examples in examples/<cohesity_resource_name>/resource.tf and generate the docs using the following command:
+
+```sh
+$ go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+```
 
 ## <a name="contribute"></a> Contribute :handshake:
 
