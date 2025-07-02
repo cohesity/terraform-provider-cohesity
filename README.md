@@ -18,6 +18,7 @@ This provider plugin is maintained by [Cohesity](https://www.cohesity.com/)
  - [Developing the Provider](#developing-the-provider)
  - [How can you contribute](#contribute)
  - [Suggestions and Feedback](#suggest)
+ - [Disclaimer](#disclaimer)
 
 
 ## <a name ="requirements"></a> Requirements :clipboard:
@@ -86,7 +87,7 @@ $ go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 We would love to hear from you. Please send your questions and feedback to: *support@cohesity.com*
 
-## Disclaimer:
+## <a name ="disclaimer"></a> Disclaimer
 
 The scripts, recipes, and integrations provided here are community-contributed or best-effort solutions from Cohesity engineering and ecosystem partners. These resources are not officially supported by Cohesity Support or Field teams.
 For production-grade use or enterprise implementation support, please contact Cohesity Professional Services or your account team.
