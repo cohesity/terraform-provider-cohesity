@@ -5,9 +5,12 @@
 provider "aws" {
   region = var.region
 
-  # Conditionally assume role if use_iam_role is true
+  # Optional: Use a named profile if provided
+  profile = var.profile != "" ? var.profile : null
+
+  # Conditionally assume role if iam_role_arn is not empty
   dynamic "assume_role" {
-    for_each = var.use_iam_role ? [1] : []
+    for_each = var.iam_role_arn != "" ? [1] : []
     content {
       role_arn = var.iam_role_arn
     }
@@ -28,7 +31,7 @@ data "aws_subnet" "subnet" {
 ################################################################################
 
 # Generate an 8-character alphanumeric random string for resource names
-resource "random_string" "resource_name_prefix" {
+resource "random_string" "random_prefix" {
   length  = 8
   special = false
   upper   = false
@@ -39,7 +42,7 @@ resource "random_string" "resource_name_prefix" {
 ################################################################################
 
 locals {
-  random_prefix = random_string.resource_name_prefix.result
+  random_prefix = random_string.random_prefix.result
 
   # Define resource name prefix based on user input
   resource_name_prefix = var.add_random_prefix == false ? var.resource_name_prefix : "${var.resource_name_prefix}-${local.random_prefix}"
@@ -77,9 +80,6 @@ locals {
   # Load VM configurations from the specified JSON file
   configurations = jsondecode(file(var.config_file)).Configurations
 
-  # Load security group rules
-  rules = jsondecode(file(var.rules_file)).rules
-
   # Select the configuration using the `config_id` variable
   selected_config = lookup(
     { for config in local.configurations : config.Id => config },
@@ -89,6 +89,30 @@ locals {
 
   # Fallback to `custom_config` if provided; otherwise, use the selected configuration
   config = var.custom_config != null ? var.custom_config : local.selected_config
+
+  # Create a HDD disk map with a stable composite key
+  hdd_disks = flatten([
+    for vm_index in range(var.num_instances) : [
+      for disk_index in range(local.config.HDDTierNumDisks) : {
+        key        = "hdd-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        vm_index   = vm_index
+        disk_index = disk_index
+      }
+    ]
+  ])
+  hdd_disk_map = { for d in local.hdd_disks : d.key => d }
+
+  # Create a SSD disk map with a stable composite key
+  ssd_disks = flatten([
+    for vm_index in range(var.num_instances) : [
+      for disk_index in range(local.config.SSDTierNumDisks) : {
+        key        = "ssd-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        vm_index   = vm_index
+        disk_index = disk_index
+      }
+    ]
+  ])
+  ssd_disk_map = { for d in local.ssd_disks : d.key => d }
 
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
@@ -136,34 +160,6 @@ locals {
 # Resource Definitions
 ################################################################################
 
-# Security Group (if creating a new one)
-resource "aws_security_group" "cohesity_sg" {
-  count       = var.use_existing_sg ? 0 : 1
-  name        = var.sg_name
-  description = "Security Group created for Cohesity cluster Deployment"
-  vpc_id      = var.vpc_id
-
-  dynamic "ingress" {
-    for_each = local.rules
-    content {
-      description = ingress.value["description"]
-      protocol    = ingress.value["protocol"]
-      from_port   = ingress.value["from_port"]
-      to_port     = ingress.value["to_port"]
-      cidr_blocks = ingress.value["cidr_blocks"]
-    }
-  }
-
-  tags = merge(local.parsed_tags, {
-    Name = var.sg_name
-  })
-}
-
-# Select Security Group (either existing or new)
-locals {
-  security_group_id = var.use_existing_sg ? var.existing_sg_id : aws_security_group.cohesity_sg[0].id
-}
-
 # Create Public IPs if attach_public_ip is true
 resource "aws_eip" "public_ip" {
   count    = var.attach_public_ip ? var.num_instances : 0
@@ -181,7 +177,21 @@ resource "aws_instance" "vm" {
   instance_type               = local.config.InstanceType
   subnet_id                   = var.subnet_id
   associate_public_ip_address = var.attach_public_ip
-  security_groups             = [local.security_group_id]
+  vpc_security_group_ids      = var.security_group_ids
+
+  root_block_device {
+    volume_type = "gp3"
+    encrypted   = var.encrypt_ebs_volumes
+    kms_key_id  = var.encrypt_ebs_volumes ? (var.kms_key_id != "" ? var.kms_key_id : null) : null
+    tags = merge(local.parsed_tags, {
+      Name = "${local.resource_name_prefix}-vm-${count.index}-os-disk"
+    })
+  }
+
+  metadata_options {
+    http_tokens   = var.enforce_imdsv2 ? "required" : "optional"
+    http_endpoint = "enabled"
+  }
 
   tags = merge(local.parsed_tags, {
     Name = "${local.resource_name_prefix}-vm-${count.index}"
@@ -190,50 +200,56 @@ resource "aws_instance" "vm" {
 
 # Create EBS Volumes (SSD Tier)
 resource "aws_ebs_volume" "ssd_tier_data_disk" {
-  count             = var.num_instances * local.config.SSDTierNumDisks
+  for_each          = local.ssd_disk_map
   availability_zone = data.aws_subnet.subnet.availability_zone
   size              = local.config.SSDTierDiskSizeinGB
   type              = local.config.SSDTierDiskType
   iops              = local.config.SSDTierDiskIops
   throughput        = local.config.SSDTierDiskThroughputinMBps
+  encrypted         = var.encrypt_ebs_volumes
+  kms_key_id        = var.encrypt_ebs_volumes ? (var.kms_key_id != "" ? var.kms_key_id : null) : null
 
   tags = merge(local.parsed_tags, {
-    Name = "${local.resource_name_prefix}-ssd-tier-disk-${count.index}"
+    Name = "${local.resource_name_prefix}-ssd-tier-disk-${each.key}"
   })
 }
 
 # Attach EBS Volumes (SSD Tier)
 resource "aws_volume_attachment" "attach_ssd" {
-  count       = var.num_instances * local.config.SSDTierNumDisks
-  instance_id = aws_instance.vm[floor(count.index / local.config.SSDTierNumDisks)].id
-  volume_id   = aws_ebs_volume.ssd_tier_data_disk[count.index].id
+  for_each    = local.ssd_disk_map
+  instance_id = aws_instance.vm[each.value.vm_index].id
+  volume_id   = aws_ebs_volume.ssd_tier_data_disk[each.key].id
 
   # Generate a unique device name for each SSD disk attached to the same instance
-  device_name = "/dev/sd${element(["f", "g", "h", "i", "j", "k", "l", "m", "n", "o"], count.index % local.config.SSDTierNumDisks)}"
+  device_name  = "/dev/sd${element(["f", "g", "h", "i", "j", "k", "l", "m", "n", "o"], each.value.disk_index)}"
+  force_detach = true
 }
 
 # Create EBS Volumes (HDD Tier)
 resource "aws_ebs_volume" "hdd_tier_data_disk" {
-  count             = var.num_instances * local.config.HDDTierNumDisks
+  for_each          = local.hdd_disk_map
   availability_zone = data.aws_subnet.subnet.availability_zone
   size              = local.config.HDDTierDiskSizeinGB
   type              = local.config.HDDTierDiskType
   iops              = local.config.HDDTierDiskIops
   throughput        = local.config.HDDTierDiskThroughputinMBps
+  encrypted         = var.encrypt_ebs_volumes
+  kms_key_id        = var.encrypt_ebs_volumes ? (var.kms_key_id != "" ? var.kms_key_id : null) : null
 
   tags = merge(local.parsed_tags, {
-    Name = "${local.resource_name_prefix}-hdd-tier-disk-${count.index}"
+    Name = "${local.resource_name_prefix}-hdd-tier-disk-${each.key}"
   })
 }
 
 # Attach EBS Volumes (HDD Tier)
 resource "aws_volume_attachment" "attach_hdd" {
-  count       = var.num_instances * local.config.HDDTierNumDisks
-  instance_id = aws_instance.vm[floor(count.index / local.config.HDDTierNumDisks)].id
-  volume_id   = aws_ebs_volume.hdd_tier_data_disk[count.index].id
+  for_each    = local.hdd_disk_map
+  instance_id = aws_instance.vm[each.value.vm_index].id
+  volume_id   = aws_ebs_volume.hdd_tier_data_disk[each.key].id
 
   # Generate a unique device name for each HDD disk attached to the same instance
-  device_name = "/dev/sd${element(["p", "q", "r", "s", "t", "u", "v", "w", "x", "y"], count.index % local.config.HDDTierNumDisks)}"
+  device_name  = "/dev/sd${element(["p", "q", "r", "s", "t", "u", "v", "w", "x", "y"], each.value.disk_index)}"
+  force_detach = true
 }
 
 ################################################################################
@@ -251,12 +267,12 @@ resource "null_resource" "print_command" {
 # Post boot commands for cluster creation
 resource "null_resource" "post_boot_commands" {
   depends_on = [aws_volume_attachment.attach_ssd, aws_volume_attachment.attach_hdd]
-  count      = var.create_cluster ? 1 : 0
+  count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
     command = <<EOT
-    echo "Waiting for 5 minutes for VM to be ready..."
-    sleep ${var.post_boot_wait}  # Wait for 5 minutes before starting the loop
+    echo "Waiting for a few minutes for VM to be ready..."
+    sleep ${var.post_boot_wait}
 
     while true; do
       output=$(${local.sshpass_cluster_status_cmd})
@@ -278,7 +294,7 @@ resource "null_resource" "post_boot_commands" {
 # Execute cluster create command
 resource "null_resource" "execute_cluster_create_command" {
   depends_on = [null_resource.post_boot_commands]
-  count      = var.create_cluster ? 1 : 0
+  count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
     command = local.sshpass_cluster_create_cmd

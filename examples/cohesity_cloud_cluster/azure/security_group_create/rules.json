@@ -1,0 +1,586 @@
+{
+  "rules": [
+    {
+      "name": "DNS1",
+      "priority": 301,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "53",
+      "description": "DNS TCP"
+    },
+    {
+      "name": "DNS2",
+      "priority": 302,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "53",
+      "description": "DNS UDP"
+    },
+    {
+      "name": "NTP3",
+      "priority": 303,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "123",
+      "description": "NTP UDP 123"
+    },
+    {
+      "name": "NTP4",
+      "priority": 304,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "323",
+      "description": "NTP UDP 323"
+    },
+    {
+      "name": "SNMP_Polling5",
+      "priority": 305,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "161",
+      "description": "SNMP Polling"
+    },
+    {
+      "name": "SNMP_Trap6",
+      "priority": 306,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "162",
+      "description": "SNMP Trap"
+    },
+    {
+      "name": "SSH7",
+      "priority": 307,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "22",
+      "description": "SSH"
+    },
+    {
+      "name": "Web_UI8",
+      "priority": 308,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "443",
+      "description": "Web UI HTTPS"
+    },
+    {
+      "name": "Web_UI9",
+      "priority": 309,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "80",
+      "description": "Web UI HTTP"
+    },
+    {
+      "name": "Avahi10",
+      "priority": 310,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "5353",
+      "description": "Avahi mDNS"
+    },
+    {
+      "name": "portmapper11",
+      "priority": 311,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "111",
+      "description": "Portmapper TCP"
+    },
+    {
+      "name": "portmapper12",
+      "priority": 312,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "111",
+      "description": "Portmapper UDP"
+    },
+    {
+      "name": "NFS13",
+      "priority": 313,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "2049",
+      "description": "NFS TCP"
+    },
+    {
+      "name": "NFS14",
+      "priority": 314,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "2049",
+      "description": "NFS UDP"
+    },
+    {
+      "name": "Mount15",
+      "priority": 315,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "11111",
+      "description": "Mount UDP"
+    },
+    {
+      "name": "SMB16",
+      "priority": 316,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "135",
+      "description": "SMB TCP 135"
+    },
+    {
+      "name": "SMB17",
+      "priority": 317,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "445",
+      "description": "SMB TCP 445"
+    },
+    {
+      "name": "S318",
+      "priority": 318,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "3000",
+      "description": "Service 3000"
+    },
+    {
+      "name": "Bridge19",
+      "priority": 319,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11111",
+      "description": "Bridge TCP 11111"
+    },
+    {
+      "name": "Magneto20",
+      "priority": 320,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "20000",
+      "description": "Magneto TCP 20000"
+    },
+    {
+      "name": "Gandalf21",
+      "priority": 321,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "22222",
+      "description": "Gandalf TCP 22222"
+    },
+    {
+      "name": "Nexus22",
+      "priority": 322,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "23456",
+      "description": "Nexus TCP 23456"
+    },
+    {
+      "name": "iSCSI23",
+      "priority": 323,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "3260",
+      "description": "iSCSI TCP 3260"
+    },
+    {
+      "name": "Hydra24",
+      "priority": 324,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11112",
+      "description": "Hydra TCP 11112"
+    },
+    {
+      "name": "DDW_Portal25",
+      "priority": 325,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11113",
+      "description": "DDW Portal TCP 11113"
+    },
+    {
+      "name": "Pigeon_GRPC26",
+      "priority": 326,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11114",
+      "description": "Pigeon GRPC TCP 11114"
+    },
+    {
+      "name": "Vault_Proxy27",
+      "priority": 327,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11115",
+      "description": "Vault Proxy TCP 11115"
+    },
+    {
+      "name": "Bridge_Proxy28",
+      "priority": 328,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11116",
+      "description": "Bridge Proxy TCP 11116"
+    },
+    {
+      "name": "NewScribe29",
+      "priority": 329,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "12222",
+      "description": "NewScribe TCP 12222"
+    },
+    {
+      "name": "Scribe_Upgrade30",
+      "priority": 330,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "12321",
+      "description": "Scribe Upgrade TCP 12321"
+    },
+    {
+      "name": "Alerts31",
+      "priority": 331,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "21111",
+      "description": "Alerts TCP 21111"
+    },
+    {
+      "name": "Tricoder32",
+      "priority": 332,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "23458",
+      "description": "Tricoder TCP 23458"
+    },
+    {
+      "name": "Iris_Proxy33",
+      "priority": 333,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "24567",
+      "description": "Iris Proxy TCP 24567"
+    },
+    {
+      "name": "Apollo34",
+      "priority": 334,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "24680",
+      "description": "Apollo TCP 24680"
+    },
+    {
+      "name": "Stats35",
+      "priority": 335,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25566",
+      "description": "Stats TCP 25566"
+    },
+    {
+      "name": "Genie36",
+      "priority": 336,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25678",
+      "description": "Genie TCP 25678"
+    },
+    {
+      "name": "Gofer37",
+      "priority": 337,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25679",
+      "description": "Gofer TCP 25679"
+    },
+    {
+      "name": "StatsCollector38",
+      "priority": 338,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25680",
+      "description": "StatsCollector TCP 25680"
+    },
+    {
+      "name": "ES39",
+      "priority": 339,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25700",
+      "description": "ES TCP 25700"
+    },
+    {
+      "name": "ES40",
+      "priority": 340,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25800",
+      "description": "ES TCP 25800"
+    },
+    {
+      "name": "ES_discovery41",
+      "priority": 341,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25801",
+      "description": "ES discovery TCP 25801"
+    },
+    {
+      "name": "ES_discovery42",
+      "priority": 342,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Udp",
+      "source_port_range": "*",
+      "destination_port_range": "25801",
+      "description": "ES discovery UDP 25801"
+    },
+    {
+      "name": "Yoda43",
+      "priority": 343,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25999",
+      "description": "Yoda TCP 25999"
+    },
+    {
+      "name": "Rhino44",
+      "priority": 344,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "25998",
+      "description": "Rhino TCP 25998"
+    },
+    {
+      "name": "Librarain45",
+      "priority": 345,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "26000",
+      "description": "Librarain TCP 26000"
+    },
+    {
+      "name": "Lucene46",
+      "priority": 346,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "26001",
+      "description": "Lucene TCP 26001"
+    },
+    {
+      "name": "Groot47",
+      "priority": 347,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "26999",
+      "description": "Groot TCP 26999"
+    },
+    {
+      "name": "PostgreSQL48",
+      "priority": 348,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "27999",
+      "description": "PostgreSQL TCP 27999"
+    },
+    {
+      "name": "Keychain49",
+      "priority": 349,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "22000",
+      "description": "Keychain TCP 22000"
+    },
+    {
+      "name": "Storage_Proxy50",
+      "priority": 350,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "20001",
+      "description": "Storage Proxy TCP 20001"
+    },
+    {
+      "name": "SMB_Proxy51",
+      "priority": 351,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "20002",
+      "description": "SMB Proxy TCP 20002"
+    },
+    {
+      "name": "Siren52",
+      "priority": 352,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "9111",
+      "description": "Siren TCP 9111"
+    },
+    {
+      "name": "Eagle_Agent53",
+      "priority": 353,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "23460",
+      "description": "Eagle Agent TCP 23460"
+    },
+    {
+      "name": "Bridge54",
+      "priority": 354,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11111",
+      "description": "Bridge TCP 11111"
+    },
+    {
+      "name": "Magneto55",
+      "priority": 355,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "20000",
+      "description": "Magneto TCP 20000"
+    },
+    {
+      "name": "https56",
+      "priority": 356,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "443",
+      "description": "HTTPS TCP 443"
+    },
+    {
+      "name": "http_https57",
+      "priority": 357,
+      "direction": "Outbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "80",
+      "destination_port_range": "*",
+      "destination_address_prefix": "*",
+      "description": "HTTP Outbound TCP 80"
+    },
+    {
+      "name": "http_https58",
+      "priority": 358,
+      "direction": "Outbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "443",
+      "destination_port_range": "*",
+      "destination_address_prefix": "*",
+      "description": "HTTPS Outbound TCP 443"
+    }
+  ]
+}

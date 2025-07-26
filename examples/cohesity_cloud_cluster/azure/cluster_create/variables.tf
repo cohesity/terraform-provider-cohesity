@@ -130,27 +130,19 @@ variable "tags" {
 variable "resource_name_prefix" {
   description = <<EOT
 Prefix for the names of all created resources (VMs, NICs, Disks, etc.).
+This value is mandatory. It must be greater than 0 and less than or equal to 30 characters long.
+It must contain only lowercase letters, numbers, and hyphens, must start with a lowercase letter, and cannot end with a hyphen.
 EOT
-  type        = string
-  default     = ""
 
-  # Validation rules for non-null values
-  validation {
-    condition     = length(var.resource_name_prefix) <= 30
-    error_message = <<EOT
-The resource_name_prefix must less than or equal to 30 characters long.
-EOT
-  }
+  type = string
 
   validation {
-    condition = var.resource_name_prefix == "" || (
-      can(regex("^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$", var.resource_name_prefix))
+    condition = (
+      length(var.resource_name_prefix) > 0 &&
+      length(var.resource_name_prefix) <= 30 &&
+      can(regex("^[a-z][a-z0-9-]*[a-z0-9]$", var.resource_name_prefix))
     )
-    error_message = <<EOT
-The resource_name_prefix must either be an empty string (in which case a
-random string will be used as prefix) or contain only letters, numbers,
-and hyphens. Hyphens cannot be consecutive, or appear at the start or end.
-EOT
+    error_message = "resource_name_prefix is mandatory, must be 1-30 chars, start with a lowercase letter, contain only lowercase letters, numbers, and hyphens, and not end with a hyphen."
   }
 }
 
@@ -203,11 +195,6 @@ EOT
 # Cluster Create Variables
 ################################################################################
 
-variable "create_cluster" {
-  description = "Whether to issue cluster creation request or not"
-  type        = bool
-}
-
 variable "cluster_name" {
   description = "Name given to the Cohesity cluster"
   type        = string
@@ -229,17 +216,35 @@ variable "domain_names" {
 }
 
 variable "apps_subnet" {
-  description = "Apps subnet"
+  description = "A private IPv4 subnet for the internal overlay network of the kubernetes cluster to run the apps infrastructure."
   type        = string
+  default     = "192.168.0.0"
 }
 
 variable "apps_subnet_mask" {
-  description = "Apps subnet mask"
+  description = "A private IPv4 subnet mask for the internal overlay network of the kubernetes cluster to run the apps infrastructure."
   type        = string
+  default     = "255.255.0.0"
 }
 
 variable "post_boot_wait" {
   type        = string
   description = "Wait after the VM Boot up for the nexus service to be available"
   default     = "600"
+}
+
+variable "issue_cluster_create_cmd" {
+  description = <<EOT
+Whether to issue the cluster creation command via SSH after VM deployment.
+Usually set to true (default) as Terraform is expected to run in the same VNet as the VMs, or public IPs are attached for SSH access.
+Set to false if you want to create the cluster manually.
+EOT
+  type        = bool
+  default     = true
+}
+
+variable "customer_managed_disk_encryption_id" {
+  description = "(Optional) The Azure Disk Encryption Set (DES) resource ID to use for customer-managed disk encryption. If not set, Azure-managed keys are used."
+  type        = string
+  default     = ""
 }

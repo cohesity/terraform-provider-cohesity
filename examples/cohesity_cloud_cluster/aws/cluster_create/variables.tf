@@ -8,14 +8,21 @@ variable "region" {
 }
 
 variable "iam_role_arn" {
+  description = <<EOT
+(Optional) The ARN of the IAM Role to assume for AWS authentication.
+If specified, Terraform will use this role for all AWS API calls instead of the default credentials.
+Leave blank to use the default AWS authentication mechanism (environment variables, profile, etc).
+EOT
   type        = string
-  description = "AWS IAM role to use"
+  default     = ""
 }
 
-variable "use_iam_role" {
-  type        = bool
-  description = "Whether to use IAM role for Authentication or IAM user credentials"
-  default     = false
+variable "profile" {
+  description = <<EOT
+(Optional) AWS CLI named profile to use for authentication. Set this if you want to use a specific profile from ~/.aws/credentials or ~/.aws/config. If not set, the default profile or other authentication methods will be used.
+EOT
+  type        = string
+  default     = ""
 }
 
 ################################################################################
@@ -39,35 +46,9 @@ variable "subnet_id" {
   description = "ID of the existing Subnet"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "ID of the vpc where you want the security group created"
-  default = ""
-}
-
-variable "use_existing_sg" {
-  description = "Whether to use an existing Security Group"
-  type        = bool
-}
-
-variable "existing_sg_id" {
-  description = "ID of the existing Security Group (if using one)"
-  type        = string
-}
-
-variable "sg_name" {
-  description = "Name of the new Security Group (if creating one)"
-  type        = string
-}
-
-variable "rules_file" {
-  description = "Path to the JSON rules file for creating new sec grp"
-  type        = string
-  default     = "./rules.json"
-}
-
 variable "security_group_ids" {
   type        = list(string)
+  default     = []
   description = <<EOT
 List of security group IDs to attach to the instances.
 Each ID must correspond to an existing security group in AWS.
@@ -93,30 +74,45 @@ variable "attach_public_ip" {
 variable "resource_name_prefix" {
   description = <<EOT
 Prefix for the names of all created resources (VMs, NICs, Disks, etc.).
+This value is mandatory. It must be greater than 0 and less than or equal to 30 characters long.
+It must contain only lowercase letters, numbers, and hyphens, must start with a lowercase letter, and cannot end with a hyphen.
 EOT
-  type        = string
-  default     = ""
 
-  # Validation rules for non-null values
-  validation {
-    condition     = length(var.resource_name_prefix) <= 30
-    error_message = <<EOT
-The resource_name_prefix must less than or equal to 30 characters long.
-EOT
-  }
+  type = string
 
   validation {
-    condition = var.resource_name_prefix == "" || (
-      can(regex("^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$", var.resource_name_prefix))
+    condition = (
+      length(var.resource_name_prefix) > 0 &&
+      length(var.resource_name_prefix) <= 30 &&
+      can(regex("^[a-z][a-z0-9-]*[a-z0-9]$", var.resource_name_prefix))
     )
-    error_message = <<EOT
-The resource_name_prefix must either be an empty string (in which case a
-random string will be used as prefix) or contain only letters, numbers,
-and hyphens. Hyphens cannot be consecutive, or appear at the start or end.
-EOT
+    error_message = "resource_name_prefix is mandatory, must be 1-30 chars, start with a lowercase letter, contain only lowercase letters, numbers, and hyphens, and not end with a hyphen."
   }
 }
+variable "enforce_imdsv2" {
+  description = <<EOT
+Whether to enforce AWS Instance Metadata Service Version 2 (IMDSv2).
 
+- true: Enforces usage of IMDSv2 (http_tokens = "required")
+        which improves security by requiring session tokens.
+- false: Allows IMDSv1 (http_tokens = "optional") for legacy compatibility.
+
+EOT
+  type        = bool
+  default     = false
+}
+
+variable "kms_key_id" {
+  description = "(Optional) The ARN of the KMS key to use for EBS volume encryption. If not set, AWS default EBS encryption is used."
+  type        = string
+  default     = ""
+}
+
+variable "encrypt_ebs_volumes" {
+  description = "Whether to encrypt EBS volumes. If false, volumes are not encrypted and kms_key_id is ignored. If true, kms_key_id is used if set, otherwise AWS default EBS encryption is used."
+  type        = bool
+  default     = true
+}
 
 ################################################################################
 # Config Variables
@@ -125,7 +121,7 @@ EOT
 variable "config_id" {
   description = "ID of the configuration to choose from the JSON file"
   type        = string
-  default     = "3"
+  default     = "2"
 }
 
 variable "config_file" {
@@ -165,11 +161,6 @@ variable "post_boot_wait" {
 # Cluster Create Variables
 ################################################################################
 
-variable "create_cluster" {
-  description = "Whether to issue cluster creation request or not"
-  type        = bool
-}
-
 variable "cluster_name" {
   description = "Name given to the Cohesity cluster"
   type        = string
@@ -191,11 +182,23 @@ variable "domain_names" {
 }
 
 variable "apps_subnet" {
-  description = "Apps subnet"
+  description = "A private IPv4 subnet for the internal overlay network of the kubernetes cluster to run the apps infrastructure."
   type        = string
+  default     = "192.168.0.0"
 }
 
 variable "apps_subnet_mask" {
-  description = "Apps subnet mask"
+  description = "A private IPv4 subnet mask for the internal overlay network of the kubernetes cluster to run the apps infrastructure."
   type        = string
+  default     = "255.255.0.0"
+}
+
+variable "issue_cluster_create_cmd" {
+  description = <<EOT
+Whether to issue the cluster creation command via SSH after VM deployment.
+Usually set to true (default) as Terraform is expected to run in the same VPC as the VMs, or public IPs are attached for SSH access.
+Set to false if you want to create the cluster manually.
+EOT
+  type        = bool
+  default     = true
 }

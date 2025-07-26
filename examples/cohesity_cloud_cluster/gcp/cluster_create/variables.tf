@@ -3,8 +3,9 @@
 # Authentication Variables
 ###############################################################################
 variable "credentials_file_path" {
-  description = "The path to the GCP credentials file"
+  description = "The path to the GCP credentials file. Leave empty to use Application Default Credentials (ADC)."
   type        = string
+  default     = ""
 }
 ###############################################################################
 # Deployment Variables
@@ -34,11 +35,6 @@ variable "region" {
 variable "zone" {
   description = "The zone within the region to deploy instances"
   type        = string
-
-  validation {
-    condition     = contains(data.google_compute_zones.available_zones.names, var.zone)
-    error_message = "Invalid zone '${var.zone}' for region '${var.region}'. Available zones are: ${join(", ", data.google_compute_zones.available_zones.names)}."
-  }
 }
 
 variable "vnet_name" {
@@ -56,35 +52,27 @@ variable "image_id" {
   description = "ID of the image to use for the Virtual Machine (format: 'projects/<project>/global/images/<image>')"
 }
 
-variable "tags" {
+variable "labels" {
   type        = list(string)
-  description = "List of tags in the format ['key:value', 'key:value']"
+  description = "List of labels in the format ['key:value', 'key:value']"
 }
 
 variable "resource_name_prefix" {
   description = <<EOT
 Prefix for the names of all created resources (VMs, NICs, Disks, etc.).
+This value is mandatory. It must be greater than 0 and less than or equal to 30 characters long.
+It must contain only lowercase letters, numbers, and hyphens, must start with a lowercase letter, and cannot end with a hyphen.
 EOT
-  type        = string
-  default     = ""
 
-  # Validation rules for non-null values
-  validation {
-    condition     = length(var.resource_name_prefix) <= 30
-    error_message = <<EOT
-The resource_name_prefix must less than or equal to 30 characters long.
-EOT
-  }
+  type = string
 
   validation {
-    condition = var.resource_name_prefix == "" || (
-      can(regex("^[a-z]([-a-z0-9]*[a-z0-9])?", var.resource_name_prefix))
+    condition = (
+      length(var.resource_name_prefix) > 0 &&
+      length(var.resource_name_prefix) <= 30 &&
+      can(regex("^[a-z][a-z0-9-]*[a-z0-9]$", var.resource_name_prefix))
     )
-    error_message = <<EOT
-The resource_name_prefix must either be an empty string (in which case a
-random string will be used as prefix) or contain only lowecase letters, numbers,
-and hyphens. Must start with lowecase letter and cannot end with a Hyphen.
-EOT
+    error_message = "resource_name_prefix is mandatory, must be 1-30 chars, start with a lowercase letter, contain only lowercase letters, numbers, and hyphens, and not end with a hyphen."
   }
 }
 
@@ -92,6 +80,24 @@ variable "attach_public_ip" {
   description = "Boolean flag to attach public IPs to each GCP VM."
   type        = bool
   default     = false
+}
+
+variable "service_account_email" {
+  description = "Optional: Pre-existing service account email to attach to the VM"
+  type        = string
+  default     = ""
+}
+
+variable "network_tags" {
+  description = "Optional: List of network tags to apply to the GCP VMs (used for firewall rules, etc.)"
+  type        = list(string)
+  default     = []
+}
+
+variable "customer_managed_kms_key" {
+  description = "(Optional) The KMS key self link or resource ID to use for disk encryption. If not set, Google-managed keys are used."
+  type        = string
+  default     = ""
 }
 
 ###############################################################################
@@ -137,10 +143,6 @@ variable "post_boot_wait" {
 ###############################################################################
 # Cluster Create Variables
 ###############################################################################
-variable "create_cluster" {
-  description = "Whether to issue cluster creation request or not"
-  type        = bool
-}
 
 variable "cluster_name" {
   description = "Name given to the Cohesity cluster"
@@ -162,11 +164,23 @@ variable "domain_names" {
 }
 
 variable "apps_subnet" {
-  description = "Apps subnet"
+  description = "A private IPv4 subnet for the internal overlay network of the kubernetes cluster to run the apps infrastructure."
   type        = string
+  default     = "192.168.0.0"
 }
 
 variable "apps_subnet_mask" {
-  description = "Apps subnet mask"
+  description = "A private IPv4 subnet mask for the internal overlay network of the kubernetes cluster to run the apps infrastructure."
   type        = string
+  default     = "255.255.0.0"
+}
+
+variable "issue_cluster_create_cmd" {
+  description = <<EOT
+Whether to issue the cluster creation command via SSH after VM deployment.
+Usually set to true (default) as Terraform is expected to run in the same VPC as the VMs, or public IPs are attached for SSH access.
+Set to false if you want to create the cluster manually.
+EOT
+  type        = bool
+  default     = true
 }

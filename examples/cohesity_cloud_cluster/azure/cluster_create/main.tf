@@ -9,7 +9,7 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 
   # Service Principal authentication (if credentials are provided)
-  client_id     = var.client_id != "" ? var.client_id : null
+  client_id     = var.use_managed_identity && var.managed_identity_id != "" ? var.managed_identity_id : (var.client_id != "" ? var.client_id : null)
   client_secret = var.client_secret != "" ? var.client_secret : null
   tenant_id     = var.tenant_id != "" ? var.tenant_id : null
 
@@ -71,7 +71,7 @@ locals {
 
   # Extract Address Prefix and Subnet Gateway
   # Address Prefix example "10.100.128.0/21"
-  address_prefix = data.azurerm_subnet.example.address_prefix
+  address_prefix = data.azurerm_subnet.example.address_prefix != "" ? data.azurerm_subnet.example.address_prefix : data.azurerm_subnet.example.address_prefixes[0]
   # Extract subnet mask
   subnet_mask = cidrnetmask(local.address_prefix)
   # First usable IP is the subnet gateway
@@ -205,50 +205,56 @@ resource "azurerm_network_interface_security_group_association" "attach_nsg" {
 
 # Create managed OS disks
 resource "azurerm_managed_disk" "os_disk" {
-  count                = var.num_instances
-  name                 = "${local.resource_name_prefix}-vm-${count.index}-os-disk"
-  location             = var.region
-  resource_group_name  = local.resource_group_name
-  storage_account_type = "Premium_LRS"
-  create_option        = "Import"
-  source_uri           = var.vhd_uri
-  storage_account_id   = var.storage_account_id
-  hyper_v_generation   = "V1"
-  os_type              = "Linux"
-
-  tags = local.parsed_tags
+  count                  = var.num_instances
+  name                   = "${local.resource_name_prefix}-vm-${count.index}-os-disk"
+  location               = var.region
+  resource_group_name    = local.resource_group_name
+  storage_account_type   = "Premium_LRS"
+  create_option          = "Import"
+  source_uri             = var.vhd_uri
+  storage_account_id     = var.storage_account_id
+  hyper_v_generation     = "V1"
+  os_type                = "Linux"
+  disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
+  tags                   = local.parsed_tags
 }
 
 # Create managed disks for SSD tier
 resource "azurerm_managed_disk" "ssd_tier_data_disk" {
-  count                = var.num_instances * local.config.SSDTierNumDisks
-  name                 = "${local.resource_name_prefix}-vm-${floor(count.index / local.config.SSDTierNumDisks)}-ssd-tier-disk-${count.index % local.config.SSDTierNumDisks}"
-  location             = var.region
-  resource_group_name  = local.resource_group_name
-  storage_account_type = local.config.SSDTierDiskType
-  disk_size_gb         = local.config.SSDTierDiskSizeinGB
-  disk_iops_read_write = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskIops : null
-  disk_mbps_read_write = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskThroughputinMBps : null
-  create_option        = "Empty"
-  zone                 = var.availability_zone
-
-  tags = local.parsed_tags
+  for_each = {
+    for idx in range(var.num_instances * local.config.SSDTierNumDisks) :
+    "disk-${floor(idx / local.config.SSDTierNumDisks)}-${idx % local.config.SSDTierNumDisks}" => idx
+  }
+  name                   = "${local.resource_name_prefix}-vm-${floor(each.value / local.config.SSDTierNumDisks)}-ssd-tier-disk-${each.value % local.config.SSDTierNumDisks}"
+  location               = var.region
+  resource_group_name    = local.resource_group_name
+  storage_account_type   = local.config.SSDTierDiskType
+  disk_size_gb           = local.config.SSDTierDiskSizeinGB
+  disk_iops_read_write   = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskIops : null
+  disk_mbps_read_write   = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskThroughputinMBps : null
+  create_option          = "Empty"
+  zone                   = var.availability_zone
+  disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
+  tags                   = local.parsed_tags
 }
 
 # Create managed disks for HDD tier
 resource "azurerm_managed_disk" "hdd_tier_data_disk" {
-  count                = var.num_instances * local.config.HDDTierNumDisks
-  name                 = "${local.resource_name_prefix}-vm-${floor(count.index / local.config.HDDTierNumDisks)}-hdd-tier-disk-${count.index % local.config.HDDTierNumDisks}"
-  location             = var.region
-  resource_group_name  = local.resource_group_name
-  storage_account_type = local.config.HDDTierDiskType
-  disk_size_gb         = local.config.HDDTierDiskSizeinGB
-  disk_iops_read_write = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskIops : null
-  disk_mbps_read_write = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskThroughputinMBps : null
-  create_option        = "Empty"
-  zone                 = var.availability_zone
-
-  tags = local.parsed_tags
+  for_each = {
+    for idx in range(var.num_instances * local.config.HDDTierNumDisks) :
+    "disk-${floor(idx / local.config.HDDTierNumDisks)}-${idx % local.config.HDDTierNumDisks}" => idx
+  }
+  name                   = "${local.resource_name_prefix}-vm-${floor(each.value / local.config.HDDTierNumDisks)}-hdd-tier-disk-${each.value % local.config.HDDTierNumDisks}"
+  location               = var.region
+  resource_group_name    = local.resource_group_name
+  storage_account_type   = local.config.HDDTierDiskType
+  disk_size_gb           = local.config.HDDTierDiskSizeinGB
+  disk_iops_read_write   = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskIops : null
+  disk_mbps_read_write   = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskThroughputinMBps : null
+  create_option          = "Empty"
+  zone                   = var.availability_zone
+  disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
+  tags                   = local.parsed_tags
 }
 
 # Create Virtual Machines
@@ -278,12 +284,12 @@ resource "azurerm_virtual_machine" "azure_vm" {
   dynamic "storage_data_disk" {
     for_each = range(local.config.SSDTierNumDisks)
     content {
-      name            = azurerm_managed_disk.ssd_tier_data_disk[(count.index * local.config.SSDTierNumDisks) + storage_data_disk.value].name
+      name            = azurerm_managed_disk.ssd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].name
       lun             = storage_data_disk.value
       caching         = "None"
       create_option   = "Attach"
       disk_size_gb    = local.config.SSDTierDiskSizeinGB
-      managed_disk_id = azurerm_managed_disk.ssd_tier_data_disk[(count.index * local.config.SSDTierNumDisks) + storage_data_disk.value].id
+      managed_disk_id = azurerm_managed_disk.ssd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].id
     }
   }
 
@@ -291,12 +297,12 @@ resource "azurerm_virtual_machine" "azure_vm" {
   dynamic "storage_data_disk" {
     for_each = range(local.config.HDDTierNumDisks)
     content {
-      name            = azurerm_managed_disk.hdd_tier_data_disk[(count.index * local.config.HDDTierNumDisks) + storage_data_disk.value].name
+      name            = azurerm_managed_disk.hdd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].name
       lun             = storage_data_disk.value + local.config.SSDTierNumDisks
       caching         = "None"
       create_option   = "Attach"
       disk_size_gb    = local.config.HDDTierDiskSizeinGB
-      managed_disk_id = azurerm_managed_disk.hdd_tier_data_disk[(count.index * local.config.HDDTierNumDisks) + storage_data_disk.value].id
+      managed_disk_id = azurerm_managed_disk.hdd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].id
     }
   }
 
@@ -318,12 +324,12 @@ resource "null_resource" "print_command" {
 # Post boot commands for cluster creation
 resource "null_resource" "post_boot_commands" {
   depends_on = [azurerm_virtual_machine.azure_vm]
-  count      = var.create_cluster ? 1 : 0
+  count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
     command = <<EOT
-    echo "Waiting for 10 minutes for VM to be ready..."
-    sleep ${var.post_boot_wait}  # Wait for 10 minutes before starting the loop
+    echo "Waiting for a few minutes for VM to be ready..."
+    sleep ${var.post_boot_wait}
 
     while true; do
       output=$(${local.sshpass_cluster_status_cmd})
@@ -345,7 +351,7 @@ resource "null_resource" "post_boot_commands" {
 # Execute cluster create command
 resource "null_resource" "execute_cluster_create_command" {
   depends_on = [null_resource.post_boot_commands]
-  count      = var.create_cluster ? 1 : 0
+  count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
     command = local.sshpass_cluster_create_cmd

@@ -3,6 +3,8 @@
 # Overview
 This project automates the deployment of the Cohesity Cluster infrastructure in Cloud.
 
+**Note: These examples are currently experimental and are not officially supported yet.**
+
 # Prerequisites
 - Terraform v1.7.5+
 - sshpass installed (Only needed when issuing cluster create command)
