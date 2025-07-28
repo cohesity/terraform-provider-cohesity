@@ -248,7 +248,7 @@ func UpdateNotificationRule(url, token string, notificationRule NotificationRule
 	if err != nil {
 		return nil, err
 	}
-	if code != 204 {
+	if code != 200 {
 		return nil, fmt.Errorf("the request failed with code %d", code)
 	}
 	var response NotificationRule
