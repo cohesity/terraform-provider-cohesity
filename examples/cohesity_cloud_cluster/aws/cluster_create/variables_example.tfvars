@@ -1,72 +1,52 @@
 ###############################################################################
-# Authentication Variables
+# Authentication Overview
 ###############################################################################
 
-# Supported AWS Authentication Methods:
+# You can use one of the following authentication methods to allow Terraform to
+# create resources in your AWS account. Terraform uses the AWS SDK credential
+# chain in the following priority order to determine which method to use:
+#  1) Environment variables
+#  2) AWS Credentials & Config Files
+#  3) EC2 Instance Roles
 #
-# 1. AWS Access Key and Secret Key
-#    - Set environment variables:
-#        export AWS_ACCESS_KEY_ID=your_access_key
-#        export AWS_SECRET_ACCESS_KEY=your_secret_key
-#    - Or configure in ~/.aws/credentials and ~/.aws/config
-#    - The IAM user identity must have permissions to create/modify the
-#      required AWS resources.
+# Methods:
+# 1) Environment variables (IAM User access key and secret or temporary credentials)
+#    export AWS_ACCESS_KEY_ID=your_access_key
+#    export AWS_SECRET_ACCESS_KEY=your_secret_key
+#    export AWS_SESSION_TOKEN=your_session_token   # for temp creds
 #
-# 2. IAM Role via EC2 Instance Metadata (Instance Profile)
-#    - Use when running Terraform from an EC2 instance with an attached IAM
-#      Role.
-#    - No manual configuration needed. Terraform will use the instance
-#      profile automatically by querying the instance metadata endpoint
-#      (http://169.254.169.254).
-#    - The attached IAM Role must have permissions to create/modify the
-#      required AWS resources.
-#    - Note: This method only works when running inside an EC2 instance.
+# 2) AWS Credentials & Config Files
+# Terraform does not call the AWS CLI. Installing it is optional and useful to
+# run 'aws configure' to create/update the shared files.
+#    Files: ~/.aws/credentials and ~/.aws/config
+#    Default: run 'aws configure' or create [default] entries manually.
+#    Named: run 'aws configure --profile myprofile' or create entries.
+#    If using a named profile ensure to set the environment variable:
+#      - export AWS_PROFILE=myprofile
+#    See AWS docs https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html for details.
 #
-# 3. AWS CLI Named Profile (for managing multiple AWS accounts/roles)
-#    - Set up AWS CLI by running: aws configure --profile myprofile
-#    - This creates entries in ~/.aws/credentials and ~/.aws/config.
-#    - Use it in Terraform by setting the AWS_PROFILE environment variable,
-#      or by setting the 'profile' variable (see below).
-#    - Example:
-#        export AWS_PROFILE=myprofile
-#    - Or in provider block:
-#        provider "aws" {
-#          profile = "myprofile"
-#          region  = "us-west-2"
-#        }
-#    - The profile must have permissions to create/modify the required AWS
-#      resources.
+# 3) EC2 Instance Roles
+#    When running terraform on an AWS EC2 instance with an IAM role attached,
+#    if above two methods are not used, terraform will discover the credentials
+#    automatically by leveraging EC2 Instance Metadata Service.
 #
-# 4. AssumeRole via STS (Cross-account or privilege separation)
-#    - Set iam_role_arn (see below) to the role you want Terraform to assume.
-#    - You must have a base identity from one of the above methods with
-#      sts:AssumeRole permission for the target role.
-#    - Example:
-#        iam_role_arn = "arn:aws:iam::123456789012:role/DeploymentRole"
-#    - The assumed role must have permissions to create/modify the required
-#      AWS resources.
-#
-# Permissions Required:
-#   - The role or user used by Terraform must have permissions to create,
-#     modify, and delete AWS resources required for deployment (such as EC2,
-#     VPC, Security Groups, EBS, etc.).
-#   - For AssumeRole, the base identity must have sts:AssumeRole for the
-#     target role specified in iam_role_arn.
-#   - The full set of required permissions will be provided separately in
-#     documentation.
-#
-# Note: If running outside EC2, instance profile authentication will not work.
-# Use access keys, named profile, or AssumeRole.
+# Note:
+#  - Whichever method is chosen, the identity must have the permissions needed
+#    to create/modify/delete the AWS resources this terraform module creates,
+#     for example EC2 instance, EBS volumes, etc.
+#  - EC2 Instance Roles method auth works only on EC2 instance.
 
-# (Optional) IAM Role ARN to assume for deployment (for authentication method 4).
+###############################################################################
+# Authentication Options
+###############################################################################
+
+# (Optional) IAM Role ARN to assume for deployment. Using any of the above
+# authentication methods, this parameter tells terraform to assume a role to
+# perform actions on AWS. Note that the base identity only needs to have
+# sts:AssumeRole permission for the target role which you want terraform to
+# assume.
 # Example: "arn:aws:iam::123456789012:role/my-terraform-role"
-# Only set this if you are using the AssumeRole authentication method above.
 iam_role_arn = ""
-
-# (Optional) AWS CLI named profile to use for authentication (method 3).
-# Example: "myprofile" (must exist in ~/.aws/credentials or ~/.aws/config)
-# Leave blank to use the default profile or other authentication methods.
-profile = ""
 
 ###############################################################################
 # Deployment Variables
@@ -159,6 +139,26 @@ encrypt_ebs_volumes = false
 #   - To get the ARN for a key, use:
 #       aws kms describe-key --key-id <key-id>
 kms_key_id = ""
+
+# (Optional) Name of an IAM instance profile to attach to each EC2 instance.
+#
+# This instance profile is typically used to grant temporary credentials to the EC2 VMs.
+# In most deployments, the role associated with this instance profile should include permissions
+# to assume other IAM roles which have the required access to AWS services such as EC2, EBS, S3, etc.
+#
+# Use cases this should be used:
+# - Registering S3 external target with IAM role for backup and archival purposes.
+# - AWS Source registration with IAM role for accessing AWS APIs from within
+#   the VMs for operations such as snapshotting, backup etc.
+#
+# Prerequisites:
+# - The instance profile must be created in your AWS account
+# - The role associated with the profile should have at minimum permissions to
+#   call sts:AssumeRole on the IAM roles to assume.
+#
+# Example:
+#   instance_profile_name = "CohesityInstanceProfile"
+instance_profile_name = ""
 
 ###############################################################################
 # Config Variables

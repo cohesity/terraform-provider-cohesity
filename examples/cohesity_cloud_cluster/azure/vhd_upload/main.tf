@@ -90,7 +90,8 @@ locals {
       --stgaccountkey "${local.nonsensitive_storage_account_key}" \
       --containername "${local.container_name}" \
       --blobname "${local.vhd_filename}" \
-      --parallelism ${var.vhd_upload_parallelism}
+      --parallelism ${var.vhd_upload_parallelism} \
+      --overwrite
 
     if [ $? -eq 0 ]; then
       echo "VHD upload completed successfully!"

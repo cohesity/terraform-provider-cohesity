@@ -5,9 +5,6 @@
 provider "aws" {
   region = var.region
 
-  # Optional: Use a named profile if provided
-  profile = var.profile != "" ? var.profile : null
-
   # Conditionally assume role if iam_role_arn is not empty
   dynamic "assume_role" {
     for_each = var.iam_role_arn != "" ? [1] : []
@@ -178,6 +175,7 @@ resource "aws_instance" "vm" {
   subnet_id                   = var.subnet_id
   associate_public_ip_address = var.attach_public_ip
   vpc_security_group_ids      = var.security_group_ids
+  iam_instance_profile        = var.instance_profile_name != "" ? var.instance_profile_name : null
 
   root_block_device {
     volume_type = "gp3"

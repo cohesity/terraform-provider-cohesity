@@ -6,6 +6,7 @@ provider "google" {
   project     = var.project_id
   region      = var.region
   credentials = var.credentials_file_path != "" ? file(var.credentials_file_path) : null
+  impersonate_service_account = var.impersonate_service_account != "" ? var.impersonate_service_account : null
 }
 
 ###############################################################################
@@ -61,7 +62,13 @@ locals {
   subnet_gateway = cidrhost(local.address_prefix, 1)
 
   # Parse user-provided labels into a key-value map
-  parsed_labels = { for label in var.labels : split(":", label)[0] => split(":", label)[1] }
+  parsed_labels = merge(
+    { for label in var.labels : split(":", label)[0] => split(":", label)[1] },
+    {
+      "goog-partner-solution1" = var.goog_partner_solution1
+      "goog-partner-solution2" = var.goog_partner_solution2
+    }
+  )
 
   # Collect private IPs of the created NICs
   private_ips = [
@@ -172,8 +179,11 @@ resource "google_compute_disk" "boot_disk" {
   zone   = var.zone
   labels = local.parsed_labels
   image  = var.image_id
-  disk_encryption_key {
-    kms_key_self_link = var.customer_managed_kms_key != "" ? var.customer_managed_kms_key : null
+  dynamic "disk_encryption_key" {
+    for_each = var.customer_managed_kms_key != "" ? [1] : []
+    content {
+      kms_key_self_link = var.customer_managed_kms_key
+    }
   }
   guest_os_features {
     type = "GVNIC"
@@ -191,8 +201,11 @@ resource "google_compute_disk" "ssd_tier_data_disk" {
   labels                 = local.parsed_labels
   provisioned_iops       = local.ssd_tier_disk_iops
   provisioned_throughput = local.ssd_tier_disk_throughput
-  disk_encryption_key {
-    kms_key_self_link = var.customer_managed_kms_key != "" ? var.customer_managed_kms_key : null
+  dynamic "disk_encryption_key" {
+    for_each = var.customer_managed_kms_key != "" ? [1] : []
+    content {
+      kms_key_self_link = var.customer_managed_kms_key
+    }
   }
 }
 
@@ -208,8 +221,11 @@ resource "google_compute_disk" "hdd_tier_data_disk" {
   labels                 = local.parsed_labels
   provisioned_iops       = local.hdd_tier_disk_iops
   provisioned_throughput = local.hdd_tier_disk_throughput
-  disk_encryption_key {
-    kms_key_self_link = var.customer_managed_kms_key != "" ? var.customer_managed_kms_key : null
+  dynamic "disk_encryption_key" {
+    for_each = var.customer_managed_kms_key != "" ? [1] : []
+    content {
+      kms_key_self_link = var.customer_managed_kms_key
+    }
   }
 }
 
@@ -221,7 +237,8 @@ resource "google_compute_instance" "vm" {
   zone         = var.zone
   labels       = local.parsed_labels
   tags         = var.network_tags
-  # allow_stopping_for_update = true   (In case machinetype/numberofcpus needs to be changed, set this to true)
+  #  Uncomment below line in case machine_type, min_cpu_platform or other instance-related attributes needs to be changed.
+  # allow_stopping_for_update = true
 
   boot_disk {
     source = google_compute_disk.boot_disk[count.index].self_link

@@ -12,14 +12,6 @@ EOT
   default     = ""
 }
 
-variable "profile" {
-  description = <<EOT
-(Optional) AWS CLI named profile to use for authentication. Set this if you want to use a specific profile from ~/.aws/credentials or ~/.aws/config. If not set, the default profile or other authentication methods will be used.
-EOT
-  type        = string
-  default     = ""
-}
-
 ###############################################################################
 # Security Group Variables
 ###############################################################################

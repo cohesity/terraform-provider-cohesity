@@ -3,7 +3,13 @@
 # Authentication Variables
 ###############################################################################
 variable "credentials_file_path" {
-  description = "The path to the GCP credentials file. Leave empty to use Application Default Credentials (ADC)."
+  description = "(Optional) The path to the GCP credentials file."
+  type        = string
+  default     = ""
+}
+
+variable "impersonate_service_account" {
+  description = "(Optional) The email address of the GCP service account to impersonate for all operations. If set, Terraform will act as this service account (requires Service Account Token Creator role on it). Leave empty to not impersonate."
   type        = string
   default     = ""
 }
@@ -55,6 +61,18 @@ variable "image_id" {
 variable "labels" {
   type        = list(string)
   description = "List of labels in the format ['key:value', 'key:value']"
+}
+
+variable "goog_partner_solution1" {
+  type        = string
+  description = "Google Partner Solution label 1 value"
+  default     = "isol_psn_0014m00001h33qrqai_cohesitydatacloud"
+}
+
+variable "goog_partner_solution2" {
+  type        = string
+  description = "Google Partner Solution label 2 value"
+  default     = "isol_psn_0014m00001h34k5qaa_cohesitydatacloud"
 }
 
 variable "resource_name_prefix" {

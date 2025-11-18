@@ -5,9 +5,6 @@
 provider "aws" {
   region = var.region
 
-  # Optional: Use a named profile if provided
-  profile = var.profile != "" ? var.profile : null
-
   # Conditionally assume role if iam_role_arn is not empty
   dynamic "assume_role" {
     for_each = var.iam_role_arn != "" ? [1] : []

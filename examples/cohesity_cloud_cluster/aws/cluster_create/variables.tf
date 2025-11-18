@@ -17,14 +17,6 @@ EOT
   default     = ""
 }
 
-variable "profile" {
-  description = <<EOT
-(Optional) AWS CLI named profile to use for authentication. Set this if you want to use a specific profile from ~/.aws/credentials or ~/.aws/config. If not set, the default profile or other authentication methods will be used.
-EOT
-  type        = string
-  default     = ""
-}
-
 ################################################################################
 # Deployment Variables
 ################################################################################
@@ -112,6 +104,12 @@ variable "encrypt_ebs_volumes" {
   description = "Whether to encrypt EBS volumes. If false, volumes are not encrypted and kms_key_id is ignored. If true, kms_key_id is used if set, otherwise AWS default EBS encryption is used."
   type        = bool
   default     = true
+}
+
+variable "instance_profile_name" {
+  description = "(Optional) The NAME of an IAM instance profile to attach to all VMs. This is NOT the ARN. Find it in the AWS console under the 'Instance Profiles' section or extract from the end of the ARN. Leave blank to not use an instance profile."
+  type        = string
+  default     = ""
 }
 
 ################################################################################

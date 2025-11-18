@@ -1,20 +1,74 @@
 ###############################################################################
+# Authentication Overview for Terraform on GCP
+###############################################################################
+
+# Terraform (Google Provider) follows this order to find GCP credentials:
+#
+# 1. Provider-Specific Credentials (Highest Priority)
+#    - If the provider's `credentials` argument (e.g., via `credentials_file_path`) is set,
+#      it is ALWAYS used and overrides all other methods below.
+#    Steps:
+#      a. In Google Cloud Console, visit IAM & Admin > Service Accounts.
+#      b. Create/select a service account (with the needed roles, like Compute Admin).
+#         See the docs for detailed permissions.
+#      c. Click "Manage keys" > "Add Key" > "Create new key" (choose JSON).
+#      d. Download the JSON file.
+#      e. Set the `credentials_file_path` variable below to the absolute path of this file.
+#
+# 2. GOOGLE_CREDENTIALS Environment Variable
+#    - Set this variable with the contents of your Service Account JSON file (not a path).
+#    Steps:
+#      a. Export the file content, not path:
+#         export GOOGLE_CREDENTIALS="$(cat /path/to/key.json)"
+#
+# 3. GOOGLE_APPLICATION_CREDENTIALS Environment Variable
+#    - Set this variable with the absolute path to your Service Account JSON file.
+#    Steps:
+#      a. Download your service account key file as above.
+#      b. export GOOGLE_APPLICATION_CREDENTIALS="/absolute/path/to/key.json"
+#
+# 4. Application Default Credentials from gcloud CLI
+#    - If no above env vars, Terraform checks for credentials created by the gcloud CLI.
+#    Steps:
+#      a. Install the gcloud CLI (https://cloud.google.com/sdk/docs/install)
+#      b. Run:
+#         gcloud auth application-default login
+#      c. This will create a file at: ~/.config/gcloud/application_default_credentials.json
+#    Note: Terraform does not use gcloud directly, but relies on the credentials file it creates.
+#
+# 5. GCP Environment (Compute Engine)
+#    - If all above not set, and running on a GCP VM, uses the attached service account.
+#    Steps:
+#      a. Ensure your Compute Engine instance has a service account with the necessary IAM roles.
+#      b. Attach this service account when creating the resource or update an existing one:
+#         See: https://cloud.google.com/compute/docs/access/service-accounts
+#
+# Reference: https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference
+#
+# Best practices:
+#  - Use least-privilege roles for Service Accounts.
+#  - Prefer Service Accounts over personal logins for shared/deployment environments.
+
+###############################################################################
 # Authentication Variables
 ###############################################################################
 
-# Path to the GCP Service Account credentials JSON file.
-# If not provided or left empty, Application Default Credentials (ADC) will
-# be used.
-# To set up ADC, run `gcloud auth application-default login` before invoking
-# Terraform.
+# Provider-Specific Credentials (Option 1 - Highest Priority, see above):
+# ----------------------------------------------------------------------
+# Set 'credentials_file_path' below to the absolute path of your GCP Service
+# Account credentials JSON file. This will be used if your provider
+# configuration is set up to use this variable, and will override all other
+# authentication mechanisms listed above.
 #
-# To generate GCP Service Account credentials JSON file:
-#   1. Go to the Google Cloud Console > IAM & Admin > Service Accounts.
-#   2. Create a new service account or select an existing one.
-#   3. Grant it the required roles (e.g., Compute Admin, Service Account User).
-#   4. Click "Manage keys" > "Add Key" > "Create new key" (choose JSON).
-#   5. Download the JSON file and provide its absolute path below.
-credentials_file_path = "replace-with-the-credentials-file"
+# Example: credentials_file_path = "/absolute/path/to/your/credentials.json"
+credentials_file_path = ""
+
+# (Optional) Email address of the GCP service account to impersonate for all operations.
+# If set, Terraform will act as this service account instead of the one from the credentials file or ADC.
+# The identity running Terraform must have Service Account Token Creator (roles/iam.serviceAccountTokenCreator)
+# on the impersonated service account.
+# Example: impersonate_service_account = "my-impersonated-sa@my-gcp-project.iam.gserviceaccount.com"
+impersonate_service_account = ""
 
 ###############################################################################
 # Deployment Variables
@@ -103,7 +157,9 @@ attach_public_ip = false
 
 # (Optional) Email of a pre-created service account to attach to the VMs.
 # Leave empty to create VMs without a service account.
-# Example: "my-service-account@my-project.iam.gserviceaccount.com"
+# Note that the identity used to run this terraform should have Service Account
+# User role (roles/iam.serviceAccountUser) on the service account to be attached.
+# Example: "my-attached-service-account@my-project.iam.gserviceaccount.com"
 service_account_email = ""
 
 # (Optional) The full resource ID of the customer-managed KMS key to use for disk encryption.
