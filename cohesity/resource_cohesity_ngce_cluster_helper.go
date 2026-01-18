@@ -499,7 +499,7 @@ func getClusterCreateScriptContent() string {
 					sleep 30
 					status_output=$(iris_cli --username=admin --password=admin --skip_password_prompt=true --skip_force_password_change=true cluster status)
 					echo "${status_output}"
-					if echo "${status_output}" | grep -Eq "CLUSTER ACTIVE OPERATION\s*:\s*$"; then
+					if echo "${status_output}" | grep -qE "SERVICE STATE SYNC\s*:\s*DONE"; then
 						echo "Cluster creation completed successfully."
 						final_status_output=$(iris_cli --output=prettyjson --username=admin --password=admin --skip_password_prompt=true --skip_force_password_change=true cluster status)
 						# Extract Node: x IP: [y] pairs from the final status output and print them
