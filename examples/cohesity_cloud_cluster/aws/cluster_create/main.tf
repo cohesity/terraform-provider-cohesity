@@ -2,6 +2,23 @@
 # Provider Configuration
 ################################################################################
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
+  }
+}
+
 provider "aws" {
   region = var.region
 
@@ -91,7 +108,7 @@ locals {
   hdd_disks = flatten([
     for vm_index in range(var.num_instances) : [
       for disk_index in range(local.config.HDDTierNumDisks) : {
-        key        = "hdd-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        key        = "hdd-tier-${vm_index}-${disk_index}" # composite key: VM index and disk index
         vm_index   = vm_index
         disk_index = disk_index
       }
@@ -103,13 +120,29 @@ locals {
   ssd_disks = flatten([
     for vm_index in range(var.num_instances) : [
       for disk_index in range(local.config.SSDTierNumDisks) : {
-        key        = "ssd-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        key        = "ssd-tier-${vm_index}-${disk_index}" # composite key: VM index and disk index
         vm_index   = vm_index
         disk_index = disk_index
       }
     ]
   ])
   ssd_disk_map = { for d in local.ssd_disks : d.key => d }
+
+  # Device name suffixes for SSD tier disks
+  # Supports up to 20 disks: f-o (10), then aa-aj (10)
+  # Note: We skip p-z to avoid conflicts with HDD which uses that range
+  ssd_device_suffixes = concat(
+    ["f", "g", "h", "i", "j", "k", "l", "m", "n", "o"], # 0-9
+    ["aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj"] # 10-19
+  )
+
+  # Device name suffixes for HDD tier disks
+  # Starts at 'p' to avoid conflicts with SSD (which uses f-o, then skips to aa+)
+  # Supports up to 20 disks: p-y (10), then z, then ca-ci (9)
+  hdd_device_suffixes = concat(
+    ["p", "q", "r", "s", "t", "u", "v", "w", "x", "y"], # 0-9
+    ["z", "ca", "cb", "cc", "cd", "ce", "cf", "cg", "ch", "ci"] # 10-19
+  )
 
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
@@ -208,7 +241,7 @@ resource "aws_ebs_volume" "ssd_tier_data_disk" {
   kms_key_id        = var.encrypt_ebs_volumes ? (var.kms_key_id != "" ? var.kms_key_id : null) : null
 
   tags = merge(local.parsed_tags, {
-    Name = "${local.resource_name_prefix}-ssd-tier-disk-${each.key}"
+    Name = "${local.resource_name_prefix}-${each.key}"
   })
 }
 
@@ -219,7 +252,7 @@ resource "aws_volume_attachment" "attach_ssd" {
   volume_id   = aws_ebs_volume.ssd_tier_data_disk[each.key].id
 
   # Generate a unique device name for each SSD disk attached to the same instance
-  device_name  = "/dev/sd${element(["f", "g", "h", "i", "j", "k", "l", "m", "n", "o"], each.value.disk_index)}"
+  device_name  = "/dev/sd${element(local.ssd_device_suffixes, each.value.disk_index)}"
   force_detach = true
 }
 
@@ -235,7 +268,7 @@ resource "aws_ebs_volume" "hdd_tier_data_disk" {
   kms_key_id        = var.encrypt_ebs_volumes ? (var.kms_key_id != "" ? var.kms_key_id : null) : null
 
   tags = merge(local.parsed_tags, {
-    Name = "${local.resource_name_prefix}-hdd-tier-disk-${each.key}"
+    Name = "${local.resource_name_prefix}-${each.key}"
   })
 }
 
@@ -246,7 +279,7 @@ resource "aws_volume_attachment" "attach_hdd" {
   volume_id   = aws_ebs_volume.hdd_tier_data_disk[each.key].id
 
   # Generate a unique device name for each HDD disk attached to the same instance
-  device_name  = "/dev/sd${element(["p", "q", "r", "s", "t", "u", "v", "w", "x", "y"], each.value.disk_index)}"
+  device_name  = "/dev/sd${element(local.hdd_device_suffixes, each.value.disk_index)}"
   force_detach = true
 }
 

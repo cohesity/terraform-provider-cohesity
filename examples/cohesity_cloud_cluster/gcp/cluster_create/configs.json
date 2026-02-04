@@ -70,6 +70,22 @@
       "HDDTierDiskType": "hyperdisk-balanced",
       "HDDTierDiskIops": 3000,
       "HDDTierDiskThroughputinMBps": 140
+    },
+    {
+      "Name": "Internal Test Config - Not meant for POC or Production",
+      "Id": "12345",
+      "InstanceCPUCount": "16",
+      "BootDiskType": "hyperdisk-balanced",
+      "SSDTierNumDisks": 2,
+      "SSDTierDiskSizeinGB": 100,
+      "SSDTierDiskType": "hyperdisk-balanced",
+      "SSDTierDiskIops": 3000,
+      "SSDTierDiskThroughputinMBps": 140,
+      "HDDTierNumDisks": 1,
+      "HDDTierDiskSizeinGB": 512,
+      "HDDTierDiskType": "hyperdisk-balanced",
+      "HDDTierDiskIops": 3000,
+      "HDDTierDiskThroughputinMBps": 140
     }
   ]
 }

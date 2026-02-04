@@ -2,25 +2,39 @@
 # Provider Configuration
 ################################################################################
 
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
+  }
+}
+
 provider "azurerm" {
   features {}
 
-  # Required for all authentication methods
   subscription_id = var.subscription_id
+  environment     = var.environment
 
-  # Service Principal authentication (if credentials are provided)
-  client_id     = var.use_managed_identity && var.managed_identity_id != "" ? var.managed_identity_id : (var.client_id != "" ? var.client_id : null)
+  # Credentials are interpreted based on auth_method:
+  # - Service Principal: client_id + client_secret + tenant_id all required
+  # - Managed Identity: client_id optional (only required for multiple user-assigned identities)
+  # - Azure CLI: all empty, provider uses 'az login' credentials automatically
+  client_id     = var.client_id != "" ? var.client_id : null
   client_secret = var.client_secret != "" ? var.client_secret : null
   tenant_id     = var.tenant_id != "" ? var.tenant_id : null
 
-  # Use Managed Identity if enabled
-  use_msi = var.use_managed_identity
-
-  # Use Azure CLI authentication if enabled
-  use_cli = var.use_azure_cli
-
-  # Set the Azure cloud environment
-  environment = var.environment
+  # Enable managed identity authentication when specified
+  use_msi = var.auth_method == "managed_identity"
 }
 
 ################################################################################
@@ -112,6 +126,30 @@ locals {
   # Fallback to `custom_config` if provided; otherwise, use the selected configuration
   config = var.custom_config != null ? var.custom_config : local.selected_config
 
+  # Create a HDD disk map with a stable composite key
+  hdd_disks = flatten([
+    for vm_index in range(var.num_instances) : [
+      for disk_index in range(local.config.HDDTierNumDisks) : {
+        key        = "hdd-tier-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        vm_index   = vm_index
+        disk_index = disk_index
+      }
+    ]
+  ])
+  hdd_disk_map = { for d in local.hdd_disks : d.key => d }
+
+  # Create a SSD disk map with a stable composite key
+  ssd_disks = flatten([
+    for vm_index in range(var.num_instances) : [
+      for disk_index in range(local.config.SSDTierNumDisks) : {
+        key        = "ssd-tier-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        vm_index   = vm_index
+        disk_index = disk_index
+      }
+    ]
+  ])
+  ssd_disk_map = { for d in local.ssd_disks : d.key => d }
+
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
 
@@ -184,6 +222,7 @@ resource "azurerm_network_interface" "nic" {
   name                = "${local.resource_name_prefix}-vm-${count.index}-nic"
   location            = var.region
   resource_group_name = local.resource_group_name
+  accelerated_networking_enabled = true
 
   ip_configuration {
     name                          = "internal"
@@ -221,40 +260,34 @@ resource "azurerm_managed_disk" "os_disk" {
 
 # Create managed disks for SSD tier
 resource "azurerm_managed_disk" "ssd_tier_data_disk" {
-  for_each = {
-    for idx in range(var.num_instances * local.config.SSDTierNumDisks) :
-    "disk-${floor(idx / local.config.SSDTierNumDisks)}-${idx % local.config.SSDTierNumDisks}" => idx
-  }
-  name                   = "${local.resource_name_prefix}-vm-${floor(each.value / local.config.SSDTierNumDisks)}-ssd-tier-disk-${each.value % local.config.SSDTierNumDisks}"
-  location               = var.region
-  resource_group_name    = local.resource_group_name
-  storage_account_type   = local.config.SSDTierDiskType
-  disk_size_gb           = local.config.SSDTierDiskSizeinGB
-  disk_iops_read_write   = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskIops : null
-  disk_mbps_read_write   = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskThroughputinMBps : null
-  create_option          = "Empty"
-  zone                   = var.availability_zone
+  for_each             = local.ssd_disk_map
+  name                 = "${local.resource_name_prefix}-${each.key}"
+  location             = var.region
+  resource_group_name  = local.resource_group_name
+  storage_account_type = local.config.SSDTierDiskType
+  disk_size_gb         = local.config.SSDTierDiskSizeinGB
+  disk_iops_read_write = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskIops : null
+  disk_mbps_read_write = local.config.SSDTierDiskType == "PremiumV2_LRS" ? local.config.SSDTierDiskThroughputinMBps : null
+  create_option        = "Empty"
+  zone                 = var.availability_zone
   disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
-  tags                   = local.parsed_tags
+  tags                 = local.parsed_tags
 }
 
 # Create managed disks for HDD tier
 resource "azurerm_managed_disk" "hdd_tier_data_disk" {
-  for_each = {
-    for idx in range(var.num_instances * local.config.HDDTierNumDisks) :
-    "disk-${floor(idx / local.config.HDDTierNumDisks)}-${idx % local.config.HDDTierNumDisks}" => idx
-  }
-  name                   = "${local.resource_name_prefix}-vm-${floor(each.value / local.config.HDDTierNumDisks)}-hdd-tier-disk-${each.value % local.config.HDDTierNumDisks}"
-  location               = var.region
-  resource_group_name    = local.resource_group_name
-  storage_account_type   = local.config.HDDTierDiskType
-  disk_size_gb           = local.config.HDDTierDiskSizeinGB
-  disk_iops_read_write   = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskIops : null
-  disk_mbps_read_write   = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskThroughputinMBps : null
-  create_option          = "Empty"
-  zone                   = var.availability_zone
+  for_each             = local.hdd_disk_map
+  name                 = "${local.resource_name_prefix}-${each.key}"
+  location             = var.region
+  resource_group_name  = local.resource_group_name
+  storage_account_type = local.config.HDDTierDiskType
+  disk_size_gb         = local.config.HDDTierDiskSizeinGB
+  disk_iops_read_write = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskIops : null
+  disk_mbps_read_write = local.config.HDDTierDiskType == "PremiumV2_LRS" ? local.config.HDDTierDiskThroughputinMBps : null
+  create_option        = "Empty"
+  zone                 = var.availability_zone
   disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
-  tags                   = local.parsed_tags
+  tags                 = local.parsed_tags
 }
 
 # Create Virtual Machines
@@ -282,27 +315,35 @@ resource "azurerm_virtual_machine" "azure_vm" {
 
   # Attach SSD Tier Data Disks
   dynamic "storage_data_disk" {
-    for_each = range(local.config.SSDTierNumDisks)
+    for_each = { for k, v in local.ssd_disk_map : k => v if v.vm_index == count.index }
     content {
-      name            = azurerm_managed_disk.ssd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].name
-      lun             = storage_data_disk.value
+      name            = azurerm_managed_disk.ssd_tier_data_disk[storage_data_disk.key].name
+      lun             = storage_data_disk.value.disk_index
       caching         = "None"
       create_option   = "Attach"
       disk_size_gb    = local.config.SSDTierDiskSizeinGB
-      managed_disk_id = azurerm_managed_disk.ssd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].id
+      managed_disk_id = azurerm_managed_disk.ssd_tier_data_disk[storage_data_disk.key].id
     }
   }
 
   # Attach HDD Tier Data Disks
   dynamic "storage_data_disk" {
-    for_each = range(local.config.HDDTierNumDisks)
+    for_each = { for k, v in local.hdd_disk_map : k => v if v.vm_index == count.index }
     content {
-      name            = azurerm_managed_disk.hdd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].name
-      lun             = storage_data_disk.value + local.config.SSDTierNumDisks
+      name            = azurerm_managed_disk.hdd_tier_data_disk[storage_data_disk.key].name
+      lun             = storage_data_disk.value.disk_index + local.config.SSDTierNumDisks
       caching         = "None"
       create_option   = "Attach"
       disk_size_gb    = local.config.HDDTierDiskSizeinGB
-      managed_disk_id = azurerm_managed_disk.hdd_tier_data_disk["disk-${count.index}-${storage_data_disk.value}"].id
+      managed_disk_id = azurerm_managed_disk.hdd_tier_data_disk[storage_data_disk.key].id
+    }
+  }
+
+  dynamic "identity" {
+    for_each = length(var.user_assigned_managed_identities_to_attach) > 0 ? [1] : []
+    content {
+      type         = "UserAssigned"
+      identity_ids = var.user_assigned_managed_identities_to_attach
     }
   }
 

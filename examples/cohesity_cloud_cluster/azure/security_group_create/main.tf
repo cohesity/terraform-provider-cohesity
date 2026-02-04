@@ -2,25 +2,31 @@
 # Provider Configuration
 ################################################################################
 
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+  }
+}
+
 provider "azurerm" {
   features {}
 
-  # Required for all authentication methods
   subscription_id = var.subscription_id
+  environment     = var.environment
 
-  # Service Principal authentication (if credentials are provided)
-  client_id     = var.use_managed_identity && var.managed_identity_id != "" ? var.managed_identity_id : (var.client_id != "" ? var.client_id : null)
+  # Credentials are interpreted based on auth_method:
+  # - Service Principal: client_id + client_secret + tenant_id all required
+  # - Managed Identity: client_id optional (only required for multiple user-assigned identities)
+  # - Azure CLI: all empty, provider uses 'az login' credentials automatically
+  client_id     = var.client_id != "" ? var.client_id : null
   client_secret = var.client_secret != "" ? var.client_secret : null
   tenant_id     = var.tenant_id != "" ? var.tenant_id : null
 
-  # Use Managed Identity if enabled
-  use_msi = var.use_managed_identity
-
-  # Use Azure CLI authentication if enabled
-  use_cli = var.use_azure_cli
-
-  # Set the Azure cloud environment
-  environment = var.environment
+  # Enable managed identity authentication when specified
+  use_msi = var.auth_method == "managed_identity"
 }
 
 locals {

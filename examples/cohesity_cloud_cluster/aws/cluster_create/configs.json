@@ -59,6 +59,21 @@
       "HDDTierDiskSizeinGB" : 1024,
       "HDDTierDiskIops" : 3000,
       "HDDTierDiskThroughputinMBps" : 500
+    },
+    {
+      "Name" : "Internal Test Config - Not meant for POC or Production",
+      "Id" : "12345",
+      "InstanceType" : "m6i.2xlarge",
+      "SSDTierDiskType" : "gp3",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 100,
+      "SSDTierDiskIops" : 3000,
+      "SSDTierDiskThroughputinMBps" : 125,
+      "HDDTierDiskType" : "gp3",
+      "HDDTierNumDisks" : 1,
+      "HDDTierDiskSizeinGB" : 512,
+      "HDDTierDiskIops" : 3000,
+      "HDDTierDiskThroughputinMBps" : 125
     }
   ]
 }

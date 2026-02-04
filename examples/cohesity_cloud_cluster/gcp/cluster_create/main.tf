@@ -2,6 +2,23 @@
 # Provider Configuration
 ###############################################################################
 
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 7.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
+  }
+}
+
 provider "google" {
   project     = var.project_id
   region      = var.region
@@ -149,6 +166,30 @@ locals {
   # Boot disk type: use config.BootDiskType if present, else default to pd-standard
   boot_disk_type = contains(keys(local.config), "BootDiskType") ? local.config.BootDiskType : "pd-standard"
 
+  # Create a HDD disk map with a stable composite key
+  hdd_disks = flatten([
+    for vm_index in range(var.num_instances) : [
+      for disk_index in range(local.config.HDDTierNumDisks) : {
+        key        = "hdd-tier-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        vm_index   = vm_index
+        disk_index = disk_index
+      }
+    ]
+  ])
+  hdd_disk_map = { for d in local.hdd_disks : d.key => d }
+
+  # Create a SSD disk map with a stable composite key
+  ssd_disks = flatten([
+    for vm_index in range(var.num_instances) : [
+      for disk_index in range(local.config.SSDTierNumDisks) : {
+        key        = "ssd-tier-${vm_index}-${disk_index}" # composite key: VM index and disk index
+        vm_index   = vm_index
+        disk_index = disk_index
+      }
+    ]
+  ])
+  ssd_disk_map = { for d in local.ssd_disks : d.key => d }
+
   # SSD Tier disk IOPS: use config.SSDTierDiskIops if present, else null
   ssd_tier_disk_iops = contains(keys(local.config), "SSDTierDiskIops") ? local.config.SSDTierDiskIops : null
   # SSD Tier disk Throughput: use config.SSDTierDiskThroughputinMBps if present, else null
@@ -157,6 +198,12 @@ locals {
   hdd_tier_disk_iops = contains(keys(local.config), "HDDTierDiskIops") ? local.config.HDDTierDiskIops : null
   # HDD Tier disk Throughput: use config.HDDTierDiskThroughputinMBps if present, else null
   hdd_tier_disk_throughput = contains(keys(local.config), "HDDTierDiskThroughputinMBps") ? local.config.HDDTierDiskThroughputinMBps : null
+
+  # Determine if gVNIC is required based on machine family type
+  # C4*, C3*, and N4* families require gVNIC according to GCP documentation
+  # Extract the family prefix (e.g., "c4" from "c4-standard", "n4d" from "n4d-standard")
+  machine_family_prefix = split("-", var.machine_family_type)[0]
+  requires_gvnic = can(regex("^(c4|c3|n4)", local.machine_family_prefix))
 }
 
 ###############################################################################
@@ -174,7 +221,7 @@ resource "google_compute_address" "public_ip" {
 # Create Boot Disks
 resource "google_compute_disk" "boot_disk" {
   count  = var.num_instances
-  name   = "${local.resource_name_prefix}-vm-${count.index}-boot-disk"
+  name   = "${local.resource_name_prefix}-vm-${count.index}-os-disk"
   type   = local.boot_disk_type
   zone   = var.zone
   labels = local.parsed_labels
@@ -185,21 +232,23 @@ resource "google_compute_disk" "boot_disk" {
       kms_key_self_link = var.customer_managed_kms_key
     }
   }
-  guest_os_features {
-    type = "GVNIC"
+  dynamic "guest_os_features" {
+    for_each = local.requires_gvnic ? [1] : []
+    content {
+      type = "GVNIC"
+    }
   }
 }
 
 # Create SSD Tier Data Disks
 resource "google_compute_disk" "ssd_tier_data_disk" {
-  for_each = { for idx in range(var.num_instances * local.config.SSDTierNumDisks) :
-  "disk-vm-${floor(idx / local.config.SSDTierNumDisks)}-hdd-tier-${idx % local.config.SSDTierNumDisks}" => idx }
-  name                   = "${local.resource_name_prefix}-vm-${floor(each.value / local.config.SSDTierNumDisks)}-ssd-tier-${each.value % local.config.SSDTierNumDisks}"
-  type                   = local.config.SSDTierDiskType
-  zone                   = var.zone
-  size                   = local.config.SSDTierDiskSizeinGB
-  labels                 = local.parsed_labels
-  provisioned_iops       = local.ssd_tier_disk_iops
+  for_each          = local.ssd_disk_map
+  name              = "${local.resource_name_prefix}-${each.key}"
+  type              = local.config.SSDTierDiskType
+  zone              = var.zone
+  size              = local.config.SSDTierDiskSizeinGB
+  labels            = local.parsed_labels
+  provisioned_iops  = local.ssd_tier_disk_iops
   provisioned_throughput = local.ssd_tier_disk_throughput
   dynamic "disk_encryption_key" {
     for_each = var.customer_managed_kms_key != "" ? [1] : []
@@ -211,15 +260,13 @@ resource "google_compute_disk" "ssd_tier_data_disk" {
 
 # Create HDD Tier Data Disks
 resource "google_compute_disk" "hdd_tier_data_disk" {
-  for_each = { for idx in range(var.num_instances * local.config.HDDTierNumDisks) :
-  "disk-vm-${floor(idx / local.config.HDDTierNumDisks)}-hdd-tier-${idx % local.config.HDDTierNumDisks}" => idx }
-
-  name                   = "${local.resource_name_prefix}-vm-${floor(each.value / local.config.HDDTierNumDisks)}-hdd-tier-${each.value % local.config.HDDTierNumDisks}"
-  type                   = local.config.HDDTierDiskType
-  zone                   = var.zone
-  size                   = local.config.HDDTierDiskSizeinGB
-  labels                 = local.parsed_labels
-  provisioned_iops       = local.hdd_tier_disk_iops
+  for_each          = local.hdd_disk_map
+  name              = "${local.resource_name_prefix}-${each.key}"
+  type              = local.config.HDDTierDiskType
+  zone              = var.zone
+  size              = local.config.HDDTierDiskSizeinGB
+  labels            = local.parsed_labels
+  provisioned_iops  = local.hdd_tier_disk_iops
   provisioned_throughput = local.hdd_tier_disk_throughput
   dynamic "disk_encryption_key" {
     for_each = var.customer_managed_kms_key != "" ? [1] : []
@@ -247,7 +294,7 @@ resource "google_compute_instance" "vm" {
   network_interface {
     network    = var.vnet_name
     subnetwork = var.subnet_name
-    nic_type   = "GVNIC"
+    nic_type   = local.requires_gvnic ? "GVNIC" : null
     dynamic "access_config" {
       for_each = var.attach_public_ip ? [1] : []
       content {
@@ -259,7 +306,7 @@ resource "google_compute_instance" "vm" {
 
   # Attach SSD tier disks
   dynamic "attached_disk" {
-    for_each = { for k, v in google_compute_disk.ssd_tier_data_disk : k => v if tonumber(split("-", k)[2]) == count.index }
+    for_each = { for k, v in google_compute_disk.ssd_tier_data_disk : k => v if local.ssd_disk_map[k].vm_index == count.index }
     content {
       source = attached_disk.value.self_link
     }
@@ -267,7 +314,7 @@ resource "google_compute_instance" "vm" {
 
   # Attach HDD tier disks
   dynamic "attached_disk" {
-    for_each = { for k, v in google_compute_disk.hdd_tier_data_disk : k => v if tonumber(split("-", k)[2]) == count.index }
+    for_each = { for k, v in google_compute_disk.hdd_tier_data_disk : k => v if local.hdd_disk_map[k].vm_index == count.index }
     content {
       source = attached_disk.value.self_link
     }

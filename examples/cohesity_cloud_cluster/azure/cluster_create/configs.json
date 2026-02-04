@@ -134,6 +134,21 @@
       "HDDTierDiskType" : "PremiumV2_LRS",
       "HDDTierDiskIops" : 3000,
       "HDDTierDiskThroughputinMBps": 600
+    },
+    {
+      "Name": "Internal Test Config - Not meant for POC or Production",
+      "Id" : "12345",
+      "InstanceType" : "Standard_D16s_v5",
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 100,
+      "SSDTierDiskType" : "PremiumV2_LRS",
+      "SSDTierDiskIops" : 3000,
+      "SSDTierDiskThroughputinMBps": 125,
+      "HDDTierNumDisks" : 1,
+      "HDDTierDiskSizeinGB" : 512,
+      "HDDTierDiskType" : "PremiumV2_LRS",
+      "HDDTierDiskIops" : 3000,
+      "HDDTierDiskThroughputinMBps": 125
     }
   ]
 }

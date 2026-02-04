@@ -42,45 +42,41 @@ tenant_id     = ""     # Service Principal only
 environment = "public"
 
 ################################################################################
-# Security Group Variables
+# Resource and Upload Variables
 ################################################################################
 
-# The prefix to use for naming the security group and related resources
-# This will be prepended to resource names, followed by additional identifiers
-#
-# Example: If you set resource_name_prefix = "cohesity", the security group will be named:
-# - "cohesity-nsg"
-#
-# Restrictions:
-# - Must only contain letters (a-z, A-Z), numbers (0-9), and hyphens (-).
-# - Cannot start or end with a hyphen.
-# - Hyphens cannot be consecutive (e.g., "--").
-resource_name_prefix = "replace-with-prefix"
-
-# Name of the resource group where the security group will be created
-# - If blank, a new resource group named {resource_name_prefix}-rg will be created
-resource_group_name = "replace-with-resource-group-name"
-
-# Azure Region for deployment (e.g., eastus, westus2, westeurope)
-# - List of regions: https://azure.microsoft.com/en-us/explore/global-infrastructure/products/
+# Azure region where the resources will be created.
+# Example: "East US", "West US", "Central US", "West Europe", "eastus2", etc.
+# See all regions: https://azure.microsoft.com/en-us/explore/global-infrastructure/products/
 region = "replace-with-region"
 
-# Tags to apply to the security group and related resources
-# Format: key-value pairs in a map
-# Example: { environment = "production", project = "cohesity-deployment" }
-tags = {
-  environment = "replace-with-environment",
-  owner       = "replace-with-owner"
-}
+# Prefix for naming resources (resource group, storage account, container) that
+# this terraform creates.
+# - Must be 3-20 characters long
+# - Can only contain lowercase letters and numbers
+# - Must start with a letter
+# Example: If set to "myprefix", resources will be named:
+#   Resource Group: myprefix-rg
+#   Storage Account: myprefixsa
+#   Storage Container: myprefix-container
+resource_name_prefix = "replace-with-prefix"
 
-# CIDR block that will be used as source_address_prefix for Outbound rules and
-# destination_address_prefix for Inbound rules
-# - This should match the subnet CIDR where your Cohesity cluster will be deployed
-# - Example: "10.0.0.0/24"
-cidr = "replace-with-cidr-block"
+# Name of the existing resource group to use (leave blank to create a new one)
+# Example: "my-existing-rg"
+resource_group_name = ""
 
-# Path to the JSON file containing security group rules
-# - The default file (./rules.json) contains a comprehensive set of rules for Cohesity deployments
-# - You can customize this file or provide a different file with your own rule set
-# - Format is a JSON array of rule objects as shown in the default rules.json
-rules_file = "./rules.json"
+# Name of the existing storage account to use (leave blank to create a new one)
+# Example: "mystorageacct"
+storage_account_name = ""
+
+# Name of the existing container in the storage account (leave blank to create a new one)
+# Example: "vhds"
+container_name = ""
+
+# Path to the local VHD file to upload
+# Example: "/home/user/images/myimage.vhd"
+local_vhd_path = "/path/to/your/vhd-file.vhd"
+
+# Path to the azure-vhd-utils executable
+# Example: "/usr/local/bin/azure-vhd-utils"
+azure_vhd_utils_path = "/path/to/azure-vhd-utils"

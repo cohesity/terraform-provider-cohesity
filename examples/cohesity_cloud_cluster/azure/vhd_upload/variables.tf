@@ -2,42 +2,43 @@
 # Authentication Variables
 ###############################################################################
 
+variable "auth_method" {
+  description = "Authentication method to use: 'service_principal', 'managed_identity', or 'azure_cli'"
+  type        = string
+
+  validation {
+    condition     = contains(["service_principal", "managed_identity", "azure_cli"], var.auth_method)
+    error_message = "auth_method must be one of: 'service_principal', 'managed_identity', or 'azure_cli'."
+  }
+}
+
 variable "subscription_id" {
   description = "Azure Subscription ID (Required for all authentication methods)"
   type        = string
 }
 
-# Service Principal Authentication
 variable "client_id" {
-  description = "Azure Service Principal Client ID (leave empty to use other authentication methods)"
+  description = <<-EOT
+    Client ID for authentication:
+    - Service Principal: Application (client) ID (required)
+    - Managed Identity: User-assigned identity client ID (only required if VM has multiple user-assigned identities)
+    - Azure CLI: Not used (leave empty)
+  EOT
   type        = string
   default     = ""
 }
 
 variable "client_secret" {
-  description = "Azure Service Principal Client Secret (leave empty to use other authentication methods)"
+  description = "Azure Service Principal Client Secret (required when auth_method = 'service_principal', leave empty otherwise)"
   type        = string
   default     = ""
+  sensitive   = true
 }
 
 variable "tenant_id" {
-  description = "Azure Tenant ID (leave empty to use other authentication methods)"
+  description = "Azure Tenant ID (required when auth_method = 'service_principal', leave empty otherwise)"
   type        = string
   default     = ""
-}
-
-# Managed Identity Authentication
-variable "use_managed_identity" {
-  description = "Set to true to authenticate using Managed Identity"
-  type        = bool
-  default     = false
-}
-
-# Azure CLI Authentication
-variable "use_azure_cli" {
-  description = "Set to true to authenticate using Azure CLI login"
-  type        = bool
-  default     = false
 }
 
 variable "environment" {
@@ -109,9 +110,9 @@ variable "azure_vhd_utils_path" {
 }
 
 variable "log_storage_account_key" {
-  description = "Set to true to allow Terraform to log the storage account key (not recommended for security reasons)"
+  description = "Set to false to not log the storage account key"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "vhd_upload_parallelism" {
