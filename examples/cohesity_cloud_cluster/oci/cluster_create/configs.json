@@ -1,0 +1,15 @@
+{
+  "Configurations" : [
+    {
+      "Name": "FLEX_1",
+      "Id": "1",
+      "InstanceType": "VM.Standard.E4.Flex",
+      "InstanceOCPUs": 8,
+      "InstanceMemoryInGBs": 128,
+      "SSDTierNumDisks" : 2,
+      "SSDTierDiskSizeinGB" : 511,
+      "HDDTierNumDisks" : 1,
+      "HDDTierDiskSizeinGB" : 512
+    }
+  ]
+}
