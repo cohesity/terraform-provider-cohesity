@@ -59,7 +59,22 @@ variable "subnet_id" {
 
 variable "image_id" {
   type        = string
-  description = "OCID of the image to use for the Virtual Machine"
+  description = <<EOT
+OCID of the image to use for the Virtual Machine.
+
+For initial cluster creation: Use the image for your desired Cohesity version.
+
+For adding nodes to an existing cluster: Update this to the image matching your
+current cluster version (after any upgrades). Existing instances are protected
+from replacement via lifecycle ignore_changes, so only new instances will use
+this image. This enables seamless scale-out after in-place software upgrades.
+
+Example workflow for adding nodes after upgrade:
+  1. Initial deploy: 3 nodes with cohesity-image-7.2
+  2. In-place upgrade cluster to 7.3 (no Terraform change)
+  3. Add nodes: Update image_id to cohesity-image-7.3, increase num_instances to 5
+  4. terraform apply -> nodes 0-2 untouched, nodes 3-4 created with new image
+EOT
 }
 
 variable "tags" {

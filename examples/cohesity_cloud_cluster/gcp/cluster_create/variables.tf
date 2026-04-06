@@ -16,6 +16,13 @@ variable "impersonate_service_account" {
 ###############################################################################
 # Deployment Variables
 ###############################################################################
+
+variable "cluster_size" {
+  type        = string
+  description = "Cluster size variable to define legacy cloud cluster (CE) or nextGen cloud cluster (NGCE). Example: \"xlarge\", \"nextGen\""
+  default     = "nextGen"
+}
+
 variable "project_id" {
   description = "The ID of the GCP project"
   type        = string
@@ -55,7 +62,23 @@ variable "subnet_name" {
 
 variable "image_id" {
   type        = string
-  description = "ID of the image to use for the Virtual Machine (format: 'projects/<project>/global/images/<image>')"
+  description = <<EOT
+ID of the image to use for the Virtual Machine.
+Format: 'projects/<project>/global/images/<image>'
+
+For initial cluster creation: Use the image for your desired Cohesity version.
+
+For adding nodes to an existing cluster: Update this to the image matching your
+current cluster version (after any upgrades). Existing boot disks are protected
+from replacement via lifecycle ignore_changes, so only new instances will use
+this image. This enables seamless scale-out after in-place software upgrades.
+
+Example workflow for adding nodes after upgrade:
+  1. Initial deploy: 3 nodes with cohesity-image-7.2
+  2. In-place upgrade cluster to 7.3 (no Terraform change)
+  3. Add nodes: Update image_id to cohesity-image-7.3, increase num_instances to 5
+  4. terraform apply -> nodes 0-2 untouched, nodes 3-4 created with new image
+EOT
 }
 
 variable "labels" {

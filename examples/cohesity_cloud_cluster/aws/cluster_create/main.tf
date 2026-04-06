@@ -160,7 +160,7 @@ locals {
   # Construct cluster command
   cluster_create_cmd = join(" ", [
     local.iris_cli_cmd_prefix,
-    "cluster cloud-create cluster-size=nextGen enable-software-encryption=true",
+    "cluster cloud-create cluster-size=${var.cluster_size} enable-software-encryption=true",
     "name=${var.cluster_name}",
     "node-ips=${local.private_ips_string}",
     "hostname=${local.private_ips[0]}",
@@ -227,6 +227,15 @@ resource "aws_instance" "vm" {
   tags = merge(local.parsed_tags, {
     Name = "${local.resource_name_prefix}-vm-${count.index}"
   })
+
+  lifecycle {
+    # Prevent replacement of existing cluster nodes when AMI changes.
+    # This enables add-node scenarios where new nodes use a different AMI
+    # (matching the upgraded cluster version) while existing nodes remain untouched.
+    # When adding nodes to an upgraded cluster, update image_id to match
+    # the current cluster version before increasing num_instances.
+    ignore_changes = [ami]
+  }
 }
 
 # Create EBS Volumes (SSD Tier)

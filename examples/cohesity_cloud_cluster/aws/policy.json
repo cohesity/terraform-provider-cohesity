@@ -74,6 +74,14 @@
           "Resource": "*"
       },
       {
+          "Sid": "InstanceProfilePassRole",
+          "Effect": "Allow",
+          "Action": [
+              "iam:PassRole"
+          ],
+          "Resource": "*"
+      },
+      {
           "Sid": "KMSAccess",
           "Effect": "Allow",
           "Action": [

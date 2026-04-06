@@ -1,11 +1,11 @@
 {
   "Configurations" : [
     {
-      "Name": "FLEX_1",
+      "Name": "Core",
       "Id": "1",
       "InstanceType": "VM.Standard.E4.Flex",
       "InstanceOCPUs": 8,
-      "InstanceMemoryInGBs": 128,
+      "InstanceMemoryInGBs": 64,
       "SSDTierNumDisks" : 2,
       "SSDTierDiskSizeinGB" : 511,
       "HDDTierNumDisks" : 1,

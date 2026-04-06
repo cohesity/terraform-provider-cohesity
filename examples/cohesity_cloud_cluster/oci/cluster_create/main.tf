@@ -201,6 +201,15 @@ resource "oci_core_instance" "vm" {
   }
 
   freeform_tags = local.parsed_tags
+
+  lifecycle {
+    # Prevent replacement of existing cluster nodes when image changes.
+    # This enables add-node scenarios where new nodes use a different image
+    # (matching the upgraded cluster version) while existing nodes remain untouched.
+    # When adding nodes to an upgraded cluster, update image_id to match
+    # the current cluster version before increasing num_instances.
+    ignore_changes = [source_details[0].source_id]
+  }
 }
 
 # Create Block Volumes (SSD Tier)

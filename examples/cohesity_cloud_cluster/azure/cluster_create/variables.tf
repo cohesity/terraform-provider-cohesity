@@ -56,6 +56,12 @@ variable "environment" {
 # Deployment Variables
 ################################################################################
 
+variable "cluster_size" {
+  type        = string
+  description = "Cluster size variable to define legacy cloud cluster (CE) or nextGen cloud cluster (NGCE). Example: \"xlarge\", \"nextGen\""
+  default     = "nextGen"
+}
+
 variable "num_instances" {
   type        = number
   description = "Number of Virtual Machines to create"
@@ -109,7 +115,22 @@ EOT
 
 variable "vhd_uri" {
   type        = string
-  description = "The URI of the VHD file to use for creating the OS disk"
+  description = <<EOT
+The URI of the VHD file to use for creating the OS disk.
+
+For initial cluster creation: Use the VHD for your desired Cohesity version.
+
+For adding nodes to an existing cluster: Update this to the VHD matching your
+current cluster version (after any upgrades). Existing OS disks are protected
+from replacement via lifecycle ignore_changes, so only new instances will use
+this VHD. This enables seamless scale-out after in-place software upgrades.
+
+Example workflow for adding nodes after upgrade:
+  1. Initial deploy: 3 nodes with cohesity-vhd-7.2
+  2. In-place upgrade cluster to 7.3 (no Terraform change)
+  3. Add nodes: Update vhd_uri to cohesity-vhd-7.3, increase num_instances to 5
+  4. terraform apply -> nodes 0-2 untouched, nodes 3-4 created with new VHD
+EOT
 }
 
 variable "storage_account_id" {

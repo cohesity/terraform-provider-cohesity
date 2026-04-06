@@ -166,7 +166,7 @@ locals {
   # Construct cluster command
   cluster_create_cmd = join(" ", [
     local.iris_cli_cmd_prefix,
-    "cluster cloud-create cluster-size=nextGen enable-software-encryption=true",
+    "cluster cloud-create cluster-size=${var.cluster_size} enable-software-encryption=true",
     "name=${var.cluster_name}",
     "node-ips=${local.private_ips_string}",
     "hostname=${local.private_ips[0]}",
@@ -256,6 +256,15 @@ resource "azurerm_managed_disk" "os_disk" {
   os_type                = "Linux"
   disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
   tags                   = local.parsed_tags
+
+  lifecycle {
+    # Prevent replacement of existing cluster nodes when VHD URI changes.
+    # This enables add-node scenarios where new nodes use a different VHD
+    # (matching the upgraded cluster version) while existing nodes remain untouched.
+    # When adding nodes to an upgraded cluster, update vhd_uri to match
+    # the current cluster version before increasing num_instances.
+    ignore_changes = [source_uri]
+  }
 }
 
 # Create managed disks for SSD tier

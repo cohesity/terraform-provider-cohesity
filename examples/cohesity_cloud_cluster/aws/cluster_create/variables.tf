@@ -7,6 +7,12 @@ variable "region" {
   description = "AWS Region to deploy to"
 }
 
+variable "cluster_size" {
+  type        = string
+  description = "Cluster size variable to define legacy cloud cluster or nextGen cloud cluster."
+  default     = "nextGen"
+}
+
 variable "iam_role_arn" {
   description = <<EOT
 (Optional) The ARN of the IAM Role to assume for AWS authentication.
@@ -49,7 +55,22 @@ EOT
 
 variable "image_id" {
   type        = string
-  description = "ID of the AMI to use for the Virtual Machine"
+  description = <<EOT
+ID of the AMI to use for Virtual Machines.
+
+For initial cluster creation: Use the AMI for your desired Cohesity version.
+
+For adding nodes to an existing cluster: Update this to the AMI matching your
+current cluster version (after any upgrades). Existing instances are protected
+from replacement via lifecycle ignore_changes, so only new instances will use
+this AMI. This enables seamless scale-out after in-place software upgrades.
+
+Example workflow for adding nodes after upgrade:
+  1. Initial deploy: 3 nodes with ami-7.2
+  2. In-place upgrade cluster to 7.3 (no Terraform change)
+  3. Add nodes: Update image_id to ami-7.3, increase num_instances to 5
+  4. terraform apply -> nodes 0-2 untouched, nodes 3-4 created with ami-7.3
+EOT
 }
 
 variable "tags" {
