@@ -189,19 +189,19 @@ config_file = "./configs.json"
 # Custom configuration of the VM which overrides the config provided by the
 # config_id. If you want to use a custom setup, uncomment below and the config will be overridden with the custom config.
 #
-# Example (NGCE lab / AWS EUSC sovereign — prefer >= 8 vCPU; 4-vCPU can break CAD):
+# Example:
 # custom_config = {
 #   InstanceType                = "m6i.2xlarge"
-#   SSDTierDiskType             = "gp3"
 #   SSDTierNumDisks             = 2
-#   SSDTierDiskSizeinGB         = 100
+#   SSDTierDiskSizeinGB         = 511
+#   SSDTierDiskType             = "gp3"
 #   SSDTierDiskIops             = 3000
-#   SSDTierDiskThroughputinMBps = 125
-#   HDDTierDiskType             = "gp3"
-#   HDDTierNumDisks             = 1
+#   SSDTierDiskThroughputinMBps = 200
+#   HDDTierNumDisks             = 2
 #   HDDTierDiskSizeinGB         = 512
+#   HDDTierDiskType             = "gp3"
 #   HDDTierDiskIops             = 3000
-#   HDDTierDiskThroughputinMBps = 125
+#   HDDTierDiskThroughputinMBps = 200
 # }
 
 ###############################################################################
