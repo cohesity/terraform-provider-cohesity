@@ -12,6 +12,21 @@ EOT
   default     = ""
 }
 
+variable "aws_custom_endpoints" {
+  description = <<EOT
+(Optional) Custom AWS service endpoints. Required for AWS European Sovereign Cloud
+(EUSC / partition aws-eusc), where APIs use dnsSuffix amazonaws.eu. Leave null
+for commercial AWS regions. S3 is unused by this module but kept off the object
+for simplicity; only ec2/sts/iam are passed to the provider.
+EOT
+  type = object({
+    ec2 = string
+    sts = string
+    iam = string
+  })
+  default = null
+}
+
 ###############################################################################
 # Security Group Variables
 ###############################################################################

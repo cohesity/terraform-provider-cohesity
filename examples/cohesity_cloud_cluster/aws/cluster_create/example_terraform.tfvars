@@ -48,6 +48,16 @@
 # Example: "arn:aws:iam::123456789012:role/my-terraform-role"
 iam_role_arn = ""
 
+# (Optional) Custom AWS API endpoints. Required for AWS European Sovereign Cloud
+# (EUSC). Leave unset/null for commercial AWS. See terraform.tfvars.eusc-example
+# and ../README_EUSC.md.
+# aws_custom_endpoints = {
+#   ec2 = "https://ec2.eusc-de-east-1.amazonaws.eu"
+#   sts = "https://sts.eusc-de-east-1.amazonaws.eu"
+#   iam = "https://iam.eusc-de-east-1.amazonaws.eu"
+#   s3  = "https://s3.eusc-de-east-1.amazonaws.eu"
+# }
+
 ###############################################################################
 # Deployment Variables
 ###############################################################################
@@ -179,19 +189,19 @@ config_file = "./configs.json"
 # Custom configuration of the VM which overrides the config provided by the
 # config_id. If you want to use a custom setup, uncomment below and the config will be overridden with the custom config.
 #
-# Example:
+# Example (NGCE lab / AWS EUSC sovereign — prefer >= 8 vCPU; 4-vCPU can break CAD):
 # custom_config = {
 #   InstanceType                = "m6i.2xlarge"
-#   SSDTierNumDisks             = 2
-#   SSDTierDiskSizeinGB         = 511
 #   SSDTierDiskType             = "gp3"
+#   SSDTierNumDisks             = 2
+#   SSDTierDiskSizeinGB         = 100
 #   SSDTierDiskIops             = 3000
-#   SSDTierDiskThroughputinMBps = 200
-#   HDDTierNumDisks             = 2
-#   HDDTierDiskSizeinGB         = 512
+#   SSDTierDiskThroughputinMBps = 125
 #   HDDTierDiskType             = "gp3"
+#   HDDTierNumDisks             = 1
+#   HDDTierDiskSizeinGB         = 512
 #   HDDTierDiskIops             = 3000
-#   HDDTierDiskThroughputinMBps = 200
+#   HDDTierDiskThroughputinMBps = 125
 # }
 
 ###############################################################################

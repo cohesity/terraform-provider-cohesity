@@ -1,0 +1,18 @@
+###############################################################################
+# AWS European Sovereign Cloud (EUSC) — security group create example
+# Copy to terraform.tfvars (or use -var-file=) and replace placeholder IDs.
+###############################################################################
+
+iam_role_arn = ""
+
+aws_custom_endpoints = {
+  ec2 = "https://ec2.eusc-de-east-1.amazonaws.eu"
+  sts = "https://sts.eusc-de-east-1.amazonaws.eu"
+  iam = "https://iam.eusc-de-east-1.amazonaws.eu"
+}
+
+region               = "eusc-de-east-1"
+vpc_id               = "vpc-REPLACE_ME"
+resource_name_prefix = "cohesity-eusc"
+tags                 = ["env:eusc-lab", "project:aws-eusc-ngce"]
+rules_file           = "./rules.json"

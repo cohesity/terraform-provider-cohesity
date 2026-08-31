@@ -22,6 +22,19 @@ terraform {
 provider "aws" {
   region = var.region
 
+  # Optional custom API endpoints (required for AWS European Sovereign Cloud / EUSC).
+  # Commercial AWS: leave var.aws_custom_endpoints null (default).
+  # EUSC example: see terraform.tfvars.eusc-example
+  dynamic "endpoints" {
+    for_each = var.aws_custom_endpoints != null ? [var.aws_custom_endpoints] : []
+    content {
+      ec2 = endpoints.value.ec2
+      sts = endpoints.value.sts
+      iam = endpoints.value.iam
+      s3  = endpoints.value.s3
+    }
+  }
+
   # Conditionally assume role if iam_role_arn is not empty
   dynamic "assume_role" {
     for_each = var.iam_role_arn != "" ? [1] : []

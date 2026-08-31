@@ -1,0 +1,68 @@
+###############################################################################
+# AWS European Sovereign Cloud (EUSC) — NGCE cluster create example
+#
+# Partition: aws-eusc | Region: eusc-de-east-1 | dnsSuffix: amazonaws.eu
+# Console: https://console.amazonaws-eusc.eu/
+#
+# Prerequisites:
+# - MFA session / credentials that can call EC2/STS/IAM/S3 on amazonaws.eu
+# - Security group created via ../security_group_create with EUSC endpoints
+# - AMI imported into the same region (OVA -> S3 -> ec2 import-image)
+#
+# Copy to terraform.tfvars (or use -var-file=) and replace placeholder IDs.
+###############################################################################
+
+iam_role_arn = ""
+
+# Required for EUSC — without these, Terraform hits commercial amazonaws.com
+aws_custom_endpoints = {
+  ec2 = "https://ec2.eusc-de-east-1.amazonaws.eu"
+  sts = "https://sts.eusc-de-east-1.amazonaws.eu"
+  iam = "https://iam.eusc-de-east-1.amazonaws.eu"
+  s3  = "https://s3.eusc-de-east-1.amazonaws.eu"
+}
+
+region               = "eusc-de-east-1"
+num_instances        = 1
+resource_name_prefix = "cohesity-eusc-ngce"
+subnet_id            = "subnet-REPLACE_ME"
+security_group_ids   = ["sg-REPLACE_ME"]
+image_id             = "ami-REPLACE_ME"
+
+tags = [
+  "env:eusc-lab",
+  "project:aws-eusc-ngce"
+]
+
+attach_public_ip      = false
+enforce_imdsv2        = true
+encrypt_ebs_volumes   = false
+kms_key_id            = ""
+instance_profile_name = "CohesityInstanceProfile"
+
+# Prefer m6i.2xlarge (8 vCPU). Undersized 4-vCPU shapes can cause NGCE autoscaler
+# to set bridge_blob_store_downtier_cf_to_cloud_num_deque_per_batch < 2 and FATAL
+# bridge_exec during CAD archival.
+config_id   = "12345"
+config_file = "./configs.json"
+custom_config = {
+  InstanceType                = "m6i.2xlarge"
+  SSDTierDiskType             = "gp3"
+  SSDTierNumDisks             = 2
+  SSDTierDiskSizeinGB         = 100
+  SSDTierDiskIops             = 3000
+  SSDTierDiskThroughputinMBps = 125
+  HDDTierDiskType             = "gp3"
+  HDDTierNumDisks             = 1
+  HDDTierDiskSizeinGB         = 512
+  HDDTierDiskIops             = 3000
+  HDDTierDiskThroughputinMBps = 125
+}
+
+cluster_name             = "replace-with-cluster-name"
+dns_server_ips           = "10.12.0.2"
+ntp_servers              = "169.254.169.123"
+domain_names             = "eusc-de-east-1.compute.internal"
+apps_subnet              = "192.168.0.0"
+apps_subnet_mask         = "255.255.0.0"
+issue_cluster_create_cmd = true
