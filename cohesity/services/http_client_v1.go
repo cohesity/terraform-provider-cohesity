@@ -117,8 +117,6 @@ func initHttpClientInstance() *http.Client {
 	}
 }
 
-
-
 // PostWithModel performs a POST request using any struct as the request body.
 // It returns status code, response body bytes, and error (if any).
 func PostWithModel[T any](url string, token string, model T) ([]byte, int, error) {
@@ -172,7 +170,6 @@ func PutWithModel[T any](url string, token string, model T) ([]byte, int, error)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, -1, fmt.Errorf("request failed: %w", err)
@@ -187,7 +184,7 @@ func PutWithModel[T any](url string, token string, model T) ([]byte, int, error)
 	return body, resp.StatusCode, nil
 }
 
-func GetWithModel(url string, token string) ([]byte,int, error) {
+func GetWithModel(url string, token string) ([]byte, int, error) {
 
 	client := initHttpClientInstance()
 
@@ -200,7 +197,6 @@ func GetWithModel(url string, token string) ([]byte,int, error) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, -1, fmt.Errorf("request failed: %w", err)
@@ -215,7 +211,7 @@ func GetWithModel(url string, token string) ([]byte,int, error) {
 
 	return body, resp.StatusCode, nil
 }
-func DeleteWithModel(url string, token string) ([]byte,int, error) {
+func DeleteWithModel(url string, token string) ([]byte, int, error) {
 
 	client := initHttpClientInstance()
 
@@ -227,7 +223,6 @@ func DeleteWithModel(url string, token string) ([]byte,int, error) {
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-
 
 	resp, err := client.Do(req)
 	if err != nil {

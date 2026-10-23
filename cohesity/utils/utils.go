@@ -59,11 +59,11 @@ func ListDifference(oldList, newList []interface{}) (removed []interface{}, adde
 func SuppressNodeIPsDiff(k, old, new string, d *schema.ResourceData) bool {
 	oldNodeIPsInterface, newNodeIPsInterface := d.GetChange("node_ips")
 	if oldNodeIPsInterface == nil {
-        oldNodeIPsInterface = []interface{}{}
-    }
-    if newNodeIPsInterface == nil {
-        newNodeIPsInterface = []interface{}{}
-    }
+		oldNodeIPsInterface = []interface{}{}
+	}
+	if newNodeIPsInterface == nil {
+		newNodeIPsInterface = []interface{}{}
+	}
 	// Assert the types to []interface{}
 	oldNodeIPs, ok1 := oldNodeIPsInterface.([]interface{})
 	newNodeIPs, ok2 := newNodeIPsInterface.([]interface{})
@@ -99,19 +99,19 @@ func BoolPtr(b bool) *bool {
 }
 
 func InterfaceSliceToStringSlice(input []interface{}) ([]string, error) {
-    result := make([]string, len(input))
-    for i, v := range input {
-        str, ok := v.(string)
-        if !ok {
-            return nil, fmt.Errorf("element at index %d is not a string: %v", i, v)
-        }
-        result[i] = str
-    }
-    return result, nil
+	result := make([]string, len(input))
+	for i, v := range input {
+		str, ok := v.(string)
+		if !ok {
+			return nil, fmt.Errorf("element at index %d is not a string: %v", i, v)
+		}
+		result[i] = str
+	}
+	return result, nil
 }
 
 func InterfaceSliceToInt32Slice(input []interface{}) ([]int32, error) {
-    output := make([]int32, len(input))
+	output := make([]int32, len(input))
 	for i, v := range input {
 		val := reflect.ValueOf(v)
 

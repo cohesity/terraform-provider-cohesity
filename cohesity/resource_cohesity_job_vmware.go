@@ -151,10 +151,12 @@ func parseGetSourceIDs(sources map[string]empty, sourceNode []interface{}) []int
 	}
 	return sourceIDs
 }
+
 type ProtectionJobRequestBody struct {
-	SourceIds                            *[]int64                                `json:"sourceIds,omitempty" form:"sourceIds,omitempty"`                                                       //Array of Protected Source Objects.
+	SourceIds *[]int64 `json:"sourceIds,omitempty" form:"sourceIds,omitempty"` //Array of Protected Source Objects.
 
 }
+
 func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {
 	var cohesityConfig = configMetaData.(utils.Config)
 	// authenticate with Cohesity cluster
@@ -173,12 +175,11 @@ func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.R
 	var protectionSourceID int64
 	clientV2, err := services.NewCohesityClientV2(cohesityConfig)
 
-
 	//get the policy id
 	log.Printf("[INFO] Get the protection policy id")
 	policy, err := clientV2.GetProtectionPolicy(resourceData.Get("policy").(string))
 	// policy, err := client.ProtectionPolicies().GetProtectionPolicies(nil,
-		// []string{resourceData.Get("policy").(string)}, nil, nil, nil, nil)
+	// []string{resourceData.Get("policy").(string)}, nil, nil, nil, nil)
 	if err != nil {
 		log.Printf("%s", err.Error())
 		return diag.Errorf("Error in getting the protection policy")
@@ -301,7 +302,7 @@ func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.R
 	}
 	resourceData.SetId(strconv.FormatInt(*result.Id, 10))
 	log.Printf("[INFO] Successfully created the protection job %s", name)
-	return resourceCohesityJobVMwareRead(ctx,resourceData,configMetaData)
+	return resourceCohesityJobVMwareRead(ctx, resourceData, configMetaData)
 }
 
 func resourceCohesityJobVMwareRead(ctx context.Context, resourceData *schema.ResourceData, configMetaData interface{}) diag.Diagnostics {

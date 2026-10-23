@@ -21,15 +21,16 @@ func convertStringToASCIISlice(str string) []int64 {
 func normalizePrivateKey(clientPrivateKey string) string {
 	// Replace all encoded equal signs with actual '='
 	clientPrivateKey = strings.ReplaceAll(clientPrivateKey, "\\u003d", "=")
-	
+
 	// Replace all string representations of '\n' with actual new lines
 	clientPrivateKey = strings.ReplaceAll(clientPrivateKey, "\\n", "\n")
-	
+
 	return clientPrivateKey
 }
 func convertASCIISliceToString(asciiSlice []uint8) string {
 	return string(asciiSlice)
 }
+
 type RegisterEntityResult struct {
 
 	// If the entity was successfully registered, it's EntityProto is returned to
@@ -39,19 +40,16 @@ type RegisterEntityResult struct {
 	Entity PrivateEntityProto `json:"entity,omitempty"`
 }
 type EntityArgWrapper struct {
-	Entity PrivateEntityProto `json:"entity,omitempty"`
-	EntityInfo EntityAccessInfo `json:"entityInfo,omitempty"`
-
+	Entity     PrivateEntityProto `json:"entity,omitempty"`
+	EntityInfo EntityAccessInfo   `json:"entityInfo,omitempty"`
 }
 type EntityAccessInfo struct {
 
 	// Credentials that will be used to login to the environment.
 	Credentials PrivateCredentials `json:"credentials,omitempty"`
 
-
 	// The type of environment behind the endpoint.
 	Type int32 `json:"type,omitempty"`
-
 }
 type PrivateCredentials struct {
 	CloudCredentials NexusCloudCredentials `json:"cloudCredentials,omitempty"`
@@ -64,7 +62,6 @@ type PrivateGcpCredentials struct {
 	// Client email address associated with the service account.
 	ClientEmailAddress string `json:"clientEmailAddress,omitempty"`
 
-
 	// Client private key generated at the time of creating the service
 	// account. This is used for authenticating ourselves with Google cloud.
 	// This field only stores the private key in bytes and doesn't encrypt it.
@@ -72,7 +69,6 @@ type PrivateGcpCredentials struct {
 
 	// Id of the project associated with Google cloud account.
 	ProjectID string `json:"projectId,omitempty"`
-
 }
 type EntityHierarchyWrapper struct {
 
@@ -85,8 +81,8 @@ type EntityHierarchyProto struct {
 }
 type PrivateEntityProto struct {
 	GcpEntity PrivateGcpEntity `json:"gcpEntity,omitempty"`
-	ID int64 `json:"id,omitempty"`
-	Type int32 `json:"type,omitempty"`
+	ID        int64            `json:"id,omitempty"`
+	Type      int32            `json:"type,omitempty"`
 }
 type PrivateGcpEntity struct {
 
@@ -140,26 +136,26 @@ type PrivateGcpEntity struct {
 	Zone string `json:"zone,omitempty"`
 
 	CommonInfo EntityCommonInfo `json:"commonInfo,omitempty"`
-
 }
 type EntityCommonInfo struct {
 	ID string `json:"id,omitempty"`
 }
+
 func AddGCPProtectionSource(clusterVip, bearerToken, clientEmailAddress, clientPrivateKey, projectId, VPCNetwork, VPCSubnetwork string) (int64, error) {
 	url := fmt.Sprintf("https://%s/irisservices/api/v1/backupsources", clusterVip)
 	gcpType := int32(0)
 	// Request body structure.
-	requestBody:= EntityArgWrapper{
+	requestBody := EntityArgWrapper{
 		Entity: PrivateEntityProto{
 			Type: int32(20),
 			GcpEntity: PrivateGcpEntity{
 				CommonInfo: EntityCommonInfo{
 					ID: clientEmailAddress,
 				},
-				Type: &gcpType,
-				OwnerID: clientEmailAddress,
-				ProjectID: projectId,
-				VpcNetwork: VPCNetwork,
+				Type:          &gcpType,
+				OwnerID:       clientEmailAddress,
+				ProjectID:     projectId,
+				VpcNetwork:    VPCNetwork,
 				VpcSubnetwork: VPCSubnetwork,
 			},
 		},
@@ -168,15 +164,14 @@ func AddGCPProtectionSource(clusterVip, bearerToken, clientEmailAddress, clientP
 			Credentials: PrivateCredentials{
 				CloudCredentials: NexusCloudCredentials{
 					GcpCredentials: PrivateGcpCredentials{
-						ClientEmailAddress: clientEmailAddress,
-						ProjectID: projectId,
+						ClientEmailAddress:        clientEmailAddress,
+						ProjectID:                 projectId,
 						EncryptedClientPrivateKey: convertStringToASCIISlice(normalizePrivateKey(clientPrivateKey)),
 					},
 				},
 			},
 		},
 	}
-	
 
 	// Marshal request body to JSON.
 	requestBodyJSON, err := json.Marshal(requestBody)
@@ -196,7 +191,7 @@ func AddGCPProtectionSource(clusterVip, bearerToken, clientEmailAddress, clientP
 	}
 
 	// Add headers.
-	req.Header.Set("Authorization", "Bearer "+ bearerToken)
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
@@ -211,7 +206,7 @@ func AddGCPProtectionSource(clusterVip, bearerToken, clientEmailAddress, clientP
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
 		log.Printf("http call failed with status code %d: %s ", resp.StatusCode, string(body))
-		return -1, fmt.Errorf("failed to add GCP protection source: %s\nstatuscode: %v \n\n \n body: %v", string(body),resp.StatusCode,string(requestBodyJSON))
+		return -1, fmt.Errorf("failed to add GCP protection source: %s\nstatuscode: %v \n\n \n body: %v", string(body), resp.StatusCode, string(requestBodyJSON))
 	}
 
 	// Parse the response body.
@@ -224,7 +219,6 @@ func AddGCPProtectionSource(clusterVip, bearerToken, clientEmailAddress, clientP
 	// Define response structure.
 	var response RegisterEntityResult
 
-
 	// Unmarshal the response body.
 	err = json.Unmarshal(body, &response)
 	if err != nil {
@@ -234,7 +228,6 @@ func AddGCPProtectionSource(clusterVip, bearerToken, clientEmailAddress, clientP
 
 	return response.Entity.ID, nil
 }
-
 
 func GetGcpProtectionSource(clusterVip, bearerToken, id string) (*EntityHierarchyProto, error) {
 	// Convert string to int64 to validate the ID
@@ -286,7 +279,7 @@ func GetGcpProtectionSource(clusterVip, bearerToken, id string) (*EntityHierarch
 	var response EntityHierarchyWrapper
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		log.Printf("failed to unmarshal response: %d ,: %v",resp.StatusCode, err)
+		log.Printf("failed to unmarshal response: %d ,: %v", resp.StatusCode, err)
 		return nil, err
 	}
 
@@ -318,7 +311,6 @@ func DeleteProtectionSource(clusterVip, bearerToken, id string) error {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-
 	// Make the API call.
 	resp, err := client.Do(req)
 	if err != nil {
@@ -337,7 +329,7 @@ func DeleteProtectionSource(clusterVip, bearerToken, id string) error {
 	return nil
 }
 
-func UpdateGcpProtectionSource(clusterVip, bearerToken, id,clientEmailAddress, clientPrivateKey, projectId, VPCNetwork, VPCSubnetwork string) error {
+func UpdateGcpProtectionSource(clusterVip, bearerToken, id, clientEmailAddress, clientPrivateKey, projectId, VPCNetwork, VPCSubnetwork string) error {
 	url := fmt.Sprintf("https://%s/irisservices/api/v1/backupsources/%s", clusterVip, id)
 	gcpType := int32(0)
 	entityId, err := strconv.ParseInt(id, 10, 64)
@@ -345,18 +337,18 @@ func UpdateGcpProtectionSource(clusterVip, bearerToken, id,clientEmailAddress, c
 		return fmt.Errorf("invalid id: %v", err)
 	}
 	// Request body structure.
-	requestBody:= EntityArgWrapper{
+	requestBody := EntityArgWrapper{
 		Entity: PrivateEntityProto{
 			Type: int32(20),
-			ID: entityId,
+			ID:   entityId,
 			GcpEntity: PrivateGcpEntity{
 				CommonInfo: EntityCommonInfo{
 					ID: clientEmailAddress,
 				},
-				Type: &gcpType,
-				OwnerID: clientEmailAddress,
-				ProjectID: projectId,
-				VpcNetwork: VPCNetwork,
+				Type:          &gcpType,
+				OwnerID:       clientEmailAddress,
+				ProjectID:     projectId,
+				VpcNetwork:    VPCNetwork,
 				VpcSubnetwork: VPCSubnetwork,
 			},
 		},
@@ -365,15 +357,14 @@ func UpdateGcpProtectionSource(clusterVip, bearerToken, id,clientEmailAddress, c
 			Credentials: PrivateCredentials{
 				CloudCredentials: NexusCloudCredentials{
 					GcpCredentials: PrivateGcpCredentials{
-						ClientEmailAddress: clientEmailAddress,
-						ProjectID: projectId,
+						ClientEmailAddress:        clientEmailAddress,
+						ProjectID:                 projectId,
 						EncryptedClientPrivateKey: convertStringToASCIISlice(normalizePrivateKey(clientPrivateKey)),
 					},
 				},
 			},
 		},
 	}
-	
 
 	// Marshal request body to JSON.
 	requestBodyJSON, err := json.Marshal(requestBody)
@@ -393,7 +384,7 @@ func UpdateGcpProtectionSource(clusterVip, bearerToken, id,clientEmailAddress, c
 	}
 
 	// Add headers.
-	req.Header.Set("Authorization", "Bearer "+ bearerToken)
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
@@ -408,9 +399,8 @@ func UpdateGcpProtectionSource(clusterVip, bearerToken, id,clientEmailAddress, c
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
 		log.Printf("[ERROR] http call failed with status code %d: %s ", resp.StatusCode, string(body))
-		return fmt.Errorf("failed to add GCP protection source: %s\nstatuscode: %v \n\n \n body: %v", string(body),resp.StatusCode,string(requestBodyJSON))
+		return fmt.Errorf("failed to add GCP protection source: %s\nstatuscode: %v \n\n \n body: %v", string(body), resp.StatusCode, string(requestBodyJSON))
 	}
-
 
 	return nil
 }

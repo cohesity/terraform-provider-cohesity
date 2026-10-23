@@ -15,8 +15,6 @@ import (
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
-
-
 type CohesityClientV2 struct {
 	client      *apiClientV2.CohesityRESTAPI
 	bearerToken runtime.ClientAuthInfoWriter
@@ -36,15 +34,15 @@ func NewCohesityClientV2(config utils.Config) (*CohesityClientV2, error) {
 func GetClientV2(clusterVip string) *apiClientV2.CohesityRESTAPI {
 	return apiClientV2.New(httptransport.NewWithClient(clusterVip, "/v2", nil, initHttpClientInstance()), strfmt.Default)
 }
-func (c *CohesityClientV2) GetClusterInfo() (*modelsV2.Cluster,error) {
-	resp, err := c.client.Platform.GetCluster(platform.NewGetClusterParams(),c.bearerToken)
+func (c *CohesityClientV2) GetClusterInfo() (*modelsV2.Cluster, error) {
+	resp, err := c.client.Platform.GetCluster(platform.NewGetClusterParams(), c.bearerToken)
 	if err != nil {
 		return nil, err
 	}
 	return resp.Payload, nil
 }
-func (c *CohesityClientV2) UpdateClusterInfo(toUpdateClusterInfo *modelsV2.Cluster) (*modelsV2.Cluster,error) {
-	resp, err := c.client.Platform.UpdateCluster(platform.NewUpdateClusterParams().WithBody(toUpdateClusterInfo),c.bearerToken)
+func (c *CohesityClientV2) UpdateClusterInfo(toUpdateClusterInfo *modelsV2.Cluster) (*modelsV2.Cluster, error) {
+	resp, err := c.client.Platform.UpdateCluster(platform.NewUpdateClusterParams().WithBody(toUpdateClusterInfo), c.bearerToken)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +65,6 @@ func GetAccessTokenV2(client *apiClientV2.CohesityRESTAPI, username, password, d
 func toStrPtr(variable string) *string {
 	return &variable
 }
-
 
 // NormalizeHTTPSAddress ensures the VIP has an https:// prefix and proper formatting
 func NormalizeHTTPSAddress(vip string) (string, error) {

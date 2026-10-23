@@ -135,7 +135,7 @@ func getMapInterface(v interface{}) map[string]interface{} {
 
 func expandRegularBackup(v interface{}) *modelsV2.RegularBackupPolicy {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 
@@ -199,7 +199,7 @@ func expandFullBackups(v interface{}) []*modelsV2.FullScheduleAndRetention {
 
 func expandLogBackup(v interface{}) *modelsV2.LogBackupPolicy {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.LogBackupPolicy{
@@ -210,7 +210,7 @@ func expandLogBackup(v interface{}) *modelsV2.LogBackupPolicy {
 
 func expandBMRBackup(v interface{}) *modelsV2.BmrBackupPolicy {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.BmrBackupPolicy{
@@ -221,7 +221,7 @@ func expandBMRBackup(v interface{}) *modelsV2.BmrBackupPolicy {
 
 func expandCDPBackup(v interface{}) *modelsV2.CdpBackupPolicy {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.CdpBackupPolicy{
@@ -231,7 +231,7 @@ func expandCDPBackup(v interface{}) *modelsV2.CdpBackupPolicy {
 
 func expandStorageArraySnapshotBackup(v interface{}) *modelsV2.StorageArraySnapshotBackupPolicy {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.StorageArraySnapshotBackupPolicy{
@@ -241,7 +241,7 @@ func expandStorageArraySnapshotBackup(v interface{}) *modelsV2.StorageArraySnaps
 }
 func expandStorageArraySnapshotSchedule(v interface{}) *modelsV2.StorageArraySnapshotSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 
@@ -287,7 +287,7 @@ func expandStorageArraySnapshotSchedule(v interface{}) *modelsV2.StorageArraySna
 }
 func expandIncrementalSchedule(v interface{}) *modelsV2.IncrementalSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 
@@ -348,7 +348,7 @@ func expandRunTimeouts(v interface{}) []*modelsV2.CancellationTimeoutParams {
 }
 func expandFullSchedule(v interface{}) *modelsV2.FullSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	result := &modelsV2.FullSchedule{}
@@ -382,7 +382,7 @@ func expandFullSchedule(v interface{}) *modelsV2.FullSchedule {
 }
 func expandBmrSchedule(v interface{}) *modelsV2.BmrSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	result := &modelsV2.BmrSchedule{}
@@ -415,7 +415,7 @@ func expandBmrSchedule(v interface{}) *modelsV2.BmrSchedule {
 }
 func expandLogSchedule(v interface{}) *modelsV2.LogSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	// Initialize the StorageArraySnapshotSchedule
@@ -440,7 +440,7 @@ func expandLogSchedule(v interface{}) *modelsV2.LogSchedule {
 
 func expandMinuteSchedule(v interface{}) *modelsV2.MinuteSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.MinuteSchedule{
@@ -451,7 +451,7 @@ func expandMinuteSchedule(v interface{}) *modelsV2.MinuteSchedule {
 }
 func expandDaySchedule(v interface{}) *modelsV2.DaySchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.DaySchedule{
@@ -462,7 +462,7 @@ func expandDaySchedule(v interface{}) *modelsV2.DaySchedule {
 }
 func expandHourSchedule(v interface{}) *modelsV2.HourSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 
@@ -474,7 +474,7 @@ func expandHourSchedule(v interface{}) *modelsV2.HourSchedule {
 }
 func expandWeekSchedule(v interface{}) *modelsV2.WeekSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.WeekSchedule{
@@ -484,7 +484,7 @@ func expandWeekSchedule(v interface{}) *modelsV2.WeekSchedule {
 
 func expandMonthSchedule(v interface{}) *modelsV2.MonthSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.MonthSchedule{
@@ -496,7 +496,7 @@ func expandMonthSchedule(v interface{}) *modelsV2.MonthSchedule {
 
 func expandYearSchedule(v interface{}) *modelsV2.YearSchedule {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.YearSchedule{
@@ -506,7 +506,7 @@ func expandYearSchedule(v interface{}) *modelsV2.YearSchedule {
 
 func expandRetention(v interface{}) *modelsV2.Retention {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.Retention{
@@ -518,7 +518,7 @@ func expandRetention(v interface{}) *modelsV2.Retention {
 
 func expandCDPRetention(v interface{}) *modelsV2.CdpRetention {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.CdpRetention{
@@ -530,7 +530,7 @@ func expandCDPRetention(v interface{}) *modelsV2.CdpRetention {
 
 func expandDataLockConfig(v interface{}) *modelsV2.DataLockConfig {
 	data := getMapInterface(v)
-	if data==nil {
+	if data == nil {
 		return nil
 	}
 	return &modelsV2.DataLockConfig{

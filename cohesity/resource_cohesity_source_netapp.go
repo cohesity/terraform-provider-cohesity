@@ -76,7 +76,7 @@ func resourceCohesitySourceNetapp() *schema.Resource {
 		},
 	}
 }
-func getStringList(rawVal interface{}) ([]string) {
+func getStringList(rawVal interface{}) []string {
 	listVal := make([]string, len(rawVal.([]interface{})))
 	for i, v := range rawVal.([]interface{}) {
 		listVal[i] = v.(string)
@@ -126,15 +126,15 @@ func resourceCohesitySourceNetappRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("username", *netappInfo.Credentials.Username)
 	d.Set("source_type", *netappInfo.SourceType)
 	d.Set("endpoint", *netappInfo.Endpoint)
-	if netappInfo.BackUpSMBVolumes!=nil {
+	if netappInfo.BackUpSMBVolumes != nil {
 		d.Set("backup_smb_volumes", *netappInfo.BackUpSMBVolumes)
 
 		d.Set("smb_username", *netappInfo.SmbCredentials.Username)
 	}
 	// if *netappInfo.FilterIPConfig {
-	log.Printf("[INFO] allowedIPs: %v",netappInfo.FilterIPConfig.AllowedIPAddresses)
-		d.Set("allowed_ips", netappInfo.FilterIPConfig.AllowedIPAddresses)
-		d.Set("disallowed_ips", netappInfo.FilterIPConfig.DeniedIPAddresses)
+	log.Printf("[INFO] allowedIPs: %v", netappInfo.FilterIPConfig.AllowedIPAddresses)
+	d.Set("allowed_ips", netappInfo.FilterIPConfig.AllowedIPAddresses)
+	d.Set("disallowed_ips", netappInfo.FilterIPConfig.DeniedIPAddresses)
 	// }
 	return nil
 }
@@ -163,7 +163,7 @@ func resourceCohesitySourceNetappUpdate(ctx context.Context, d *schema.ResourceD
 		} else {
 			sourceNetapp = sourceNetapp.WithDeniedIPAddresses([]string{})
 		}
-		_, err = client.UpdateNetAppSource(sourceNetapp,d.Id())
+		_, err = client.UpdateNetAppSource(sourceNetapp, d.Id())
 		if err != nil {
 			return diag.Errorf("Failed to update the Netapp source with the given details, %s", err.Error())
 		}
