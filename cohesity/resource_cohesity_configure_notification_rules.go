@@ -175,7 +175,7 @@ func resourceCohesityConfigureNotificationRulesCreate(ctx context.Context, d *sc
 		return diag.FromErr(err)
 	}
 
-	log.Printf("[INFO] notificationRule: %+v, \n token:%s", *resp, token)
+	log.Printf("[INFO] notificationRule: %+v", *resp)
 
 	// Set the ID of the created notification configuration in the resource data
 	d.SetId(fmt.Sprintf("%d", *resp.RuleID))
