@@ -115,7 +115,7 @@ func (c *CohesityClientV2) GetNetAppSource(id string) (*sourceNetapp, error) {
 	return sourceResp, nil
 }
 
-func (c *CohesityClientV2) UpdateNetAppSource(netAppSource *sourceNetapp, id string) (int64, error) {
+func (c *CohesityClientV2) UpdateNetAppSource(netAppSource *sourceNetapp,id string) (int64, error) {
 	body := &modelsV2.SourceRegistrationUpdateRequestParams{}
 	marshalledData, err := netAppSource.MarshalBinary()
 	if err != nil {
@@ -131,7 +131,7 @@ func (c *CohesityClientV2) UpdateNetAppSource(netAppSource *sourceNetapp, id str
 	}
 	resp, err := c.client.Source.UpdateProtectionSourceRegistration(source.NewUpdateProtectionSourceRegistrationParams().WithBody(body).WithTimeout(300*time.Second).WithID(idInt64), c.bearerToken)
 	if err != nil {
-		return -1, fmt.Errorf("err: %v \n body:%v", err, convertASCIISliceToString(marshalledData))
+		return -1, fmt.Errorf("err: %v \n body:%v", err,convertASCIISliceToString(marshalledData))
 	}
 	return *resp.Payload.SourceID, nil
 

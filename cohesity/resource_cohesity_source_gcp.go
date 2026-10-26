@@ -39,8 +39,8 @@ func resourceCohesitySourceGcp() *schema.Resource {
 				DiffSuppressFunc: utils.SuppressNetworkNameDiff,
 			},
 			"vpc_subnetwork": {
-				Type:             schema.TypeString,
-				Required:         true,
+				Type:     schema.TypeString,
+				Required: true,
 				DiffSuppressFunc: utils.SuppressNetworkNameDiff,
 			},
 		},
@@ -78,7 +78,7 @@ func resourceCohesitySourceGcpRead(ctx context.Context, d *schema.ResourceData, 
 	return nil
 }
 func resourceCohesitySourceGcpUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	if d.HasChange("project_id") {
+	if d.HasChange( "project_id"){
 		return diag.Errorf("changes to project Id are not allowed")
 	}
 	if d.HasChanges("client_email_address", "vpc_network", "vpc_subnetwork", "client_private_key") {
@@ -87,7 +87,7 @@ func resourceCohesitySourceGcpUpdate(ctx context.Context, d *schema.ResourceData
 		if err != nil {
 			return diag.Errorf("Failed to get a bearer toke with the given details, %s", err.Error())
 		}
-		err = services.UpdateGcpProtectionSource(config.ClusterVIP, token, d.Id(), d.Get("client_email_address").(string), d.Get("client_private_key").(string), d.Get("project_id").(string), d.Get("vpc_network").(string), d.Get("vpc_subnetwork").(string))
+		err = services.UpdateGcpProtectionSource(config.ClusterVIP, token, d.Id(), d.Get("client_email_address").(string), d.Get("client_private_key").(string),d.Get("project_id").(string), d.Get("vpc_network").(string), d.Get("vpc_subnetwork").(string))
 		if err != nil {
 			return diag.Errorf("Failed to update the GCP source with the given details, %s", err.Error())
 		}
