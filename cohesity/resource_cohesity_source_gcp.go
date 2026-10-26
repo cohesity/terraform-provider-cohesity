@@ -2,7 +2,6 @@ package cohesity
 
 import (
 	"context"
-	"log"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -54,7 +53,6 @@ func resourceCohesitySourceGcpCreate(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		return diag.Errorf("Failed to get a bearer token with the given details, %s", err.Error())
 	}
-	log.Printf("[INFO]token:%v",token)
 	sourceId, err := services.AddGCPProtectionSource(config.ClusterVIP, token, d.Get("client_email_address").(string), d.Get("client_private_key").(string), d.Get("project_id").(string), d.Get("vpc_network").(string), d.Get("vpc_subnetwork").(string))
 	if err != nil {
 		return diag.Errorf("Failed to create a GCP source with the given details, %s", err.Error())

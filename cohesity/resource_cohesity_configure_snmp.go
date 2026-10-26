@@ -75,6 +75,7 @@ func userSchema() *schema.Resource {
 			"auth_password": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Sensitive:   true,
 				Description: "AuthPassword is the authentication password for SNMP V3 users.",
 			},
 			"auth_protocol": {
@@ -85,6 +86,7 @@ func userSchema() *schema.Resource {
 			"priv_password": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Sensitive:   true,
 				Description: "PrivPassword is the privacy password for SNMP V3 users.",
 			},
 			"priv_protocol": {

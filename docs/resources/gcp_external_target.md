@@ -29,7 +29,7 @@ resource "cohesity_gcp_external_target" "gcp_external_target" {
 
 - `bucket_name` (String)
 - `client_email` (String)
-- `client_private_key_file_path` (String)
+- `client_private_key_file_path` (String, Sensitive)
 - `project_id` (String)
 - `tier_type` (String)
 

@@ -379,7 +379,6 @@ func isInArray(ele string, haystack []string) bool {
 
 // fetchClusterStatus fetches the current cluster status.
 func fetchClusterStatus(user, password string, client *ssh.Client) (*ClusterInfo, error) {
-	log.Printf("[INFO] password: %s", password)
 	cmd := fmt.Sprintf("/home/support/bin/iris_cli --output=prettyjson --username=%s --password=%s"+
 		" --skip_password_prompt=true --skip_force_password_change=true cluster status && sleep 30", user, password)
 	output, err := services.ExecuteSSHCommand(client, cmd)

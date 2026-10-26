@@ -34,7 +34,7 @@ resource "cohesity_configure_smtp" "smtp" {
 
 ### Optional
 
-- `password` (String) Specifies the password of the SMTP user. This is required if username is specified in the request.
+- `password` (String, Sensitive) Specifies the password of the SMTP user. This is required if username is specified in the request.
 - `use_ssl` (Boolean) This is set to true when the SMTP server uses SSL/TLS without supporting STARTTLS. Typically, this is used for port 465.
 - `username` (String) Specifies the username which will be used to connect to the SMTP server. If username is not specified, then it would imply that SMTP server is set up for unauthenticated access.
 

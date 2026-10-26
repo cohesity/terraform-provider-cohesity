@@ -44,6 +44,7 @@ func resourceCohesityConfigureSmtp() *schema.Resource {
 			"password": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Sensitive:   true,
 				Description: "Specifies the password of the SMTP user. This is required if username is specified in the request.",
 			},
 			"use_ssl": {

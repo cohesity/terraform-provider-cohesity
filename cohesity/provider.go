@@ -28,6 +28,7 @@ func Provider() *schema.Provider {
 			"cluster_password": {
 				Type:        schema.TypeString,
 				Required:    true,
+				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("COHESITY_PASSWORD", ""),
 				Description: "Cohesity cluster password",
 			},
