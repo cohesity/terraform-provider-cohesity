@@ -62,9 +62,9 @@ resource "cohesity_configure_snmp" "snmp" {
 
 Optional:
 
-- `auth_password` (String) AuthPassword is the authentication password for SNMP V3 users.
+- `auth_password` (String, Sensitive) AuthPassword is the authentication password for SNMP V3 users.
 - `auth_protocol` (String) AuthPrototol is the authentication protocol for SNMP V3 users. Options are None, MD5, or SHA. Defaults to None
-- `priv_password` (String) PrivPassword is the privacy password for SNMP V3 users.
+- `priv_password` (String, Sensitive) PrivPassword is the privacy password for SNMP V3 users.
 - `priv_protocol` (String) PrivPrototol is the privacy protocol for SNMP V3 users. Options are None, DES, or AES. Defaults to None
 - `user_name` (String) UserName is the user name to access SNMP V2 or SNMP V3 agent. Default is cohesityV2Public for SNMP Version V2C and cohesityV3Public for SNMP Version V3
 
@@ -74,9 +74,9 @@ Optional:
 
 Optional:
 
-- `auth_password` (String) AuthPassword is the authentication password for SNMP V3 users.
+- `auth_password` (String, Sensitive) AuthPassword is the authentication password for SNMP V3 users.
 - `auth_protocol` (String) AuthPrototol is the authentication protocol for SNMP V3 users. Options are None, MD5, or SHA. Defaults to None
-- `priv_password` (String) PrivPassword is the privacy password for SNMP V3 users.
+- `priv_password` (String, Sensitive) PrivPassword is the privacy password for SNMP V3 users.
 - `priv_protocol` (String) PrivPrototol is the privacy protocol for SNMP V3 users. Options are None, DES, or AES. Defaults to None
 - `user_name` (String) UserName is the user name to access SNMP V2 or SNMP V3 agent. Default is cohesityV2Public for SNMP Version V2C and cohesityV3Public for SNMP Version V3
 
@@ -86,8 +86,8 @@ Optional:
 
 Optional:
 
-- `auth_password` (String) AuthPassword is the authentication password for SNMP V3 users.
+- `auth_password` (String, Sensitive) AuthPassword is the authentication password for SNMP V3 users.
 - `auth_protocol` (String) AuthPrototol is the authentication protocol for SNMP V3 users. Options are None, MD5, or SHA. Defaults to None
-- `priv_password` (String) PrivPassword is the privacy password for SNMP V3 users.
+- `priv_password` (String, Sensitive) PrivPassword is the privacy password for SNMP V3 users.
 - `priv_protocol` (String) PrivPrototol is the privacy protocol for SNMP V3 users. Options are None, DES, or AES. Defaults to None
 - `user_name` (String) UserName is the user name to access SNMP V2 or SNMP V3 agent. Default is cohesityV2Public for SNMP Version V2C and cohesityV3Public for SNMP Version V3

@@ -28,7 +28,7 @@ provider "cohesity" {
 ### Optional
 
 - `cluster_domain` (String) The domain name of cohesity user
-- `cluster_password` (String) Cohesity cluster password
+- `cluster_password` (String, Sensitive) Cohesity cluster password
 - `cluster_username` (String) Cohesity cluster username
 - `cluster_vip` (String) IP or hostname of Cohesity cluster node
 - `support_password` (String, Sensitive) support password for the Cohesity cluster
