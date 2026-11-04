@@ -48,6 +48,14 @@
 # Example: "arn:aws:iam::123456789012:role/my-terraform-role"
 iam_role_arn = ""
 
+# (Optional) Custom AWS API endpoints for EUSC. Leave unset/null for commercial AWS.
+# aws_custom_endpoints = {
+#   ec2 = "https://ec2.eusc-de-east-1.amazonaws.eu"
+#   sts = "https://sts.eusc-de-east-1.amazonaws.eu"
+#   iam = "https://iam.eusc-de-east-1.amazonaws.eu"
+#   s3  = "https://s3.eusc-de-east-1.amazonaws.eu"
+# }
+
 ###############################################################################
 # Deployment Variables
 ###############################################################################
@@ -59,6 +67,7 @@ iam_role_arn = ""
 region = "replace-with-region"
 
 # Number of EC2 instances to create in the cluster.
+# To add nodes to an existing cluster, increase this to the desired total.
 # Example: 3
 num_instances = 3
 

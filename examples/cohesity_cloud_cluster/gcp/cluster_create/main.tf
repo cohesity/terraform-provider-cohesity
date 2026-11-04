@@ -24,23 +24,23 @@ provider "google" {
   region      = var.region
   credentials = var.credentials_file_path != "" ? file(var.credentials_file_path) : null
   impersonate_service_account = var.impersonate_service_account != "" ? var.impersonate_service_account : null
+
+  # Sovereign / dedicated cloud universe.
+  # Null for commercial (defaults to "googleapis.com").
+  universe_domain = var.universe_domain != "" ? var.universe_domain : null
 }
 
 ###############################################################################
 # Data Sources
 ###############################################################################
 
-# Fetch details of an existing subnet
+# Fetch details of an existing subnet.
+# In a Shared VPC deployment the subnet lives in the host project, so it is
+# looked up in host_project_id when set (falls back to project_id otherwise).
 data "google_compute_subnetwork" "network_details" {
   name    = var.subnet_name
   region  = var.region
-  project = var.project_id
-}
-
-# Fetch details of an existing vnet
-data "google_compute_network" "vnet_details" {
-  name    = var.vnet_name
-  project = var.project_id
+  project = local.network_project
 }
 
 # Fetch available zones in the given region
@@ -66,6 +66,10 @@ resource "random_string" "random_prefix" {
 
 locals {
   random_prefix = random_string.random_prefix.result
+
+  # Project that owns the VPC network and subnet. For a Shared VPC deployment
+  # this is the host project; otherwise it is the service project (project_id).
+  network_project = var.host_project_id != "" ? var.host_project_id : var.project_id
 
   # Define resource name prefix based on user input
   resource_name_prefix = var.add_random_prefix == false ? var.resource_name_prefix : "${var.resource_name_prefix}-${local.random_prefix}"
@@ -125,6 +129,21 @@ locals {
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
 
+  # Per-node device names assigned during disk attachment
+  ssd_device_names = [for i in range(local.config.SSDTierNumDisks) : "ssd-${i}"]
+  hdd_device_names = [for i in range(local.config.HDDTierNumDisks) : "hdd-${i}"]
+
+  # Build the per-node disk-identifier -> tier mapping passed to iris_cli
+  per_node_disk_identifiers = join(",", concat(
+    local.ssd_device_names,
+    local.hdd_device_names
+  ))
+
+  per_node_disk_tiers = join(",", concat(
+    [for _ in local.ssd_device_names : "PCIeSSD"],
+    [for _ in local.hdd_device_names : "SATA-HDD"]
+  ))
+
   # Construct iris_cli command prefixes
   iris_cli_cmd_prefix = join(" ", [
     "iris_cli",
@@ -135,7 +154,7 @@ locals {
     "--skip_force_password_change=true"
   ])
 
-  # Construct cluster command
+  # Construct cluster create command
   cluster_create_cmd = join(" ", [
     local.iris_cli_cmd_prefix,
     "cluster cloud-create cluster-size=${var.cluster_size} enable-software-encryption=true",
@@ -149,7 +168,49 @@ locals {
     "domain-names=${var.domain_names}",
     "metadata-fault-tolerance=${local.metadata_fault_tolerance}",
     "apps-subnet=${var.apps_subnet}",
-    "apps-subnet-mask=${var.apps_subnet_mask}"
+    "apps-subnet-mask=${var.apps_subnet_mask}",
+  ])
+  cluster_create_cmd_with_disk_mapping = join(" ", [
+    local.cluster_create_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Nodes created while num_instances has this value are labeled with it.
+  # The label is ignored on update, so earlier nodes keep their own value.
+  # Nodes created before this label existed have none and count as existing.
+  deploy_id = "deploy-${var.num_instances}"
+  new_node_ips = [
+    for instance in google_compute_instance.vm :
+    instance.network_interface[0].network_ip if try(instance.labels["cohesity-internal-deploy-id"], "") == local.deploy_id
+  ]
+  existing_node_ips = [
+    for instance in google_compute_instance.vm :
+    instance.network_interface[0].network_ip if try(instance.labels["cohesity-internal-deploy-id"], "") != local.deploy_id
+  ]
+  is_create    = length(local.existing_node_ips) == 0
+  is_expansion = !local.is_create && length(local.new_node_ips) > 0
+
+  cluster_join_cmd = join(" ", [
+    "iris_cli",
+    "--v=10",
+    "--username=admin",
+    "--password=REPLACE_WITH_IRIS_PASSWORD",
+    "--skip_password_prompt=true",
+    "--skip_force_password_change=true",
+    "cluster cloud-join",
+    "node-ips=${join(",", local.new_node_ips)}",
+  ])
+  cluster_join_cmd_with_disk_mapping = join(" ", [
+    local.cluster_join_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Construct the cloud-create help command for the target image.
+  cluster_cloud_create_help_cmd = join(" ", [
+    local.iris_cli_cmd_prefix,
+    "cluster cloud-create help show-hidden",
   ])
 
   # Construct cluster status command
@@ -159,9 +220,11 @@ locals {
   ])
 
   # Construct the SSH-based cluster creation command
-  sshpass_cmd_prefix         = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
-  sshpass_cluster_create_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
-  sshpass_cluster_status_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
+  sshpass_cmd_prefix                           = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
+  sshpass_cluster_create_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
+  sshpass_cluster_create_cmd_with_disk_mapping = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd_with_disk_mapping}"
+  sshpass_cluster_cloud_create_help_cmd        = "${local.sshpass_cmd_prefix} ${local.cluster_cloud_create_help_cmd}"
+  sshpass_cluster_status_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
 
   # Boot disk type: use config.BootDiskType if present, else default to pd-standard
   boot_disk_type = contains(keys(local.config), "BootDiskType") ? local.config.BootDiskType : "pd-standard"
@@ -291,8 +354,10 @@ resource "google_compute_instance" "vm" {
   name         = "${local.resource_name_prefix}-vm-${count.index}"
   machine_type = local.machine_type
   zone         = var.zone
-  labels       = local.parsed_labels
-  tags         = var.network_tags
+  labels = merge(local.parsed_labels, {
+    "cohesity-internal-deploy-id" = local.deploy_id
+  })
+  tags = var.network_tags
   #  Uncomment below line in case machine_type, min_cpu_platform or other instance-related attributes needs to be changed.
   # allow_stopping_for_update = true
 
@@ -301,8 +366,10 @@ resource "google_compute_instance" "vm" {
   }
 
   network_interface {
-    network    = var.vnet_name
-    subnetwork = var.subnet_name
+    # Reference the subnetwork by its self_link,
+    # and derive the network from the subnetwork read itself.
+    network    = data.google_compute_subnetwork.network_details.network
+    subnetwork = data.google_compute_subnetwork.network_details.self_link
     nic_type   = local.requires_gvnic ? "GVNIC" : null
     dynamic "access_config" {
       for_each = var.attach_public_ip ? [1] : []
@@ -317,7 +384,8 @@ resource "google_compute_instance" "vm" {
   dynamic "attached_disk" {
     for_each = { for k, v in google_compute_disk.ssd_tier_data_disk : k => v if local.ssd_disk_map[k].vm_index == count.index }
     content {
-      source = attached_disk.value.self_link
+      source      = attached_disk.value.self_link
+      device_name = local.ssd_device_names[local.ssd_disk_map[attached_disk.key].disk_index]
     }
   }
 
@@ -325,7 +393,8 @@ resource "google_compute_instance" "vm" {
   dynamic "attached_disk" {
     for_each = { for k, v in google_compute_disk.hdd_tier_data_disk : k => v if local.hdd_disk_map[k].vm_index == count.index }
     content {
-      source = attached_disk.value.self_link
+      source      = attached_disk.value.self_link
+      device_name = local.hdd_device_names[local.hdd_disk_map[attached_disk.key].disk_index]
     }
   }
 
@@ -336,17 +405,44 @@ resource "google_compute_instance" "vm" {
       scopes = ["https://www.googleapis.com/auth/cloud-platform"]
     }
   }
+
+  lifecycle {
+    # cohesity-internal-deploy-id must keep the value from the apply that created the VM.
+    ignore_changes = [labels["cohesity-internal-deploy-id"]]
+  }
 }
 
 ###############################################################################
 # Commands Based on Cluster Creation
 ###############################################################################
 
-# Print command for manual cluster creation
+# Print cloud-create or cloud-join command
 resource "null_resource" "print_command" {
   depends_on = [google_compute_instance.vm]
+
+  triggers = {
+    num_instances = tostring(var.num_instances)
+    node_ips      = join(",", local.private_ips)
+  }
+
   provisioner "local-exec" {
-    command = "echo Run the following command on any one of the VMs created: ${local.cluster_create_cmd}"
+    command = (
+      local.is_expansion ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any existing cluster node. Replace REPLACE_WITH_IRIS_PASSWORD with the Iris password:",
+        local.cluster_join_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_join_cmd,
+      ) :
+      local.is_create ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any one of the VMs created:",
+        local.cluster_create_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_create_cmd,
+      ) :
+      "echo No new nodes were created, so there is no cluster command to run."
+    )
   }
 }
 
@@ -357,6 +453,10 @@ resource "null_resource" "post_boot_commands" {
 
   provisioner "local-exec" {
     command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
     echo "Waiting for a few minutes for VM to be ready..."
     sleep ${var.post_boot_wait}
 
@@ -377,12 +477,25 @@ resource "null_resource" "post_boot_commands" {
   }
 }
 
-# Execute cluster create command
+# Execute cluster create command, checking cloud-create help for disk-identifiers
+# support and falling back to the command without disk args on older images.
 resource "null_resource" "execute_cluster_create_command" {
   depends_on = [null_resource.post_boot_commands]
   count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
-    command = local.sshpass_cluster_create_cmd
+    command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
+    help_cmd_output=$(${local.sshpass_cluster_cloud_create_help_cmd} 2>&1)
+
+    if echo "$help_cmd_output" | grep -q "disk-identifiers"; then
+      ${local.sshpass_cluster_create_cmd_with_disk_mapping}
+    else
+      ${local.sshpass_cluster_create_cmd}
+    fi
+    EOT
   }
 }

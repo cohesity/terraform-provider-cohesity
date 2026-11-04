@@ -1,6 +1,6 @@
 {
   "Name": "Cohesity Terraform Deployment Role",
-  "Description": "Minimal permissions for Cohesity DataProtect deployment via Terraform. Covers: vhd_upload, security_group_create, cluster_create modules.",
+  "Description": "Minimal permissions for Cohesity DataProtect deployment via Terraform. Covers: vhd_upload, security_group_create, cluster_create modules. NOTE: The Microsoft.Authorization/roleAssignments/{read,write,delete} actions are ONLY required when enable_system_managed_identity=true in cluster_create. If you do not use system-assigned managed identity on cluster VMs, you may safely remove those three actions. See azure/README.md (Step 1) for details.",
   "Actions": [
     "Microsoft.Resources/subscriptions/resourceGroups/read",
     "Microsoft.Resources/subscriptions/resourceGroups/write",
@@ -48,7 +48,10 @@
     "Microsoft.Compute/virtualMachines/restart/action",
     "Microsoft.Compute/virtualMachines/runCommand/action",
     "Microsoft.ManagedIdentity/userAssignedIdentities/read",
-    "Microsoft.ManagedIdentity/userAssignedIdentities/assign/action"
+    "Microsoft.ManagedIdentity/userAssignedIdentities/assign/action",
+    "Microsoft.Authorization/roleAssignments/read",
+    "Microsoft.Authorization/roleAssignments/write",
+    "Microsoft.Authorization/roleAssignments/delete"
   ],
   "NotActions": [],
   "AssignableScopes": [

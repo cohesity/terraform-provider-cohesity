@@ -64,7 +64,11 @@ variable "cluster_size" {
 
 variable "num_instances" {
   type        = number
-  description = "Number of Virtual Machines to create"
+  description = <<EOT
+Number of Virtual Machines to create.
+To add nodes to an existing cluster, increase this to the desired total and
+apply.
+EOT
   default     = 1
 }
 
@@ -175,6 +179,41 @@ variable "user_assigned_managed_identities_to_attach" {
   default     = []
 }
 
+variable "enable_system_managed_identity" {
+  description = <<EOT
+Enable system-assigned managed identity on each Azure VM. When enabled, Azure
+automatically creates and manages an identity for each VM. This identity can
+then be granted RBAC roles (via system_managed_identity_role_assignments) to
+access Azure resources without explicit credentials.
+
+Can be used alongside user-assigned managed identities — when both are enabled,
+the VM identity type is set to "SystemAssigned, UserAssigned".
+
+EOT
+  type        = bool
+  default     = false
+}
+
+variable "system_managed_identity_role_assignments" {
+  description = <<EOT
+List of RBAC role assignments to create for the system-assigned managed identity
+of each VM. Each entry creates a role assignment per VM (e.g., 3 VMs × 2 roles
+= 6 role assignments). Requires enable_system_managed_identity = true.
+
+Each object specifies:
+  - role_definition_name: Azure built-in or custom role name
+    (e.g., "Storage Blob Data Contributor", "Reader")
+  - scope: Azure resource scope for the assignment. Use subscription scope for
+    broad access or narrow to a specific resource group / resource.
+    Example subscription scope: "/subscriptions/<subscription_id>"
+    Example resource group scope: "/subscriptions/<sub_id>/resourceGroups/<rg>"
+EOT
+  type = list(object({
+    role_definition_name = string
+    scope                = string
+  }))
+  default = []
+}
 
 ################################################################################
 # Config Variables

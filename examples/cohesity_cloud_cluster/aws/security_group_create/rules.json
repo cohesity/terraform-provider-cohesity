@@ -191,6 +191,13 @@
     },
     {
       "protocol": "tcp",
+      "from_port": 10201,
+      "to_port": 10365,
+      "description": "Enable cluster encryption",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
       "from_port": 24567,
       "to_port": 24567,
       "description": "Iris Proxy",
@@ -334,6 +341,34 @@
       "from_port": 28999,
       "to_port": 28999,
       "description": "Reporting Service",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 11121,
+      "to_port": 11121,
+      "description": "Required for FusionFS Services",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 50051,
+      "to_port": 50051,
+      "description": "Linux Physical agent RPC/gRPC (required when agent host uses this SG)",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 59999,
+      "to_port": 59999,
+      "description": "Linux Physical agent HTTP/monitoring (required when agent host uses this SG)",
+      "cidr_blocks": ["0.0.0.0/0"]
+    },
+    {
+      "protocol": "tcp",
+      "from_port": 21213,
+      "to_port": 21213,
+      "description": "Linux Physical agent alternate probe port (required when agent host uses this SG)",
       "cidr_blocks": ["0.0.0.0/0"]
     },
     {

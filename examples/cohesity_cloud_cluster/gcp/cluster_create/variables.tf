@@ -14,6 +14,19 @@ variable "impersonate_service_account" {
   default     = ""
 }
 ###############################################################################
+# Sovereign / Dedicated Cloud Variables (optional)
+#
+# Leave these empty for a standard commercial GCP deployment.
+# Populate them to deploy into a dedicated / sovereign GCP universe.
+###############################################################################
+
+variable "universe_domain" {
+  description = "(Optional) GCP universe domain. Must match the universe of the supplied credentials; this cannot override the domain embedded in a credential file."
+  type        = string
+  default     = ""
+}
+
+###############################################################################
 # Deployment Variables
 ###############################################################################
 
@@ -24,13 +37,32 @@ variable "cluster_size" {
 }
 
 variable "project_id" {
-  description = "The ID of the GCP project"
+  description = "The ID of the GCP project (service project) where the cluster VMs, disks, and addresses are created."
   type        = string
+}
+
+variable "host_project_id" {
+  description = <<EOT
+(Optional) Shared VPC host project that owns the VPC network and subnet.
+Set this only for a Shared VPC deployment, where networking lives in the host
+project while compute resources are created in project_id (the service project).
+Leave empty (default) for a standalone single-project deployment.
+
+When set, the deployment identity must be granted roles/compute.networkUser on
+the host project's subnet (or on the host project), and the Compute Engine API
+must be enabled in the host project.
+EOT
+  type    = string
+  default = ""
 }
 
 variable "num_instances" {
   type        = number
-  description = "Number of Virtual Machines to create"
+  description = <<EOT
+Number of Virtual Machines to create.
+To add nodes to an existing cluster, increase this to the desired total and
+apply.
+EOT
   default     = 1
 }
 

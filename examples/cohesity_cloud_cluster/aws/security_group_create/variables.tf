@@ -12,6 +12,16 @@ EOT
   default     = ""
 }
 
+variable "aws_custom_endpoints" {
+  description = "(Optional) Custom AWS service endpoints for sovereign clouds (e.g. EUSC). Leave null for commercial AWS."
+  type = object({
+    ec2 = string
+    sts = string
+    iam = string
+  })
+  default = null
+}
+
 ###############################################################################
 # Security Group Variables
 ###############################################################################

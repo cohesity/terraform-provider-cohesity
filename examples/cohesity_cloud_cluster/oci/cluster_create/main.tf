@@ -125,8 +125,25 @@ locals {
   ])
   ssd_disk_map = { for d in local.ssd_disks : d.key => d }
 
+  # Device path letters for SSD tier disks
+  ssd_device_suffixes = ["b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
+
+  # Device path letters for HDD tier disks
+  hdd_device_suffixes = ["o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
+
+  # Build the per-node disk-identifier -> tier mapping passed to iris_cli
+  per_node_disk_identifiers = join(",", concat(
+    [for i in range(local.config.SSDTierNumDisks) : oci_core_volume_attachment.attach_ssd["ssd-tier-0-${i}"].device],
+    [for i in range(local.config.HDDTierNumDisks) : oci_core_volume_attachment.attach_hdd["hdd-tier-0-${i}"].device]
+  ))
+
+  per_node_disk_tiers = join(",", concat(
+    [for i in range(local.config.SSDTierNumDisks) : "PCIeSSD"],
+    [for i in range(local.config.HDDTierNumDisks) : "SATA-HDD"]
+  ))
 
   # Construct iris_cli command prefixes
   iris_cli_cmd_prefix = join(" ", [
@@ -138,7 +155,7 @@ locals {
     "--skip_force_password_change=true"
   ])
 
-  # Construct cluster command
+  # Construct cluster create command
   cluster_create_cmd = join(" ", [
     local.iris_cli_cmd_prefix,
     "cluster cloud-create cluster-size=nextGen enable-software-encryption=true",
@@ -152,7 +169,49 @@ locals {
     "domain-names=${var.domain_names}",
     "metadata-fault-tolerance=${local.metadata_fault_tolerance}",
     "apps-subnet=${var.apps_subnet}",
-    "apps-subnet-mask=${var.apps_subnet_mask}"
+    "apps-subnet-mask=${var.apps_subnet_mask}",
+  ])
+  cluster_create_cmd_with_disk_mapping = join(" ", [
+    local.cluster_create_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Nodes created while num_instances has this value are tagged with it.
+  # The tag is ignored on update, so earlier nodes keep their own value.
+  # Nodes created before this tag existed have none and count as existing.
+  deploy_id = "deploy-${var.num_instances}"
+  new_node_ips = [
+    for instance in oci_core_instance.vm :
+    instance.private_ip if try(instance.freeform_tags["cohesity-internal-deploy-id"], "") == local.deploy_id
+  ]
+  existing_node_ips = [
+    for instance in oci_core_instance.vm :
+    instance.private_ip if try(instance.freeform_tags["cohesity-internal-deploy-id"], "") != local.deploy_id
+  ]
+  is_create    = length(local.existing_node_ips) == 0
+  is_expansion = !local.is_create && length(local.new_node_ips) > 0
+
+  cluster_join_cmd = join(" ", [
+    "iris_cli",
+    "--v=10",
+    "--username=admin",
+    "--password=REPLACE_WITH_IRIS_PASSWORD",
+    "--skip_password_prompt=true",
+    "--skip_force_password_change=true",
+    "cluster cloud-join",
+    "node-ips=${join(",", local.new_node_ips)}",
+  ])
+  cluster_join_cmd_with_disk_mapping = join(" ", [
+    local.cluster_join_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Construct the cloud-create help command for the target image.
+  cluster_cloud_create_help_cmd = join(" ", [
+    local.iris_cli_cmd_prefix,
+    "cluster cloud-create help show-hidden",
   ])
 
   # Construct cluster status command
@@ -162,9 +221,11 @@ locals {
   ])
 
   # Construct the SSH-based cluster creation command
-  sshpass_cmd_prefix         = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
-  sshpass_cluster_create_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
-  sshpass_cluster_status_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
+  sshpass_cmd_prefix                           = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
+  sshpass_cluster_create_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
+  sshpass_cluster_create_cmd_with_disk_mapping = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd_with_disk_mapping}"
+  sshpass_cluster_cloud_create_help_cmd        = "${local.sshpass_cmd_prefix} ${local.cluster_cloud_create_help_cmd}"
+  sshpass_cluster_status_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
 }
 
 ################################################################################
@@ -200,7 +261,9 @@ resource "oci_core_instance" "vm" {
     source_id   = var.image_id
   }
 
-  freeform_tags = local.parsed_tags
+  freeform_tags = merge(local.parsed_tags, {
+    "cohesity-internal-deploy-id" = local.deploy_id
+  })
 
   lifecycle {
     # Prevent replacement of existing cluster nodes when image changes.
@@ -208,7 +271,8 @@ resource "oci_core_instance" "vm" {
     # (matching the upgraded cluster version) while existing nodes remain untouched.
     # When adding nodes to an upgraded cluster, update image_id to match
     # the current cluster version before increasing num_instances.
-    ignore_changes = [source_details[0].source_id]
+    # cohesity-internal-deploy-id must keep the value from the apply that created the VM.
+    ignore_changes = [source_details[0].source_id, freeform_tags["cohesity-internal-deploy-id"]]
   }
 }
 
@@ -219,15 +283,16 @@ resource "oci_core_volume" "ssd_tier_data_disk" {
   availability_domain = var.availability_domain
   display_name        = "${local.resource_name_prefix}-${each.key}"
   size_in_gbs         = local.config.SSDTierDiskSizeinGB
-  freeform_tags = local.parsed_tags
+  freeform_tags       = local.parsed_tags
 }
 
 # Attach Block Volumes (SSD Tier)
 resource "oci_core_volume_attachment" "attach_ssd" {
-  for_each    = local.ssd_disk_map
-  instance_id = oci_core_instance.vm[each.value.vm_index].id
-  volume_id   = oci_core_volume.ssd_tier_data_disk[each.key].id
+  for_each        = local.ssd_disk_map
+  instance_id     = oci_core_instance.vm[each.value.vm_index].id
+  volume_id       = oci_core_volume.ssd_tier_data_disk[each.key].id
   attachment_type = "paravirtualized"
+  device          = "/dev/oracleoci/oraclevd${element(local.ssd_device_suffixes, each.value.disk_index)}"
   display_name    = "${local.resource_name_prefix}-ssd-attachment-${each.key}"
 }
 
@@ -238,15 +303,16 @@ resource "oci_core_volume" "hdd_tier_data_disk" {
   availability_domain = var.availability_domain
   display_name        = "${local.resource_name_prefix}-${each.key}"
   size_in_gbs         = local.config.HDDTierDiskSizeinGB
-  freeform_tags = local.parsed_tags
+  freeform_tags       = local.parsed_tags
 }
 
 # Attach Block Volumes (HDD Tier)
 resource "oci_core_volume_attachment" "attach_hdd" {
-  for_each    = local.hdd_disk_map
-  instance_id = oci_core_instance.vm[each.value.vm_index].id
-  volume_id   = oci_core_volume.hdd_tier_data_disk[each.key].id
+  for_each        = local.hdd_disk_map
+  instance_id     = oci_core_instance.vm[each.value.vm_index].id
+  volume_id       = oci_core_volume.hdd_tier_data_disk[each.key].id
   attachment_type = "paravirtualized"
+  device           = "/dev/oracleoci/oraclevd${element(local.hdd_device_suffixes, each.value.disk_index)}"
   display_name    = "${local.resource_name_prefix}-hdd-attachment-${each.key}"
 }
 
@@ -254,11 +320,33 @@ resource "oci_core_volume_attachment" "attach_hdd" {
 # Commands Based on Cluster Creation
 ################################################################################
 
-# Print command for manual cluster creation
+# Print cloud-create or cloud-join command
 resource "null_resource" "print_command" {
   depends_on = [oci_core_volume_attachment.attach_ssd, oci_core_volume_attachment.attach_hdd]
+
+  triggers = {
+    num_instances = tostring(var.num_instances)
+    node_ips      = join(",", local.private_ips)
+  }
+
   provisioner "local-exec" {
-    command = "echo Run the following command on any one of the VMs created: ${local.cluster_create_cmd}"
+    command = (
+      local.is_expansion ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any existing cluster node. Replace REPLACE_WITH_IRIS_PASSWORD with the Iris password:",
+        local.cluster_join_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_join_cmd,
+      ) :
+      local.is_create ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any one of the VMs created:",
+        local.cluster_create_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_create_cmd,
+      ) :
+      "echo No new nodes were created, so there is no cluster command to run."
+    )
   }
 }
 
@@ -269,6 +357,10 @@ resource "null_resource" "post_boot_commands" {
 
   provisioner "local-exec" {
     command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
     echo "Waiting for a few minutes for VM to be ready..."
     sleep ${var.post_boot_wait}
 
@@ -289,12 +381,25 @@ resource "null_resource" "post_boot_commands" {
   }
 }
 
-# Execute cluster create command
+# Execute cluster create command, checking cloud-create help for disk-identifiers
+# support and falling back to the command without disk args on older images.
 resource "null_resource" "execute_cluster_create_command" {
   depends_on = [null_resource.post_boot_commands]
   count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
-    command = local.sshpass_cluster_create_cmd
+    command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
+    help_cmd_output=$(${local.sshpass_cluster_cloud_create_help_cmd} 2>&1)
+
+    if echo "$help_cmd_output" | grep -q "disk-identifiers"; then
+      ${local.sshpass_cluster_create_cmd_with_disk_mapping}
+    else
+      ${local.sshpass_cluster_create_cmd}
+    fi
+    EOT
   }
 }

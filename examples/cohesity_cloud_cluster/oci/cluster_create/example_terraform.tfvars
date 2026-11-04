@@ -45,6 +45,15 @@
 #   oci iam region list
 region = "replace-with-region"
 
+###############################################################################
+# Sovereign / Dedicated Cloud (OCI Alloy / Dedicated Region) (optional)
+# Skip this for Commercial flavour
+#
+# Export these in the same shell before terraform plan/apply:
+#   export OCI_CLI_USE_INSTANCE_METADATA_SERVICE=true
+#   export OCI_DEFAULT_REALM="<realm-domain>"
+###############################################################################
+
 # OCID of the compartment where resources will be created.
 # Example: "ocid1.compartment.oc1..xxxxx"
 # To list available compartments:
@@ -57,6 +66,7 @@ compartment_id = "replace-with-compartment-id"
 availability_domain = "replace-with-availability-domain"
 
 # Number of compute instances to create in the cluster.
+# To add nodes to an existing cluster, increase this to the desired total.
 # Example: 3
 num_instances = 3
 

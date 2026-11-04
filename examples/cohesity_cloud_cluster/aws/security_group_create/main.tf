@@ -14,6 +14,19 @@ terraform {
 provider "aws" {
   region = var.region
 
+  # Older AWS provider builds may reject eusc-de-east-1 before custom endpoints
+  # apply; skip validation only when aws_custom_endpoints is set (EUSC).
+  skip_region_validation = var.aws_custom_endpoints != null
+
+  dynamic "endpoints" {
+    for_each = var.aws_custom_endpoints != null ? [var.aws_custom_endpoints] : []
+    content {
+      ec2 = endpoints.value.ec2
+      sts = endpoints.value.sts
+      iam = endpoints.value.iam
+    }
+  }
+
   # Conditionally assume role if iam_role_arn is not empty
   dynamic "assume_role" {
     for_each = var.iam_role_arn != "" ? [1] : []

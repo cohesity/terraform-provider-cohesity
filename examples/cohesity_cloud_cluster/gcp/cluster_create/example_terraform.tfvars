@@ -74,12 +74,25 @@ impersonate_service_account = ""
 # Deployment Variables
 ###############################################################################
 
-# The GCP Project ID where resources will be created.
+# The GCP Project ID (service project) where the cluster VMs, disks, and
+# addresses will be created.
 # You can find this in the Google Cloud Console dashboard or by running:
 #   gcloud projects list
 project_id = "replace-with-project-id"
 
+# (Optional) Shared VPC host project that owns the VPC network and subnet.
+# Set this ONLY for a Shared VPC deployment, where networking lives in the host
+# project while compute resources are created in project_id above.
+# Leave empty ("") for a standalone single-project deployment.
+# Requirements when set:
+#   - Enable the Compute Engine API in the host project.
+#   - Grant the deployment identity roles/compute.networkUser on the host
+#     project's subnet (least privilege) or on the host project.
+# Example: host_project_id = "my-shared-vpc-host-project"
+host_project_id = ""
+
 # Number of Virtual Machines to create in the cluster.
+# To add nodes to an existing cluster, increase this to the desired total.
 # Example: 3
 num_instances = 3
 
@@ -87,6 +100,15 @@ num_instances = 3
 # To list available regions, run:
 #   gcloud compute regions list
 region = "replace-with-region"
+
+###############################################################################
+# Sovereign / Dedicated Cloud (optional)
+#
+# Leave empty for a standard commercial GCP deployment.
+# For a dedicated / sovereign universe, set universe_domain.
+# Example: "s3nsapis.fr"
+###############################################################################
+universe_domain = ""
 
 # GCP Zone for deployment (e.g., "us-west1-a", "us-west1-b").
 # Must be within the selected region.

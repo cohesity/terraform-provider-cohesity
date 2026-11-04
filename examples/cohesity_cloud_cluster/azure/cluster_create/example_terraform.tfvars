@@ -46,6 +46,7 @@ environment = "public"
 ################################################################################
 
 # Number of Virtual Machines to create
+# To add nodes to an existing cluster, increase this to the desired total.
 num_instances = 3
 
 # The prefix to use for naming all Azure resources (e.g., Virtual Machines,
@@ -122,6 +123,30 @@ customer_managed_disk_encryption_id = ""
 #   "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<identity_name2>"
 # ]
 user_assigned_managed_identities_to_attach = []
+
+# Enable system-assigned managed identity on each VM.
+# When true, Azure creates and manages an identity per VM automatically.
+
+enable_system_managed_identity = false
+
+# RBAC role assignments for the system-assigned managed identity (requires
+# enable_system_managed_identity = true). Each entry creates one role assignment
+# per VM at the given scope.
+#
+# Example — grant each VM "Storage Blob Data Contributor" at subscription level
+# and "Reader" at a specific resource group:
+#
+# system_managed_identity_role_assignments = [
+#   {
+#     role_definition_name = "Storage Blob Data Contributor"
+#     scope                = "/subscriptions/<subscription_id>"
+#   },
+#   {
+#     role_definition_name = "Reader"
+#     scope                = "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>"
+#   }
+# ]
+system_managed_identity_role_assignments = []
 
 ################################################################################
 # Config Variables

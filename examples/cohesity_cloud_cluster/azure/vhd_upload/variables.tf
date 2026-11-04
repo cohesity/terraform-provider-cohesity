@@ -120,3 +120,21 @@ variable "vhd_upload_parallelism" {
   type        = number
   default     = 2
 }
+
+variable "use_azurerm_native_upload" {
+  description = <<-EOT
+    Upload the VHD using the provider-native azurerm_storage_blob resource
+    instead of the azure-vhd-utils binary.
+
+    The azure-vhd-utils binary builds its storage client with the commercial
+    'core.windows.net' suffix hardcoded and exposes no endpoint/environment
+    flag, so it cannot target sovereign clouds. The azurerm provider is
+    environment-aware (var.environment), so the native path uploads to the
+    correct blob endpoint for public, usgovernment, china, or german.
+
+    Defaults to false so the existing (commercial) azure-vhd-utils path is
+    unchanged. Set to true for usgovernment / other sovereign clouds.
+  EOT
+  type        = bool
+  default     = false
+}

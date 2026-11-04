@@ -22,6 +22,20 @@ terraform {
 provider "aws" {
   region = var.region
 
+  # Older AWS provider builds may reject eusc-de-east-1 before custom endpoints
+  # apply; skip validation only when aws_custom_endpoints is set (EUSC).
+  skip_region_validation = var.aws_custom_endpoints != null
+
+  dynamic "endpoints" {
+    for_each = var.aws_custom_endpoints != null ? [var.aws_custom_endpoints] : []
+    content {
+      ec2 = endpoints.value.ec2
+      sts = endpoints.value.sts
+      iam = endpoints.value.iam
+      s3  = endpoints.value.s3
+    }
+  }
+
   # Conditionally assume role if iam_role_arn is not empty
   dynamic "assume_role" {
     for_each = var.iam_role_arn != "" ? [1] : []
@@ -147,6 +161,17 @@ locals {
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
 
+  # Build the per-node disk-identifier -> tier mapping passed to iris_cli
+  per_node_disk_identifiers = join(",", concat(
+    [for i in range(local.config.SSDTierNumDisks) : aws_volume_attachment.attach_ssd["ssd-tier-0-${i}"].device_name],
+    [for i in range(local.config.HDDTierNumDisks) : aws_volume_attachment.attach_hdd["hdd-tier-0-${i}"].device_name]
+  ))
+
+  per_node_disk_tiers = join(",", concat(
+    [for i in range(local.config.SSDTierNumDisks) : "PCIeSSD"],
+    [for i in range(local.config.HDDTierNumDisks) : "SATA-HDD"]
+  ))
+
   # Construct iris_cli command prefixes
   iris_cli_cmd_prefix = join(" ", [
     "iris_cli",
@@ -157,7 +182,7 @@ locals {
     "--skip_force_password_change=true"
   ])
 
-  # Construct cluster command
+  # Construct cluster create command
   cluster_create_cmd = join(" ", [
     local.iris_cli_cmd_prefix,
     "cluster cloud-create cluster-size=${var.cluster_size} enable-software-encryption=true",
@@ -171,7 +196,49 @@ locals {
     "domain-names=${var.domain_names}",
     "metadata-fault-tolerance=${local.metadata_fault_tolerance}",
     "apps-subnet=${var.apps_subnet}",
-    "apps-subnet-mask=${var.apps_subnet_mask}"
+    "apps-subnet-mask=${var.apps_subnet_mask}",
+  ])
+  cluster_create_cmd_with_disk_mapping = join(" ", [
+    local.cluster_create_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Nodes created while num_instances has this value are tagged with it.
+  # The tag is ignored on update, so earlier nodes keep their own value.
+  # Nodes created before this tag existed have none and count as existing.
+  deploy_id = "deploy-${var.num_instances}"
+  new_node_ips = [
+    for instance in aws_instance.vm :
+    instance.private_ip if try(instance.tags["cohesity-internal-deploy-id"], "") == local.deploy_id
+  ]
+  existing_node_ips = [
+    for instance in aws_instance.vm :
+    instance.private_ip if try(instance.tags["cohesity-internal-deploy-id"], "") != local.deploy_id
+  ]
+  is_create    = length(local.existing_node_ips) == 0
+  is_expansion = !local.is_create && length(local.new_node_ips) > 0
+
+  cluster_join_cmd = join(" ", [
+    "iris_cli",
+    "--v=10",
+    "--username=admin",
+    "--password=REPLACE_WITH_IRIS_PASSWORD",
+    "--skip_password_prompt=true",
+    "--skip_force_password_change=true",
+    "cluster cloud-join",
+    "node-ips=${join(",", local.new_node_ips)}",
+  ])
+  cluster_join_cmd_with_disk_mapping = join(" ", [
+    local.cluster_join_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Construct the cloud-create help command for the target image.
+  cluster_cloud_create_help_cmd = join(" ", [
+    local.iris_cli_cmd_prefix,
+    "cluster cloud-create help show-hidden",
   ])
 
   # Construct cluster status command
@@ -181,9 +248,11 @@ locals {
   ])
 
   # Construct the SSH-based cluster creation command
-  sshpass_cmd_prefix         = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
-  sshpass_cluster_create_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
-  sshpass_cluster_status_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
+  sshpass_cmd_prefix                           = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
+  sshpass_cluster_create_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
+  sshpass_cluster_create_cmd_with_disk_mapping = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd_with_disk_mapping}"
+  sshpass_cluster_cloud_create_help_cmd        = "${local.sshpass_cmd_prefix} ${local.cluster_cloud_create_help_cmd}"
+  sshpass_cluster_status_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
 }
 
 ################################################################################
@@ -225,7 +294,8 @@ resource "aws_instance" "vm" {
   }
 
   tags = merge(local.parsed_tags, {
-    Name = "${local.resource_name_prefix}-vm-${count.index}"
+    Name                          = "${local.resource_name_prefix}-vm-${count.index}"
+    "cohesity-internal-deploy-id" = local.deploy_id
   })
 
   lifecycle {
@@ -234,7 +304,8 @@ resource "aws_instance" "vm" {
     # (matching the upgraded cluster version) while existing nodes remain untouched.
     # When adding nodes to an upgraded cluster, update image_id to match
     # the current cluster version before increasing num_instances.
-    ignore_changes = [ami]
+    # cohesity-internal-deploy-id must keep the value from the apply that created the VM.
+    ignore_changes = [ami, tags["cohesity-internal-deploy-id"]]
   }
 }
 
@@ -296,11 +367,33 @@ resource "aws_volume_attachment" "attach_hdd" {
 # Commands Based on Cluster Creation
 ################################################################################
 
-# Print command for manual cluster creation
+# Print cloud-create or cloud-join command
 resource "null_resource" "print_command" {
   depends_on = [aws_volume_attachment.attach_ssd, aws_volume_attachment.attach_hdd]
+
+  triggers = {
+    num_instances = tostring(var.num_instances)
+    node_ips      = join(",", local.private_ips)
+  }
+
   provisioner "local-exec" {
-    command = "echo Run the following command on any one of the VMs created: ${local.cluster_create_cmd}"
+    command = (
+      local.is_expansion ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any existing cluster node. Replace REPLACE_WITH_IRIS_PASSWORD with the Iris password:",
+        local.cluster_join_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_join_cmd,
+      ) :
+      local.is_create ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any one of the VMs created:",
+        local.cluster_create_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_create_cmd,
+      ) :
+      "echo No new nodes were created, so there is no cluster command to run."
+    )
   }
 }
 
@@ -311,6 +404,10 @@ resource "null_resource" "post_boot_commands" {
 
   provisioner "local-exec" {
     command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
     echo "Waiting for a few minutes for VM to be ready..."
     sleep ${var.post_boot_wait}
 
@@ -331,12 +428,25 @@ resource "null_resource" "post_boot_commands" {
   }
 }
 
-# Execute cluster create command
+# Execute cluster create command, checking cloud-create help for disk-identifiers
+# support and falling back to the command without disk args on older images.
 resource "null_resource" "execute_cluster_create_command" {
   depends_on = [null_resource.post_boot_commands]
   count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
-    command = local.sshpass_cluster_create_cmd
+    command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
+    help_cmd_output=$(${local.sshpass_cluster_cloud_create_help_cmd} 2>&1)
+
+    if echo "$help_cmd_output" | grep -q "disk-identifiers"; then
+      ${local.sshpass_cluster_create_cmd_with_disk_mapping}
+    else
+      ${local.sshpass_cluster_create_cmd}
+    fi
+    EOT
   }
 }

@@ -19,7 +19,11 @@ variable "availability_domain" {
 
 variable "num_instances" {
   type        = number
-  description = "Number of Virtual Machines to create"
+  description = <<EOT
+Number of Virtual Machines to create.
+To add nodes to an existing cluster, increase this to the desired total and
+apply.
+EOT
   default     = 1
   validation {
     condition     = var.num_instances > 0

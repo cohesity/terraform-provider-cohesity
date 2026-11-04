@@ -25,6 +25,13 @@ provider "azurerm" {
   subscription_id = var.subscription_id
   environment     = var.environment
 
+  # Restricted subscriptions (e.g. Azure Gov) scope automation SPs to only the
+  # actions this module needs, so azurerm's default "core" auto-registration
+  # of ~35 unrelated resource providers 403s and aborts the apply; this module
+  # only needs Microsoft.Resources/Storage/Network/Compute(/Authorization when
+  # system managed identity is enabled), which are pre-registered.
+  resource_provider_registrations = "none"
+
   # Credentials are interpreted based on auth_method:
   # - Service Principal: client_id + client_secret + tenant_id all required
   # - Managed Identity: client_id optional (only required for multiple user-assigned identities)
@@ -153,6 +160,43 @@ locals {
   # Determine fault tolerance level based on the number of instances
   metadata_fault_tolerance = var.num_instances > 1 ? 1 : 0
 
+  # LUNs assigned during disk attachment
+  ssd_luns = [for i in range(local.config.SSDTierNumDisks) : i]
+  hdd_luns = [for i in range(local.config.HDDTierNumDisks) : i + local.config.SSDTierNumDisks]
+
+  # Build the per-node disk-identifier -> tier mapping passed to iris_cli
+  per_node_disk_identifiers = join(",", concat(
+    [for lun in local.ssd_luns : "/dev/disk/azure/scsi1/lun${lun}"],
+    [for lun in local.hdd_luns : "/dev/disk/azure/scsi1/lun${lun}"]
+  ))
+
+  per_node_disk_tiers = join(",", concat(
+    [for _ in local.ssd_luns : "PCIeSSD"],
+    [for _ in local.hdd_luns : "SATA-HDD"]
+  ))
+
+  # Compute VM identity type based on which identity mechanisms are enabled.
+  # Supports four states: none, SystemAssigned only, UserAssigned only, or both.
+  has_smi = var.enable_system_managed_identity
+  has_umi = length(var.user_assigned_managed_identities_to_attach) > 0
+  identity_type = local.has_smi && local.has_umi ? "SystemAssigned, UserAssigned" : (
+    local.has_smi ? "SystemAssigned" : (
+      local.has_umi ? "UserAssigned" : ""
+    )
+  )
+
+  # Cross-product of VMs × role assignments for SMI RBAC setup
+  smi_role_assignments = var.enable_system_managed_identity ? flatten([
+    for vm_index in range(var.num_instances) : [
+      for ra_index, ra in var.system_managed_identity_role_assignments : {
+        key                  = "vm${vm_index}-role${ra_index}"
+        vm_index             = vm_index
+        role_definition_name = ra.role_definition_name
+        scope                = ra.scope
+      }
+    ]
+  ]) : []
+
   # Construct iris_cli command prefixes
   iris_cli_cmd_prefix = join(" ", [
     "iris_cli",
@@ -163,7 +207,7 @@ locals {
     "--skip_force_password_change=true"
   ])
 
-  # Construct cluster command
+  # Construct cluster create command
   cluster_create_cmd = join(" ", [
     local.iris_cli_cmd_prefix,
     "cluster cloud-create cluster-size=${var.cluster_size} enable-software-encryption=true",
@@ -177,7 +221,49 @@ locals {
     "domain-names=${var.domain_names}",
     "metadata-fault-tolerance=${local.metadata_fault_tolerance}",
     "apps-subnet=${var.apps_subnet}",
-    "apps-subnet-mask=${var.apps_subnet_mask}"
+    "apps-subnet-mask=${var.apps_subnet_mask}",
+  ])
+  cluster_create_cmd_with_disk_mapping = join(" ", [
+    local.cluster_create_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Nodes created while num_instances has this value are tagged with it.
+  # The tag is ignored on update, so earlier nodes keep their own value.
+  # Nodes created before this tag existed have none and count as existing.
+  deploy_id = "deploy-${var.num_instances}"
+  new_node_ips = [
+    for i, vm in azurerm_virtual_machine.azure_vm :
+    local.private_ips[i] if try(vm.tags["cohesity-internal-deploy-id"], "") == local.deploy_id
+  ]
+  existing_node_ips = [
+    for i, vm in azurerm_virtual_machine.azure_vm :
+    local.private_ips[i] if try(vm.tags["cohesity-internal-deploy-id"], "") != local.deploy_id
+  ]
+  is_create    = length(local.existing_node_ips) == 0
+  is_expansion = !local.is_create && length(local.new_node_ips) > 0
+
+  cluster_join_cmd = join(" ", [
+    "iris_cli",
+    "--v=10",
+    "--username=admin",
+    "--password=REPLACE_WITH_IRIS_PASSWORD",
+    "--skip_password_prompt=true",
+    "--skip_force_password_change=true",
+    "cluster cloud-join",
+    "node-ips=${join(",", local.new_node_ips)}",
+  ])
+  cluster_join_cmd_with_disk_mapping = join(" ", [
+    local.cluster_join_cmd,
+    "disk-identifiers=${local.per_node_disk_identifiers}",
+    "disk-tiers=${local.per_node_disk_tiers}",
+  ])
+
+  # Construct the cloud-create help command for the target image.
+  cluster_cloud_create_help_cmd = join(" ", [
+    local.iris_cli_cmd_prefix,
+    "cluster cloud-create help show-hidden",
   ])
 
   # Construct cluster status command
@@ -187,9 +273,11 @@ locals {
   ])
 
   # Construct the SSH-based cluster creation command
-  sshpass_cmd_prefix         = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
-  sshpass_cluster_create_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
-  sshpass_cluster_status_cmd = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
+  sshpass_cmd_prefix                           = "sshpass -p 'Cohe$1ty' ssh -o StrictHostKeyChecking=no cohesity@${local.instance_ip}"
+  sshpass_cluster_create_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd}"
+  sshpass_cluster_create_cmd_with_disk_mapping = "${local.sshpass_cmd_prefix} ${local.cluster_create_cmd_with_disk_mapping}"
+  sshpass_cluster_cloud_create_help_cmd        = "${local.sshpass_cmd_prefix} ${local.cluster_cloud_create_help_cmd}"
+  sshpass_cluster_status_cmd                   = "${local.sshpass_cmd_prefix} ${local.cluster_status_cmd}"
 }
 
 ################################################################################
@@ -254,6 +342,9 @@ resource "azurerm_managed_disk" "os_disk" {
   storage_account_id     = var.storage_account_id
   hyper_v_generation     = "V1"
   os_type                = "Linux"
+  # Must match the VM's zone; without this the OS disk is regional and cannot
+  # attach to a zonal VM (required when using PremiumV2_LRS data disks).
+  zone                   = var.availability_zone
   disk_encryption_set_id = var.customer_managed_disk_encryption_id != "" ? var.customer_managed_disk_encryption_id : null
   tags                   = local.parsed_tags
 
@@ -327,7 +418,7 @@ resource "azurerm_virtual_machine" "azure_vm" {
     for_each = { for k, v in local.ssd_disk_map : k => v if v.vm_index == count.index }
     content {
       name            = azurerm_managed_disk.ssd_tier_data_disk[storage_data_disk.key].name
-      lun             = storage_data_disk.value.disk_index
+      lun             = local.ssd_luns[storage_data_disk.value.disk_index]
       caching         = "None"
       create_option   = "Attach"
       disk_size_gb    = local.config.SSDTierDiskSizeinGB
@@ -340,7 +431,7 @@ resource "azurerm_virtual_machine" "azure_vm" {
     for_each = { for k, v in local.hdd_disk_map : k => v if v.vm_index == count.index }
     content {
       name            = azurerm_managed_disk.hdd_tier_data_disk[storage_data_disk.key].name
-      lun             = storage_data_disk.value.disk_index + local.config.SSDTierNumDisks
+      lun             = local.hdd_luns[storage_data_disk.value.disk_index]
       caching         = "None"
       create_option   = "Attach"
       disk_size_gb    = local.config.HDDTierDiskSizeinGB
@@ -349,25 +440,66 @@ resource "azurerm_virtual_machine" "azure_vm" {
   }
 
   dynamic "identity" {
-    for_each = length(var.user_assigned_managed_identities_to_attach) > 0 ? [1] : []
+    for_each = local.identity_type != "" ? [1] : []
     content {
-      type         = "UserAssigned"
-      identity_ids = var.user_assigned_managed_identities_to_attach
+      type         = local.identity_type
+      identity_ids = local.has_umi ? var.user_assigned_managed_identities_to_attach : []
     }
   }
 
-  tags = local.parsed_tags
+  tags = merge(local.parsed_tags, {
+    "cohesity-internal-deploy-id" = local.deploy_id
+  })
+
+  lifecycle {
+    # cohesity-internal-deploy-id must keep the value from the apply that created the VM.
+    ignore_changes = [tags["cohesity-internal-deploy-id"]]
+  }
+}
+
+################################################################################
+# System Managed Identity — RBAC Role Assignments
+################################################################################
+
+resource "azurerm_role_assignment" "smi_roles" {
+  for_each = { for ra in local.smi_role_assignments : ra.key => ra }
+
+  scope                = each.value.scope
+  role_definition_name = each.value.role_definition_name
+  principal_id         = azurerm_virtual_machine.azure_vm[each.value.vm_index].identity[0].principal_id
 }
 
 ################################################################################
 # Commands Based on Cluster Creation
 ################################################################################
 
-# Print command for manual cluster creation
+# Print cloud-create or cloud-join command
 resource "null_resource" "print_command" {
   depends_on = [azurerm_virtual_machine.azure_vm]
+
+  triggers = {
+    num_instances = tostring(var.num_instances)
+    node_ips      = join(",", local.private_ips)
+  }
+
   provisioner "local-exec" {
-    command = "echo Run the following command on any one of the VMs created: ${local.cluster_create_cmd}"
+    command = (
+      local.is_expansion ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any existing cluster node. Replace REPLACE_WITH_IRIS_PASSWORD with the Iris password:",
+        local.cluster_join_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_join_cmd,
+      ) :
+      local.is_create ?
+      format("%s %s; %s %s",
+        "echo If cluster version is 7.5 or later, run the following command on any one of the VMs created:",
+        local.cluster_create_cmd_with_disk_mapping,
+        "echo Else, run the following command:",
+        local.cluster_create_cmd,
+      ) :
+      "echo No new nodes were created, so there is no cluster command to run."
+    )
   }
 }
 
@@ -378,6 +510,10 @@ resource "null_resource" "post_boot_commands" {
 
   provisioner "local-exec" {
     command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
     echo "Waiting for a few minutes for VM to be ready..."
     sleep ${var.post_boot_wait}
 
@@ -398,12 +534,25 @@ resource "null_resource" "post_boot_commands" {
   }
 }
 
-# Execute cluster create command
+# Execute cluster create command, checking cloud-create help for disk-identifiers
+# support and falling back to the command without disk args on older images.
 resource "null_resource" "execute_cluster_create_command" {
   depends_on = [null_resource.post_boot_commands]
   count      = var.issue_cluster_create_cmd ? 1 : 0
 
   provisioner "local-exec" {
-    command = local.sshpass_cluster_create_cmd
+    command = <<EOT
+    if [ "${local.is_create}" != "true" ]; then
+      echo "Existing nodes found; skipping cluster create."
+      exit 0
+    fi
+    help_cmd_output=$(${local.sshpass_cluster_cloud_create_help_cmd} 2>&1)
+
+    if echo "$help_cmd_output" | grep -q "disk-identifiers"; then
+      ${local.sshpass_cluster_create_cmd_with_disk_mapping}
+    else
+      ${local.sshpass_cluster_create_cmd}
+    fi
+    EOT
   }
 }

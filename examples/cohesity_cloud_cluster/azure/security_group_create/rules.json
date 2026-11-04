@@ -581,6 +581,26 @@
       "destination_port_range": "*",
       "destination_address_prefix": "*",
       "description": "HTTPS Outbound TCP 443"
+    },
+    {
+      "name": "FusionFS59",
+      "priority": 359,
+      "direction": "Inbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "*",
+      "destination_port_range": "11121",
+      "description": "FusionFS TCP 11121"
+    },
+    {
+      "name": "FusionFS60",
+      "priority": 360,
+      "direction": "Outbound",
+      "access": "Allow",
+      "protocol": "Tcp",
+      "source_port_range": "11121",
+      "destination_port_range": "*",
+      "description": "FusionFS Outbound TCP 11121"
     }
   ]
 }

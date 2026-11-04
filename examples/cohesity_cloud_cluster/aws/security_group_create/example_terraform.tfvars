@@ -48,6 +48,13 @@
 # Example: "arn:aws:iam::123456789012:role/my-terraform-role"
 iam_role_arn = ""
 
+# (Optional) Custom AWS API endpoints for EUSC. Leave unset/null for commercial AWS.
+# aws_custom_endpoints = {
+#   ec2 = "https://ec2.eusc-de-east-1.amazonaws.eu"
+#   sts = "https://sts.eusc-de-east-1.amazonaws.eu"
+#   iam = "https://iam.eusc-de-east-1.amazonaws.eu"
+# }
+
 ###############################################################################
 # Example tfvars for security_group_create
 ###############################################################################

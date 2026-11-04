@@ -23,13 +23,28 @@ EOT
   default     = ""
 }
 
+variable "aws_custom_endpoints" {
+  description = "(Optional) Custom AWS service endpoints for sovereign clouds (e.g. EUSC). Leave null for commercial AWS."
+  type = object({
+    ec2 = string
+    sts = string
+    iam = string
+    s3  = string
+  })
+  default = null
+}
+
 ################################################################################
 # Deployment Variables
 ################################################################################
 
 variable "num_instances" {
   type        = number
-  description = "Number of Virtual Machines to create"
+  description = <<EOT
+Number of Virtual Machines to create.
+To add nodes to an existing cluster, increase this to the desired total and
+apply.
+EOT
   default     = 1
 }
 
