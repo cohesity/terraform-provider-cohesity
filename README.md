@@ -24,7 +24,7 @@ This provider plugin is maintained by [Cohesity](https://www.cohesity.com/)
 ## <a name ="requirements"></a> Requirements :clipboard:
 
 -	[Terraform](https://www.terraform.io/downloads.html) 0.12.20+
--	[Go](https://golang.org/doc/install) 1.16 (to build the provider plugin)
+-	[Go](https://golang.org/doc/install) 1.25.8+ (to build the provider plugin)
 -   [Cohesity](https://www.cohesity.com/) DataPlatform 6.4+
 
 ## <a name ="building-the-provider"></a> Building The Provider :pencil2:
@@ -50,7 +50,7 @@ The Cohesity provider documentation can be found on [provider's website](https:/
 
 ## <a name ="developing-the-provider"></a> Developing the Provider :hammer_and_pick:
 
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.12 is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.25.8 or newer is required). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
 
 To compile the provider, run `make build`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 

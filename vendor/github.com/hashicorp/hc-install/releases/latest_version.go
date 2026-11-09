@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package releases
@@ -26,6 +26,10 @@ type LatestVersion struct {
 	InstallDir         string
 	Timeout            time.Duration
 	IncludePrereleases bool
+
+	// LicenseDir represents directory path where to install license files
+	// (required for enterprise versions, optional for Community editions).
+	LicenseDir string
 
 	// Enterprise indicates installation of enterprise version (leave nil for Community editions)
 	Enterprise *EnterpriseOptions
@@ -68,7 +72,7 @@ func (lv *LatestVersion) Validate() error {
 		return fmt.Errorf("invalid binary name: %q", lv.Product.BinaryName())
 	}
 
-	if err := validateEnterpriseOptions(lv.Enterprise); err != nil {
+	if err := validateEnterpriseOptions(lv.Enterprise, lv.LicenseDir); err != nil {
 		return err
 	}
 
@@ -131,10 +135,7 @@ func (lv *LatestVersion) Install(ctx context.Context) (string, error) {
 	if lv.ApiBaseURL != "" {
 		d.BaseURL = lv.ApiBaseURL
 	}
-	licenseDir := ""
-	if lv.Enterprise != nil {
-		licenseDir = lv.Enterprise.LicenseDir
-	}
+	licenseDir := lv.LicenseDir
 	up, err := d.DownloadAndUnpack(ctx, versionToInstall, dstDir, licenseDir)
 	if up != nil {
 		lv.pathsToRemove = append(lv.pathsToRemove, up.PathsToRemove...)

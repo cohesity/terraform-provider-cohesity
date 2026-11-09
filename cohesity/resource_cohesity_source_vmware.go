@@ -111,7 +111,7 @@ func resourceCohesitySourceVMwareCreate(ctx context.Context, resourceData *schem
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
@@ -169,7 +169,7 @@ func resourceCohesitySourceVMwareCreate(ctx context.Context, resourceData *schem
 	result, err := client.ProtectionSources().CreateRegisterProtectionSource(&requestBody)
 
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to register Cohesity protection source")
 	}
 	resourceData.SetId(strconv.FormatInt(*result.Id, 10))
@@ -182,7 +182,7 @@ func resourceCohesitySourceVMwareRead(ctx context.Context, resourceData *schema.
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	var environmentType = []models.EnvironmentListProtectionSourcesEnum{models.
@@ -211,7 +211,7 @@ func resourceCohesitySourceVMwareDelete(ctx context.Context, resourceData *schem
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
@@ -223,7 +223,7 @@ func resourceCohesitySourceVMwareDelete(ctx context.Context, resourceData *schem
 
 	err = client.ProtectionSources().DeleteUnregisterProtectionSource(sourceID)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to unregister VMware protection source")
 	}
 	log.Printf("[INFO] Successfully unregistered the VMware protection source %s",
@@ -237,7 +237,7 @@ func resourceCohesitySourceVMwareUpdate(ctx context.Context, resourceData *schem
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
@@ -298,7 +298,7 @@ func resourceCohesitySourceVMwareUpdate(ctx context.Context, resourceData *schem
 	_, err = client.ProtectionSources().UpdateProtectionSource(sourceID, &updatedParameters)
 
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to update VMware protection source")
 	}
 	resourceData.Partial(false)

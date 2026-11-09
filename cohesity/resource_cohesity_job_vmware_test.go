@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
@@ -39,7 +39,7 @@ func testAccCheckJobVmwareDestroy(s *terraform.State) error {
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return fmt.Errorf("Failed to authenticate with Cohesity")
 	}
 
@@ -67,7 +67,7 @@ func testAccCheckJobVmwareCreated() resource.TestCheckFunc {
 		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
 		}
 		resourceName := "cohesity_job_vmware.terraform_vmware_job"
@@ -101,7 +101,7 @@ func testAccCheckJobVmwareUpdated() resource.TestCheckFunc {
 		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
 		}
 		resourceName := "cohesity_job_vmware.terraform_vmware_job"

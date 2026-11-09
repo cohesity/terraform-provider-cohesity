@@ -8,8 +8,8 @@ import (
 
 	CohesityManagementSdk "github.com/cohesity/management-sdk-go/managementsdk"
 	"github.com/cohesity/management-sdk-go/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/terraform-providers/terraform-provider-cohesity/cohesity/utils"
 )
 
@@ -39,7 +39,7 @@ func testAccCheckSourceVmwareDestroy(s *terraform.State) error {
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return fmt.Errorf("Failed to authenticate with Cohesity")
 	}
 	var endpoint = "vc-67.eco.eng.cohesity.com"
@@ -51,7 +51,7 @@ func testAccCheckSourceVmwareDestroy(s *terraform.State) error {
 		ListProtectionSources(nil, nil, nil, &trueValue, &trueValue,
 			&trueValue, environmentType, nil, nil, nil, nil, nil)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return fmt.Errorf("Failed to get VMware protection sources")
 	}
 	for _, protectionSource := range result {
@@ -70,7 +70,7 @@ func testAccCheckSourceVmwareCreated() resource.TestCheckFunc {
 		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
 		}
 		var endpoint = "vc-67.eco.eng.cohesity.com"
@@ -83,7 +83,7 @@ func testAccCheckSourceVmwareCreated() resource.TestCheckFunc {
 			ListProtectionSources(nil, nil, nil, &trueValue, &trueValue,
 				&trueValue, environmentType, nil, nil, nil, nil, nil)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return fmt.Errorf("Failed to get VMware protection sources")
 		}
 		for _, protectionSource := range result {
@@ -112,7 +112,7 @@ func testAccCheckSourceVmwareUpdated() resource.TestCheckFunc {
 		client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 			cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return errors.New("Failed to authenticate with Cohesity")
 		}
 		var endpoint = "vc-67.eco.eng.cohesity.com"
@@ -125,7 +125,7 @@ func testAccCheckSourceVmwareUpdated() resource.TestCheckFunc {
 			ListProtectionSources(nil, nil, nil, &trueValue, &trueValue,
 				&trueValue, environmentType, nil, nil, nil, nil, nil)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return fmt.Errorf("Failed to get VMware protection sources")
 		}
 		for _, protectionSource := range result {
