@@ -2,8 +2,7 @@ terraform {
   required_version = ">= 1.11"
   required_providers {
     cohesity = {
-      source  = "stegraab/cohesity"
-      version = "2.1.3-stegra.1"
+      source = "cohesity/cohesity"
     }
   }
 }
