@@ -43,13 +43,29 @@ func testAccCheckJobRunCreated() resource.TestCheckFunc {
 		jobName := vmWareJobName
 		//get the protection job details
 		log.Printf("[INFO] Get the protection job (%s) details", jobName)
+		// GetProtectionJobs lists all the protection jobs (including DELETED ones) whose name
+		// contains the substring passed as an argument to it. Pass isDeleted=false to prevent
+		// listing deleted protection jobs.
+		isDeleted := false
 		protectionJob, err := client.ProtectionJobs().GetProtectionJobs(nil, []string{jobName}, nil,
-			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+			nil, nil, &isDeleted, nil, nil, nil, nil, nil, nil, nil)
 		if err != nil {
 			log.Printf(err.Error())
 			return errors.New("Failed to find the protection job")
 		}
-		jobID := *protectionJob[0].Id
+		// Search the protection job whose name exactly matches the
+		// job name passed as an argument and store its jobId
+		var jobID int64
+		for _, job := range protectionJob {
+			if job.Name != jobName {
+				continue
+			}
+			jobID = *job.Id
+			break
+		}
+		if jobID == 0 {
+			return errors.New("Failed to find the protection job")
+		}
 		//get the protection runs to check the status of recent job run
 		log.Printf("[INFO] Protection job %s found with ID %d ", jobName, jobID)
 		return nil
