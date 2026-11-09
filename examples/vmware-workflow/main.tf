@@ -1,3 +1,15 @@
+terraform {
+  required_providers {
+    cohesity = {
+      source = "cohesity/cohesity"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.14"
+    }
+  }
+}
+
 provider "cohesity" {
   cluster_vip      = "10.10.10.10"
   cluster_username = "admin"
@@ -38,7 +50,7 @@ resource "cohesity_job_vmware" "job1" {
 }
 
 resource "time_sleep" "wait_1_minutes2" {
-  depends_on      = [cohesity_source_vmware.source1]
+  depends_on      = [cohesity_job_vmware.job1]
   create_duration = "60s"
 }
 
