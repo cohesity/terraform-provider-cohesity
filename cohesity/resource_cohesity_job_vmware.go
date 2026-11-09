@@ -161,7 +161,7 @@ func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.R
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	var requestBody models.ProtectionJobRequestBody
@@ -206,7 +206,7 @@ func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.R
 		[]models.EnvironmentListProtectionSourcesRootNodesEnum{models.
 			EnvironmentListProtectionSourcesRootNodes_KVMWARE}, nil)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Error in getting the protection source")
 	}
 	for _, source := range sources {
@@ -223,7 +223,7 @@ func resourceCohesityJobVMwareCreate(ctx context.Context, resourceData *schema.R
 	protectionSourceWithClildObjects, err := client.ProtectionSources().
 		ListProtectionSources(&protectionSourceID, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to get the protection source")
 	}
 	log.Printf("[INFO] Set the source id's for the protection job")
@@ -329,7 +329,7 @@ func resourceCohesityJobVMwareDelete(ctx context.Context, resourceData *schema.R
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 
@@ -342,7 +342,7 @@ func resourceCohesityJobVMwareDelete(ctx context.Context, resourceData *schema.R
 		DeleteProtectionJobParam{DeleteSnapshots: &deleteSnapshots}
 	err = client.ProtectionJobs().DeleteProtectionJob(jobID, &deleteProtectionJobParam)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to delete the protection job")
 	}
 	return nil
@@ -354,7 +354,7 @@ func resourceCohesityJobVMwareUpdate(ctx context.Context, resourceData *schema.R
 	client, err := CohesityManagementSdk.NewCohesitySdkClient(cohesityConfig.ClusterVIP,
 		cohesityConfig.ClusterUsername, cohesityConfig.ClusterPassword, cohesityConfig.ClusterDomain)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to authenticate with Cohesity")
 	}
 	log.Printf("[INFO] Update VMware protection job")
@@ -401,7 +401,7 @@ func resourceCohesityJobVMwareUpdate(ctx context.Context, resourceData *schema.R
 		policy, err := client.ProtectionPolicies().GetProtectionPolicies(nil,
 			[]string{resourceData.Get("policy").(string)}, nil, nil, nil, nil)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return diag.Errorf("Error in getting the protection policy")
 		} else if err == nil && len(policy) == 0 {
 			return diag.Errorf("Failed to find the protection policy on Cohesity cluster")
@@ -418,7 +418,7 @@ func resourceCohesityJobVMwareUpdate(ctx context.Context, resourceData *schema.R
 		storageDomain, err := client.ViewBoxes().GetViewBoxes(nil, nil, nil,
 			[]string{resourceData.Get("storage_domain").(string)}, nil, nil, nil)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Print(err.Error())
 			return diag.Errorf("Error in getting the storage domain")
 		} else if err == nil && len(storageDomain) == 0 {
 			return diag.Errorf("Failed to find the storage domain on Cohesity cluster")
@@ -432,7 +432,7 @@ func resourceCohesityJobVMwareUpdate(ctx context.Context, resourceData *schema.R
 	protectionSourceWithClildObjects, err := client.ProtectionSources().ListProtectionSources(result[0].
 		ParentSourceId, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to get the protection source")
 	}
 
@@ -482,7 +482,7 @@ func resourceCohesityJobVMwareUpdate(ctx context.Context, resourceData *schema.R
 	}
 	_, err = client.ProtectionJobs().UpdateProtectionJob(&requestBody, *result[0].Id)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return diag.Errorf("Failed to update the VMware protection job")
 	}
 	resourceData.Partial(false)
