@@ -12,7 +12,8 @@ var credentialAttrPattern = regexp.MustCompile(`(?i)(^|_)(password|passwd|secret
 func checkSensitive(t *testing.T, path string, s map[string]*schema.Schema) {
 	for name, attr := range s {
 		attrPath := path + "." + name
-		if credentialAttrPattern.MatchString(name) && !attr.Sensitive {
+		// The key rotation counter contains no credential material.
+		if name != "private_key_version" && credentialAttrPattern.MatchString(name) && !attr.Sensitive {
 			t.Errorf("%s looks like a credential but is not marked Sensitive", attrPath)
 		}
 		if elem, ok := attr.Elem.(*schema.Resource); ok {

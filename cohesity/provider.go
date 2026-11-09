@@ -2,7 +2,6 @@ package cohesity
 
 import (
 	"context"
-	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,21 +12,25 @@ import (
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
+			"endpoint":                  {Type: schema.TypeString, Optional: true, Description: "HTTPS origin for certificate management. Defaults to https://cluster_vip."},
+			"api_key":                   {Type: schema.TypeString, Optional: true, Sensitive: true, DefaultFunc: schema.EnvDefaultFunc("COHESITY_API_KEY", ""), Description: "API key with CLUSTER_VIEW and CLUSTER_MODIFY for web server certificate management. Other resources require username/password authentication."},
+			"ca_certificate_pem":        {Type: schema.TypeString, Optional: true, Description: "Additional trusted CA certificates for certificate management."},
+			"bootstrap_certificate_pem": {Type: schema.TypeString, Optional: true, Description: "PEM bundle of explicitly verified existing server leaves, accepted only when normal CA validation fails."},
 			"cluster_vip": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("COHESITY_IP", ""),
 				Description: "IP or hostname of Cohesity cluster node",
 			},
 			"cluster_username": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("COHESITY_USERNAME", ""),
 				Description: "Cohesity cluster username",
 			},
 			"cluster_password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("COHESITY_PASSWORD", ""),
 				Description: "Cohesity cluster password",
@@ -46,18 +49,19 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"cohesity_source_vmware":       resourceCohesitySourceVMware(),
-			"cohesity_job_vmware":          resourceCohesityJobVMware(),
-			"cohesity_job_run":             resourceCohesityJobRun(),
-			"cohesity_ngce_cluster":        resourceCohesityNGCECluster(),
-			"cohesity_gcp_external_target": resourceCohesityGCPExternalTarget(),
-			"cohesity_source_netapp":       resourceCohesitySourceNetapp(),
-			"cohesity_source_gcp":          resourceCohesitySourceGcp(),
-			"cohesity_configure_snmp":      resourceCohesityConfigureSnmp(),
-			"cohesity_configure_smtp":      resourceCohesityConfigureSmtp(),
-			"cohesity_syslog_server": 		resourceCohesitySyslogServer(),
+			"cohesity_web_server_certificate":       resourceWebServerCertificate(),
+			"cohesity_source_vmware":                resourceCohesitySourceVMware(),
+			"cohesity_job_vmware":                   resourceCohesityJobVMware(),
+			"cohesity_job_run":                      resourceCohesityJobRun(),
+			"cohesity_ngce_cluster":                 resourceCohesityNGCECluster(),
+			"cohesity_gcp_external_target":          resourceCohesityGCPExternalTarget(),
+			"cohesity_source_netapp":                resourceCohesitySourceNetapp(),
+			"cohesity_source_gcp":                   resourceCohesitySourceGcp(),
+			"cohesity_configure_snmp":               resourceCohesityConfigureSnmp(),
+			"cohesity_configure_smtp":               resourceCohesityConfigureSmtp(),
+			"cohesity_syslog_server":                resourceCohesitySyslogServer(),
 			"cohesity_configure_notification_rules": resourceCohesityConfigureNotificationRules(),
-			"cohesity_backup_policy":      resourceCohesityBackupPolicy(),
+			"cohesity_backup_policy":                resourceCohesityBackupPolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -69,22 +73,25 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	// Retrieve the configuration values
 	config := utils.Config{
-		ClusterVIP:      d.Get("cluster_vip").(string),
-		ClusterUsername: d.Get("cluster_username").(string),
-		ClusterPassword: d.Get("cluster_password").(string),
-		SupportPassword: d.Get("support_password").(string),
-		ClusterDomain:   d.Get("cluster_domain").(string),
-	}
-	log.Printf("[INFO] vip: %s", config.ClusterVIP)
-
-	// Validate mandatory fields
-	if config.ClusterUsername == "" {
-		return nil, diag.Errorf("cluster_username is required")
+		Endpoint:                d.Get("endpoint").(string),
+		APIKey:                  d.Get("api_key").(string),
+		CACertificatePEM:        d.Get("ca_certificate_pem").(string),
+		BootstrapCertificatePEM: d.Get("bootstrap_certificate_pem").(string),
+		ClusterVIP:              d.Get("cluster_vip").(string),
+		ClusterUsername:         d.Get("cluster_username").(string),
+		ClusterPassword:         d.Get("cluster_password").(string),
+		SupportPassword:         d.Get("support_password").(string),
+		ClusterDomain:           d.Get("cluster_domain").(string),
 	}
 
-	if config.ClusterPassword == "" {
-		return nil, diag.Errorf("cluster_password is required")
+	if config.ClusterVIP == "" && config.Endpoint == "" {
+		return nil, diag.Errorf("set cluster_vip or endpoint")
 	}
-
+	if config.Endpoint == "" {
+		config.Endpoint = "https://" + config.ClusterVIP
+	}
+	if config.APIKey == "" && (config.ClusterUsername == "" || config.ClusterPassword == "") {
+		return nil, diag.Errorf("cluster_username and cluster_password are required without an api_key")
+	}
 	return config, diags
 }
